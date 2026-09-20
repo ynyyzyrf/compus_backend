@@ -1,12 +1,39 @@
-<view class="page-pad">
-  <view class="page-title">{{copy.title}}</view>
-  <view class="panel">
-    <textarea class="ask" value="{{message}}" placeholder="{{copy.placeholder}}" bindinput="onInput" maxlength="2000" />
-    <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onSend">{{copy.send}}</t-button>
-  </view>
+<view class="ai-page">
+  <scroll-view class="chat-scroll" scroll-y scroll-top="{{scrollTop}}" enable-flex>
+    <view class="chat-inner">
+      <view class="page-title">{{copy.title}}</view>
+      <view class="quick-row">
+        <view
+          wx:for="{{quickQuestions}}"
+          wx:key="*this"
+          class="quick-chip"
+          data-text="{{item}}"
+          bindtap="onQuickAsk"
+        >{{item}}</view>
+      </view>
 
-  <view class="answer">
-    <view wx:if="{{answer}}" class="answer-text">{{answer}}</view>
-    <view wx:else class="muted">{{copy.empty}}</view>
+      <view class="message-list">
+        <view wx:for="{{messages}}" wx:key="id" class="message-row {{item.role}}">
+          <view class="message-bubble">{{item.content}}</view>
+        </view>
+        <view wx:if="{{loading}}" class="message-row assistant">
+          <view class="message-bubble loading">{{copy.sending}}</view>
+        </view>
+      </view>
+      <view id="chat-bottom" class="chat-bottom"></view>
+    </view>
+  </scroll-view>
+
+  <view class="input-bar">
+    <input
+      class="chat-input"
+      value="{{message}}"
+      placeholder="{{copy.placeholder}}"
+      confirm-type="send"
+      disabled="{{loading}}"
+      bindinput="onInput"
+      bindconfirm="onSend"
+    />
+    <view class="send-button {{loading ? 'disabled' : ''}}" bindtap="onSend">↑</view>
   </view>
 </view>

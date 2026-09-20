@@ -34,18 +34,18 @@
 .activity-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: 30rpx;
 }
 .activity-card {
   overflow: hidden;
   background: #fff;
   border: 1rpx solid var(--line);
-  border-radius: 24rpx;
-  box-shadow: var(--shadow);
+  border-radius: 26rpx;
+  box-shadow: 0 18rpx 42rpx rgba(126, 40, 34, 0.12);
 }
 .image-wrap {
   position: relative;
-  height: 250rpx;
+  height: 360rpx;
 }
 .cover {
   width: 100%;
@@ -76,40 +76,52 @@
   font-weight: 900;
 }
 .body {
-  padding: 24rpx;
+  padding: 24rpx 26rpx 26rpx;
 }
 .title {
-  font-size: 31rpx;
-  font-weight: 800;
+  font-size: 32rpx;
+  line-height: 1.38;
+  font-weight: 900;
   color: var(--ink);
-  margin-bottom: 14rpx;
+  margin-bottom: 16rpx;
 }
 .row {
   display: flex;
   align-items: center;
   gap: 10rpx;
   color: var(--muted);
-  font-size: 25rpx;
+  font-size: 27rpx;
   line-height: 1.7;
 }
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 18rpx;
+  margin-top: 22rpx;
 }
-.count {
+.signup-summary {
   flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 27rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+.remaining {
+  color: #c57a24;
+  font-weight: 800;
 }
 .status {
-  height: 52rpx;
-  min-width: 128rpx;
-  padding: 0 22rpx;
+  height: 64rpx;
+  min-width: 176rpx;
+  padding: 0 30rpx;
   border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
+  font-size: 28rpx;
   font-weight: 700;
 }
 .status.primary {

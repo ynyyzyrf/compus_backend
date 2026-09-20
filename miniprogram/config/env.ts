@@ -3,7 +3,8 @@
 export type AppEnv = 'development' | 'production'
 
 /** 切換環境只需改這一行。 */
-export const ENV: AppEnv = 'development'
+const SELECTED_ENV = 'production'
+export const ENV = SELECTED_ENV as AppEnv
 
 /**
  * development：本機 FastAPI。
@@ -15,7 +16,7 @@ const DEV_HOST = '192.168.31.177:8000'
 
 const BASE_URLS: Record<AppEnv, string> = {
   development: `http://${DEV_HOST}/api/v1`,
-  production: 'https://api.example.com/api/v1',
+  production: 'https://compus.zeabur.app/api/v1',
 }
 
 export const BASE_URL = BASE_URLS[ENV]

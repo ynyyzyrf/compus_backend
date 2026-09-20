@@ -5,19 +5,25 @@ import {
   goLogin,
   listDevUsers,
 } from '../../services/auth'
+import { getMyProfile } from '../../services/profile'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
 import type { DevUser, UserProfile } from '../../types/api'
+
+const DEFAULT_PROFILE_NAME = '未命名校友'
 
 Page({
   data: {
     lang: locale.get(),
     user: null as UserProfile | null,
     initial: '·',
+    isGuest: false,
+    needsProfileName: false,
     isAdmin: false,
     isDev: IS_DEV,
     devUsers: [] as DevUser[],
     langLabel: '',
+    heroSub: '',
   },
 
   onShow() {
@@ -33,15 +39,26 @@ Page({
       lang: currentLocale,
       langLabel: currentLocale === 'zh-TW' ? t('mine.lang.zh-TW') : t('mine.lang.zh-CN'),
     })
+    wx.setNavigationBarTitle({ title: t('tab.mine') })
     const user = await ensureLogin().catch(() => null)
     if (!user) {
       goLogin()
       return
     }
+    const isGuest = session.isGuest()
+    const latestUser = !isGuest ? await getMyProfile().catch(() => user) : user
+    const displayUser = {
+      ...latestUser,
+      name: latestUser.name === DEFAULT_PROFILE_NAME && latestUser.name_en ? latestUser.name_en : latestUser.name,
+    }
+    if (!isGuest) session.setUser(displayUser)
     this.setData({
-      user,
-      initial: user.name.charAt(0) || '·',
-      isAdmin: user.role === 'super_admin',
+      user: displayUser,
+      initial: displayUser.name.charAt(0) || '·',
+      isGuest,
+      needsProfileName: !isGuest && displayUser.name === DEFAULT_PROFILE_NAME,
+      isAdmin: displayUser.role === 'super_admin',
+      heroSub: isGuest ? t('mine.member_center_sub') : '',
     })
     if (IS_DEV) this.loadDevUsers()
   },
@@ -63,7 +80,10 @@ Page({
       this.setData({
         user,
         initial: user.name.charAt(0) || '·',
+        isGuest: false,
+        needsProfileName: false,
         isAdmin: user.role === 'super_admin',
+        heroSub: '',
       })
       wx.showToast({ title: `${user.name}`, icon: 'success' })
     } finally {
@@ -74,11 +94,21 @@ Page({
   onSwitchLang() {
     const next = locale.get() === 'zh-TW' ? 'zh-CN' : 'zh-TW'
     locale.set(next)
-    // sync to globalData so the wxs filter renders correctly after reLaunch
     const app = getApp<IAppOption>()
     if (app) app.globalData.locale = next
+    this.setData({
+      lang: next,
+      langLabel: next === 'zh-TW' ? t('mine.lang.zh-TW') : t('mine.lang.zh-CN'),
+    })
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar()?.setData({ value: 'mine' })
+      const tabBar = this.getTabBar() as WechatMiniprogram.Component.TrivialInstance & {
+        refreshLocale?: () => void
+      }
+      tabBar.refreshLocale?.()
+    }
     wx.showToast({ title: t('mine.lang.switched'), icon: 'success' })
-    setTimeout(() => wx.reLaunch({ url: '/pages/mine/mine' }), 300)
+    this.refresh()
   },
 
   goAdminDashboard() {
@@ -89,6 +119,9 @@ Page({
   },
   goAdminActivities() {
     wx.navigateTo({ url: '/pages/admin-activities/admin-activities' })
+  },
+  goMyActivities() {
+    wx.navigateTo({ url: '/pages/my-activities/my-activities' })
   },
   goRelays() {
     wx.navigateTo({ url: '/pages/relay-list/relay-list' })
@@ -101,6 +134,14 @@ Page({
   },
   goProfileEdit() {
     wx.navigateTo({ url: '/pages/profile-edit/profile-edit' })
+  },
+  goLoginIfGuest() {
+    if (this.data.isGuest) {
+      session.clearGuest()
+      wx.reLaunch({ url: '/pages/login/login' })
+      return
+    }
+    if (this.data.needsProfileName) this.goProfileEdit()
   },
   comingSoon() {
     wx.showToast({ title: '開發中', icon: 'none' })

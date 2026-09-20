@@ -77,6 +77,7 @@ Page({
   closeSheet() {
     this.setData({ sheetOpen: false })
   },
+  noop() {},
   onPhone(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
     this.setData({ phone: e.detail.value })
   },

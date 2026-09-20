@@ -3,10 +3,11 @@ import { locale } from './utils/i18n'
 App<IAppOption>({
   globalData: {
     pendingOnboarding: false,
-    locale: locale.get(),
+    locale: 'zh-CN',
   },
   onLaunch() {
-    // 同步當前語言到 globalData（wxs 過濾器讀這裡）
-    this.globalData.locale = locale.get()
+    // 每次進入小程序默認使用簡體中文；本次會話內仍可在「我的」頁切換。
+    locale.set('zh-CN')
+    this.globalData.locale = 'zh-CN'
   },
 })

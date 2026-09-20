@@ -62,9 +62,12 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
           }
         }
 
-        const detail =
-          (res.data as { detail?: string } | undefined)?.detail ||
-          `請求失敗（${status}）`
+        const errorDetail = (res.data as { detail?: unknown } | undefined)?.detail
+        const detail = typeof errorDetail === 'string'
+          ? errorDetail
+          : Array.isArray(errorDetail)
+            ? errorDetail.map((item: { msg?: string }) => item.msg || '資料格式有誤').join('；')
+            : `請求失敗（${status}）`
         if (!silent) wx.showToast({ title: detail, icon: 'none' })
         reject(new ApiError(detail, status))
       },

@@ -1,0 +1,78 @@
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+}
+
+.activity-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  box-shadow: var(--shadow);
+}
+
+.cover {
+  width: 100%;
+  height: 300rpx;
+}
+
+.body {
+  padding: 24rpx 26rpx 26rpx;
+}
+
+.title {
+  color: var(--ink);
+  font-size: 32rpx;
+  font-weight: 900;
+  line-height: 1.38;
+  margin-bottom: 16rpx;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: var(--muted);
+  font-size: 27rpx;
+  line-height: 1.7;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 22rpx;
+}
+
+.signup-summary {
+  color: var(--muted);
+  font-size: 27rpx;
+}
+
+.status {
+  height: 58rpx;
+  min-width: 146rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.status.primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
+
+.status.soft {
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.status.muted {
+  color: var(--muted);
+  background: #f1ece8;
+}

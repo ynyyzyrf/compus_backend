@@ -10,6 +10,7 @@ type ActivityCard = ActivityListItem & {
   day: string
   timeText: string
   countText: string
+  remainingText: string
   statusText: string
   statusClass: string
 }
@@ -63,6 +64,7 @@ function toCard(item: ActivityListItem): ActivityCard {
     day: start ? String(start.getDate()).padStart(2, '0') : '',
     timeText: `${fmtDateTime(item.start_at)} - ${fmtDateTime(item.end_at).slice(-5)}`,
     countText: t('activities.count.signup', { count: item.signup_count }),
+    remainingText: item.capacity ? t('activities.count.remaining', { count: Math.max(item.capacity - item.signup_count, 0) }) : '',
     statusText: statusText(item.status),
     statusClass: statusClass(item.status),
   }
@@ -118,13 +120,27 @@ Page({
     this.fetch()
   },
 
+  openActivityDetail(id: number) {
+    if (!Number.isFinite(id) || id <= 0) {
+      wx.showToast({ title: '活動信息異常', icon: 'none' })
+      return
+    }
+    wx.navigateTo({
+      url: `/pages/activity-detail/activity-detail?id=${id}`,
+      fail: (err) => {
+        console.error('open activity detail failed', err)
+        wx.showToast({ title: err.errMsg || '無法打開活動詳情', icon: 'none' })
+      },
+    })
+  },
+
   onCardTap(e: WechatMiniprogram.BaseEvent) {
-    const id = Number(e.currentTarget.dataset.id)
-    if (!Number.isFinite(id)) return
-    wx.navigateTo({ url: `/pages/activity-detail/activity-detail?id=${id}` })
+    const id = Number(e.currentTarget.dataset.id ?? e.target.dataset.id)
+    this.openActivityDetail(id)
   },
 
   onSignup(e: WechatMiniprogram.BaseEvent) {
-    this.onCardTap(e)
+    const id = Number(e.currentTarget.dataset.id ?? e.target.dataset.id)
+    this.openActivityDetail(id)
   },
 })

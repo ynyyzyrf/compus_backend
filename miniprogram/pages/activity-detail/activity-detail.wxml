@@ -78,20 +78,29 @@
 
     <!-- bottom sheet -->
     <view wx:if="{{sheetOpen}}" class="sheet-mask" bindtap="closeSheet">
-      <view class="sheet" catchtap="">
+      <view class="sheet" catchtap="noop">
         <view class="grab"></view>
 
         <block wx:if="{{sheetMode === 'signup'}}">
           <view class="sheet-title">活動報名</view>
-          <view class="field"><view class="lbl2">手機號</view><t-input value="{{phone}}" placeholder="13800000000" bind:change="onPhone" maxlength="32" /></view>
-          <view class="field"><view class="lbl2">備註</view><t-input value="{{remark}}" placeholder="選填" bind:change="onRemark" maxlength="500" /></view>
+          <view class="field">
+            <view class="lbl2">手機號</view>
+            <input class="native-input" value="{{phone}}" placeholder="13800000000" bindinput="onPhone" maxlength="32" />
+          </view>
+          <view class="field">
+            <view class="lbl2">備註</view>
+            <input class="native-input" value="{{remark}}" placeholder="選填" bindinput="onRemark" maxlength="500" />
+          </view>
           <t-button theme="primary" size="large" loading="{{submitting}}" block bindtap="onConfirmSignup">確認報名</t-button>
         </block>
 
         <block wx:elif="{{sheetMode === 'checkin'}}">
           <view class="sheet-title">掃碼簽到</view>
           <view class="muted small">請讓管理員出示活動簽到碼，或粘貼 token</view>
-          <view class="field"><view class="lbl2">簽到 token</view><t-input value="{{scanToken}}" placeholder="掃碼後自動填入" bind:change="onScanToken" /></view>
+          <view class="field">
+            <view class="lbl2">簽到 token</view>
+            <input class="native-input" value="{{scanToken}}" placeholder="掃碼後自動填入" bindinput="onScanToken" />
+          </view>
           <t-button theme="default" variant="outline" size="large" block bindtap="onScanCode">打開掃一掃</t-button>
           <view style="height: 24rpx"></view>
           <t-button theme="success" size="large" loading="{{submitting}}" block bindtap="onConfirmCheckin">確認簽到</t-button>

@@ -1,10 +1,10 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="page-pad">
-  <text class="page-title">{{t.t('admin.dashboard.title', lang)}}</text>
-
   <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
 
   <block wx:elif="{{stats}}">
+    <view wx:if="{{error}}" class="error-tip">{{error}}</view>
+
     <view class="stats-grid">
       <view class="stat">
         <text class="big">{{stats.active_member_total}}</text>
@@ -28,6 +28,15 @@
       <text>{{stats.class_count}} {{t.t('admin.dashboard.class_unit', lang)}}</text>
     </view>
 
+    <view class="ai-banner" bindtap="goAi">
+      <view class="ai-star">✦</view>
+      <view class="ai-copy">
+        <view class="ai-title">{{t.t('admin.dashboard.ai', lang)}}</view>
+        <view class="ai-sub">{{t.t('admin.dashboard.ai_sub', lang)}}</view>
+      </view>
+      <view class="ai-mark">✦</view>
+    </view>
+
     <view class="section-title"><text class="t">{{t.t('admin.dashboard.content_section', lang)}}</text></view>
     <view class="admin-grid">
       <view class="admin-card" bindtap="goActivities"><view class="ac-ico">📅</view><view class="ac-title">{{t.t('admin.dashboard.activities', lang)}}</view><view class="muted">{{t.t('admin.dashboard.activities_sub', lang)}}</view></view>
@@ -41,7 +50,6 @@
       <view class="admin-card" bindtap="goMembers"><view class="ac-ico">👥</view><view class="ac-title">{{t.t('admin.dashboard.members', lang)}}</view><view class="muted">{{t.t('admin.dashboard.members_sub', lang)}}</view></view>
       <view class="admin-card" bindtap="goOrgs"><view class="ac-ico">🏫</view><view class="ac-title">{{t.t('admin.dashboard.orgs', lang)}}</view><view class="muted">{{t.t('admin.dashboard.orgs_sub', lang)}}</view></view>
       <view class="admin-card" bindtap="goPermissions"><view class="ac-ico">🔐</view><view class="ac-title">{{t.t('admin.dashboard.permissions', lang)}}</view><view class="muted">{{t.t('admin.dashboard.permissions_sub', lang)}}</view></view>
-      <view class="admin-card" bindtap="goAi"><view class="ac-ico">✦</view><view class="ac-title">{{t.t('admin.dashboard.ai', lang)}}</view><view class="muted">{{t.t('ai.title', lang)}}</view></view>
     </view>
   </block>
 </view>

@@ -5,6 +5,7 @@ export type Role = 'user' | 'super_admin'
 export interface UserProfile {
   id: number
   name: string
+  name_en?: string | null
   avatar_url: string | null
   role: Role
   status: string
@@ -141,7 +142,7 @@ export interface MyProfile {
 }
 
 export type MyProfileUpdate = Partial<
-  Omit<MyProfile, 'id' | 'name' | 'avatar_url' | 'role' | 'status'>
+  Omit<MyProfile, 'id' | 'avatar_url' | 'role' | 'status'>
 >
 
 // MemberDetail now extends the same shape (minus role/status) plus class context.

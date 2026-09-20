@@ -1,8 +1,11 @@
-.page-title {
-  display: block;
-  font-size: 44rpx;
-  font-weight: 800;
+.error-tip {
   margin-bottom: 20rpx;
+  padding: 18rpx 22rpx;
+  border-radius: 18rpx;
+  background: #fff4e1;
+  color: #8f6b28;
+  font-size: 24rpx;
+  line-height: 1.5;
 }
 .stats-grid {
   display: grid;
@@ -11,22 +14,64 @@
 }
 .stat {
   background: #fff;
-  border-radius: 28rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 22rpx;
   padding: 28rpx;
   text-align: center;
-  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 8rpx;
 }
-.big { font-size: 40rpx; font-weight: 800; color: #07c160; }
+.big { font-size: 40rpx; font-weight: 800; color: var(--brand); }
 .org-strip {
   text-align: center;
   font-size: 24rpx;
-  color: #77808a;
+  color: var(--muted);
   padding: 16rpx 0 24rpx;
 }
-.org-strip .dot { margin: 0 12rpx; color: #c8d0d8; }
+.org-strip .dot { margin: 0 12rpx; color: var(--subtle); }
+.ai-banner {
+  position: relative;
+  min-height: 148rpx;
+  padding: 28rpx 34rpx;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, #7654f0 0%, #6f87f5 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  overflow: hidden;
+  box-shadow: 0 14rpx 34rpx rgba(110, 90, 230, 0.22);
+}
+.ai-star {
+  font-size: 36rpx;
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+.ai-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.ai-title {
+  font-size: 34rpx;
+  font-weight: 900;
+}
+.ai-sub {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.4;
+}
+.ai-mark {
+  position: absolute;
+  right: -12rpx;
+  top: 18rpx;
+  font-size: 150rpx;
+  color: rgba(255, 255, 255, 0.17);
+  line-height: 1;
+}
 .section-title {
   display: flex;
   margin: 32rpx 4rpx 20rpx;
@@ -39,10 +84,11 @@
 }
 .admin-card {
   background: #fff;
-  border-radius: 28rpx;
+  border: 1rpx solid var(--line);
+  border-radius: 22rpx;
   padding: 28rpx;
   min-height: 180rpx;
-  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+  box-shadow: var(--shadow);
 }
 .ac-ico { font-size: 48rpx; margin-bottom: 16rpx; }
 .ac-title { font-size: 28rpx; font-weight: 700; }

@@ -9,6 +9,7 @@ Page({
     lang: locale.get(),
     stats: null as DashboardStats | null,
     loading: true,
+    error: '',
   },
 
   onShow() {
@@ -22,10 +23,24 @@ Page({
       setTimeout(() => wx.navigateBack(), 800)
       return
     }
-    this.setData({ lang: locale.get(), loading: true })
+    this.setData({ lang: locale.get(), loading: true, error: '' })
     try {
       const stats = await getDashboard()
       this.setData({ stats })
+    } catch (e) {
+      this.setData({
+        error: (e as Error).message || '統計載入失敗',
+        stats: {
+          member_total: 0,
+          active_member_total: 0,
+          college_count: 0,
+          department_count: 0,
+          class_count: 0,
+          signing_activity_total: 0,
+          ongoing_activity_total: 0,
+          recent_checkin_rate: 0,
+        },
+      })
     } finally {
       this.setData({ loading: false })
     }

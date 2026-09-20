@@ -1,7 +1,7 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="page-pad">
   <view class="hero">
-    <image class="hero-img" src="/assets/campus-hero.jpg" mode="aspectFill" />
+    <image class="hero-img" src="/assets/business-hero.jpg" mode="aspectFill" />
     <view class="hero-mask"></view>
     <view class="hero-copy">
       <view class="eyebrow">{{t.t('home.eyebrow', lang)}}</view>
@@ -13,38 +13,67 @@
     </view>
   </view>
 
-  <view class="section-title">
-    <text class="t">{{t.t('home.recent_articles', lang)}}</text>
-    <text class="more" bindtap="goArticles">{{t.t('common.more', lang)}}</text>
-  </view>
-  <view class="news-list card" bindtap="goArticles">
-    <view class="news-row">
-      <view class="dot"></view>
-      <view class="news-copy">
-        <view class="news-title">{{t.t('home.demo.news_1', lang)}}</view>
-        <view class="news-date">2024-04-10</view>
+  <block wx:if="{{latestArticles.length > 0}}">
+    <view class="section-title">
+      <text class="t">{{t.t('home.recent_articles', lang)}}</text>
+      <text class="more" bindtap="goArticles">{{t.t('common.more', lang)}}</text>
+    </view>
+    <view class="news-list card">
+      <view
+        class="news-row"
+        wx:for="{{latestArticles}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="goArticleDetail"
+      >
+        <view class="dot {{index % 2 === 1 ? 'blue-dot' : ''}}"></view>
+        <view class="news-copy">
+          <view class="news-title">{{item.title}}</view>
+          <view class="news-date">{{item.dateText}}</view>
+        </view>
       </view>
     </view>
-    <view class="news-row">
-      <view class="dot blue-dot"></view>
-      <view class="news-copy">
-        <view class="news-title">{{t.t('home.demo.news_2', lang)}}</view>
-        <view class="news-date">2024-03-28</view>
-      </view>
-    </view>
-  </view>
+  </block>
 
-  <view class="section-title">
-    <text class="t">{{t.t('home.recent_activities', lang)}}</text>
-    <text class="more" data-tab="activities" bindtap="goTab">{{t.t('common.more', lang)}}</text>
-  </view>
-  <view class="activity-card" bindtap="goTab" data-tab="activities">
-    <image class="activity-thumb" src="/assets/campus-hero.jpg" mode="aspectFill" />
-    <view class="activity-meta">
-      <view class="activity-title">{{t.t('home.demo.activity_title', lang)}}</view>
-      <view class="activity-row"><text class="mini-label">{{t.t('home.label.time', lang)}}</text>10/26 09:00</view>
-      <view class="activity-row"><text class="mini-label">址</text>{{t.t('home.demo.activity_location', lang)}}</view>
+  <block wx:if="{{latestRelay}}">
+    <view class="section-title">
+      <text class="t">{{t.t('home.recent_relays', lang)}}</text>
+      <text class="more" bindtap="goRelays">{{t.t('common.more', lang)}}</text>
     </view>
-    <view class="activity-cta">{{t.t('home.demo.signup', lang)}}</view>
-  </view>
+    <view class="relay-home-card" data-id="{{latestRelay.id}}" bindtap="goRelayDetail">
+      <view class="relay-main">
+        <view class="relay-title">{{latestRelay.title}}</view>
+        <view wx:if="{{latestRelay.description}}" class="relay-desc">{{latestRelay.description}}</view>
+        <view class="relay-meta">
+          <text>{{latestRelay.responseText}}</text>
+          <text wx:if="{{latestRelay.deadlineText}}">{{latestRelay.deadlineText}}</text>
+        </view>
+      </view>
+      <view class="relay-arrow">›</view>
+    </view>
+  </block>
+
+  <block wx:if="{{latestActivities.length > 0}}">
+    <view class="section-title">
+      <text class="t">{{t.t('home.recent_activities', lang)}}</text>
+      <text class="more" data-tab="activities" bindtap="goTab">{{t.t('common.more', lang)}}</text>
+    </view>
+    <view class="home-activity-list">
+      <view
+        class="activity-card"
+        wx:for="{{latestActivities}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="goActivityDetail"
+      >
+        <image class="activity-thumb" src="{{item.cover_url || '/assets/campus-hero.jpg'}}" mode="aspectFill" />
+        <view class="activity-meta">
+          <view class="activity-title">{{item.title}}</view>
+          <view class="activity-row"><text class="mini-label">{{t.t('home.label.time', lang)}}</text>{{item.timeText}}</view>
+          <view class="activity-row"><text class="mini-label">址</text>{{item.location}}</view>
+        </view>
+        <view class="activity-cta">{{t.t('activities.signup_now', lang)}}</view>
+      </view>
+    </view>
+  </block>
 </view>

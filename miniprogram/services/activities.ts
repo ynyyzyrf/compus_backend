@@ -35,6 +35,10 @@ export function listActivities(params: {
   })
 }
 
+export function listMyActivities(): Promise<ActivityListItem[]> {
+  return request<ActivityListItem[]>({ url: '/me/activities' })
+}
+
 export function getActivity(id: number): Promise<ActivityDetail> {
   return request<ActivityDetail>({ url: `/activities/${id}` })
 }

@@ -67,6 +67,23 @@ def list_activities(
     return list(rows), stats
 
 
+def list_my_signed_activities(db: Session, user: User) -> tuple[list[Activity], list[dict]]:
+    rows = db.execute(
+        select(Activity)
+        .join(ActivitySignup, ActivitySignup.activity_id == Activity.id)
+        .where(
+            Activity.status != ActivityStatus.DRAFT,
+            ActivitySignup.user_id == user.id,
+            ActivitySignup.status == SignupStatus.SIGNED,
+        )
+        .order_by(Activity.start_at.desc(), Activity.id.desc())
+    ).scalars().all()
+    if not rows:
+        return [], []
+    stats = _stats_for(db, [a.id for a in rows])
+    return list(rows), stats
+
+
 def _stats_for(db: Session, activity_ids: Iterable[int]) -> list[dict]:
     ids = list(activity_ids)
     if not ids:

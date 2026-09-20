@@ -81,6 +81,36 @@ def list_activities(
     return items
 
 
+@router.get("/my-signups", response_model=list[ActivityListItem])
+def list_my_signups(current_user: CurrentUser, db: DbSession) -> list[ActivityListItem]:
+    rows, stats_list = activity_service.list_my_signed_activities(db, current_user)
+    stats_map = {s["id"]: s for s in stats_list}
+    items = []
+    now = datetime.now(timezone.utc)
+    for a in rows:
+        status_value = activity_service.compute_status(a, now)
+        s = stats_map.get(a.id, {})
+        items.append(
+            ActivityListItem(
+                id=a.id,
+                title=a.title,
+                cover_url=a.cover_url,
+                description=a.description,
+                location=a.location,
+                organizer=a.organizer,
+                start_at=a.start_at,
+                end_at=a.end_at,
+                signup_start_at=a.signup_start_at,
+                signup_end_at=a.signup_end_at,
+                capacity=a.capacity,
+                status=status_value,
+                signup_count=s.get("signup_count", 0),
+                checkin_count=s.get("checkin_count", 0),
+            )
+        )
+    return items
+
+
 @router.get("/{activity_id}", response_model=ActivityDetail)
 def get_activity(
     activity_id: int, current_user: CurrentUser, db: DbSession

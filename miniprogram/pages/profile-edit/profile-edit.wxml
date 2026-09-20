@@ -1,13 +1,14 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="page-pad">
   <view class="card">
-    <view class="title">{{t.t('profile.edit_title', lang)}}</view>
-    <view class="muted">{{t.t('profile.edit_desc', lang)}}</view>
-  </view>
-
-  <view class="card">
     <view class="label">{{t.t('profile.name', lang)}}</view>
-    <view class="readonly">{{profile ? profile.name : ''}}</view>
+    <input
+      class="native-input"
+      value="{{profile.name}}"
+      placeholder="{{t.t('profile.name', lang)}}"
+      bindinput="onName"
+      maxlength="64"
+    />
     <view class="field">
       <view class="label-sub">{{t.t('profile.name_en', lang)}}</view>
       <t-input value="{{profile.name_en}}" placeholder="English name" bind:change="onNameEn" maxlength="100" />

@@ -13,6 +13,17 @@
   background: linear-gradient(180deg, #c83a34 0%, #e5b6b2 100%);
   color: #fff;
 }
+.guest-login-hit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  border-radius: 18rpx;
+}
+.guest-login-hit.active {
+  cursor: pointer;
+}
 .avatar.big {
   width: 112rpx;
   height: 112rpx;
@@ -80,7 +91,7 @@
 }
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   row-gap: 30rpx;
 }
 .service-item {

@@ -118,6 +118,11 @@
 .qicon.orange { background: linear-gradient(135deg, #d96a43, #b92722); }
 .qicon.mint { background: linear-gradient(135deg, #d7b45c, #b8872d); }
 .qicon.sky { background: linear-gradient(135deg, #c95b4f, #a52622); }
+.home-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
 .activity-card {
   position: relative;
   display: flex;
@@ -222,4 +227,51 @@
   margin-top: 6rpx;
   color: var(--subtle);
   font-size: 23rpx;
+}
+.relay-home-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  min-height: 156rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background:
+    linear-gradient(135deg, rgba(185, 39, 34, 0.06), rgba(215, 170, 68, 0.08)),
+    #fff;
+  border: 1rpx solid rgba(239, 228, 220, 0.95);
+  box-shadow: var(--shadow);
+}
+.relay-main {
+  flex: 1;
+  min-width: 0;
+}
+.relay-title {
+  color: var(--ink);
+  font-size: 29rpx;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.relay-desc {
+  margin-top: 8rpx;
+  color: var(--muted);
+  font-size: 25rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.relay-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx 18rpx;
+  margin-top: 10rpx;
+  color: var(--subtle);
+  font-size: 23rpx;
+}
+.relay-arrow {
+  color: var(--subtle);
+  font-size: 44rpx;
+  line-height: 1;
+  flex: 0 0 auto;
 }

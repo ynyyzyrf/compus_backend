@@ -96,6 +96,36 @@ def test_user_can_signup_and_cancel(ctx, client):
     assert resp.status_code == 204
 
 
+def test_user_my_signups_lists_only_signed_activities(ctx, client):
+    signed = _mk(ctx.db, title="已報名活動", capacity=10)
+    cancelled = _mk(ctx.db, title="已取消活動", capacity=10)
+    hidden = _mk(ctx.db, title="未報名活動", capacity=10)
+    headers = _auth(ctx.user("周可欣"))
+
+    assert client.post(
+        f"/api/v1/activities/{signed.id}/signup", json={}, headers=headers
+    ).status_code == 201
+    assert client.post(
+        f"/api/v1/activities/{cancelled.id}/signup", json={}, headers=headers
+    ).status_code == 201
+    assert client.delete(
+        f"/api/v1/activities/{cancelled.id}/signup", headers=headers
+    ).status_code == 204
+
+    resp = client.get("/api/v1/activities/my-signups", headers=headers)
+    assert resp.status_code == 200, resp.text
+    titles = [item["title"] for item in resp.json()]
+    assert "已報名活動" in titles
+    assert "已取消活動" not in titles
+    assert "未報名活動" not in titles
+    assert hidden.id
+
+    alias_resp = client.get("/api/v1/me/activities", headers=headers)
+    assert alias_resp.status_code == 200, alias_resp.text
+    alias_titles = [item["title"] for item in alias_resp.json()]
+    assert alias_titles == titles
+
+
 def test_user_checkin_via_token(ctx, client):
     a = _mk(
         ctx.db,

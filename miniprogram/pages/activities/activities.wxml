@@ -27,10 +27,13 @@
       </view>
       <view class="body">
         <view class="title">{{item.title}}</view>
-        <view class="row"><t-icon name="time" size="26rpx" />{{item.timeText}}</view>
-        <view class="row"><t-icon name="location" size="26rpx" />{{item.location}}</view>
+        <view class="row"><t-icon name="time" size="28rpx" />{{item.timeText}}</view>
+        <view class="row"><t-icon name="location" size="28rpx" />{{item.location}}</view>
         <view class="footer">
-          <view class="row count"><t-icon name="usergroup" size="26rpx" />{{item.countText}}</view>
+          <view class="signup-summary">
+            <text>{{item.countText}}</text>
+            <text wx:if="{{item.remainingText}}" class="remaining">{{item.remainingText}}</text>
+          </view>
           <view class="status {{item.statusClass}}" data-id="{{item.id}}" catchtap="onSignup">{{item.statusText}}</view>
         </view>
       </view>

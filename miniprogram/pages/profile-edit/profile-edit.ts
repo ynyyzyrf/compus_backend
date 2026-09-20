@@ -3,14 +3,24 @@ import { locale } from '../../utils/i18n'
 import { session } from '../../utils/session'
 import type { MyProfile, MyProfileUpdate } from '../../types/api'
 
+const DEFAULT_PROFILE_NAME = '未命名校友'
+
 type FormKey =
-  | 'name_en' | 'phone' | 'wechat_id' | 'email'
+  | 'name' | 'name_en' | 'phone' | 'wechat_id' | 'email'
   | 'company_name' | 'company_address' | 'company_founded_at'
   | 'profession' | 'profession_en' | 'position'
   | 'business_description' | 'referrals_needed'
   | 'personal_experience' | 'resources_offered'
   | 'chamber_chapter' | 'chamber_member_no'
   | 'chamber_join_date' | 'chamber_score' | 'bio'
+
+function leaveProfilePage() {
+  if (getCurrentPages().length > 1) {
+    wx.navigateBack({ delta: 1 })
+    return
+  }
+  wx.switchTab({ url: '/pages/mine/mine' })
+}
 
 Page({
   data: {
@@ -27,7 +37,12 @@ Page({
   async load() {
     try {
       const profile = await getMyProfile()
-      this.setData({ profile })
+      this.setData({
+        profile: {
+          ...profile,
+          name: profile.name === DEFAULT_PROFILE_NAME ? '' : profile.name,
+        },
+      })
     } catch (e) {
       console.error('load profile failed', e)
     }
@@ -37,6 +52,7 @@ Page({
     this.setData({ [`profile.${key}`]: e.detail.value })
   },
 
+  onName(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'name') },
   onNameEn(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'name_en') },
   onPhone(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'phone') },
   onWechatId(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'wechat_id') },
@@ -66,8 +82,10 @@ Page({
     const p = this.data.profile
     if (!p) return {}
     const cleanStr = (v: string | null) => (v && v.trim() ? v.trim() : null)
+    const name = p.name.trim() || p.name_en?.trim() || DEFAULT_PROFILE_NAME
     const score = p.chamber_score == null ? undefined : Number(p.chamber_score)
     return {
+      name,
       name_en: cleanStr(p.name_en),
       phone: cleanStr(p.phone),
       wechat_id: cleanStr(p.wechat_id),
@@ -92,13 +110,19 @@ Page({
 
   async onSave() {
     if (this.data.saving) return
+    if (!this.data.profile?.name.trim() && !this.data.profile?.name_en?.trim()) {
+      wx.showToast({ title: '請填寫姓名', icon: 'none' })
+      return
+    }
+    const payload = this._buildPayload()
     this.setData({ saving: true })
     try {
-      const profile = await updateMyProfile(this._buildPayload())
+      const profile = await updateMyProfile(payload)
+      if (profile.name !== payload.name) throw new Error('姓名未保存，請稍後重試')
       session.setUser(profile)
       session.markOnboarded()
       wx.showToast({ title: '已保存', icon: 'success' })
-      setTimeout(() => wx.navigateBack({ delta: 1 }), 600)
+      leaveProfilePage()
     } catch (e) {
       wx.showToast({ title: (e as Error).message || '保存失敗', icon: 'none' })
     } finally {
