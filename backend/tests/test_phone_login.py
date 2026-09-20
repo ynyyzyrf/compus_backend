@@ -24,7 +24,6 @@ def client(db):
 @pytest.fixture()
 def real_wechat(monkeypatch):
     monkeypatch.setattr(auth_service.settings, "wechat_mock_login", False)
-    monkeypatch.setattr(auth_service.settings, "wechat_phone_login_required", True)
     monkeypatch.setattr(
         auth_service, "_code2session", lambda code: (f"openid-{code}", None)
     )
