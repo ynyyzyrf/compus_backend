@@ -5,7 +5,7 @@
 
 ## 一、項目定位
 
-- **產品**：校友 / 校園組織微信小程序（AppID `wx42d74cdbd19566ff`）
+- **產品**：校友 / 校園組織微信小程序（AppID `wxc2b7726dfb13895b`）
 - **角色**：普通用戶 + 超級管理員（V1 僅兩種）
 - **核心**：組織架構（分院 → 系 → 班）+ 通訊錄權限化 + 活動閉環 + 內容 + AI
 - **需求基線**：[PRD V1.0](V1.0/campus_platform_PRD_V1.0.md)、[HTML 原型 V1.0](V1.0/wechat_campus_platform_demo.html)

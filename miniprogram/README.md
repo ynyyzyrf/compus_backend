@@ -6,7 +6,7 @@
 ## 首次運行（微信開發者工具）
 
 1. 先按 [backend/README.md](../backend/README.md) 啟動後端（默認 `:8000`）。
-2. 開發者工具導入本項目根目錄（AppID 用測試號或 `wx42d74cdbd19566ff`）。
+2. 開發者工具導入本項目根目錄（AppID `wxc2b7726dfb13895b`）。
 3. **npm 構建**：運行時依賴在 `miniprogram/package.json`，已安裝到
    `miniprogram/node_modules`，並按構建產物規則預生成了 `miniprogram/miniprogram_npm/`，
    **通常可直接編譯，無需手動構建**。若新增/升級依賴，在開發者工具菜單
