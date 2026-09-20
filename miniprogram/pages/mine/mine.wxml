@@ -1,10 +1,13 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="mine-page">
   <view wx:if="{{affiliationText}}" class="pending-notice">
-    <view class="pending-notice-title">組織申請審核中</view>
-    <view class="pending-notice-path">{{affiliationText}}</view>
+    <view class="pending-notice-pill">
+      <t-icon class="pending-notice-icon" name="sound-high-filled" size="32rpx" color="#ffffff" />
+      <text class="pending-notice-title">組織申請審核中</text>
+      <text class="pending-notice-path">{{affiliationText}}</text>
+    </view>
   </view>
-  <view class="profile-hero">
+  <view class="profile-hero {{affiliationText ? 'has-notice' : ''}}">
     <view class="guest-login-hit {{isGuest ? 'active' : ''}}" bindtap="goLoginIfGuest">
     <view class="avatar big">{{initial}}</view>
     <view class="hero-info">
