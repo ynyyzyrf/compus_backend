@@ -3,10 +3,12 @@
   background: #f6f6f6;
   padding-bottom: 40rpx;
 }
+.profile-header.has-notice {
+  border-radius: 48rpx 48rpx 0 0;
+  background: linear-gradient(180deg, #b23d37 0%, #ce756e 50%, #e5b6b2 100%);
+}
 .pending-notice {
   padding: 32rpx 20rpx 14rpx;
-  border-radius: 48rpx 48rpx 0 0;
-  background: linear-gradient(135deg, #ab3932, #c6534b);
   color: #fff;
 }
 .pending-notice-pill {
@@ -33,7 +35,7 @@
   background: linear-gradient(180deg, #c83a34 0%, #e5b6b2 100%);
   color: #fff;
 }
-.profile-hero.has-notice { background: linear-gradient(180deg, #c6534b 0%, #e5b6b2 100%); }
+.profile-hero.has-notice { background: transparent; }
 .guest-login-hit {
   flex: 1;
   min-width: 0;
