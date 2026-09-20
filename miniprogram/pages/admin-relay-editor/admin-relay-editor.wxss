@@ -1,0 +1,29 @@
+.card {
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--shadow);
+}
+.label { font-size: 27rpx; font-weight: 800; margin-bottom: 14rpx; }
+.label.sub { margin-top: 24rpx; }
+.seg, .type-grid { display: flex; flex-wrap: wrap; gap: 14rpx; }
+.seg-btn, .type, .check {
+  border-radius: 999rpx;
+  border: 1rpx solid var(--line);
+  background: #f7faff;
+  color: var(--muted);
+  padding: 12rpx 20rpx;
+  font-size: 24rpx;
+}
+.seg-btn.on, .type.on, .check.on {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.section-title { font-size: 30rpx; font-weight: 900; margin: 18rpx 0; }
+.field-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18rpx; }
+.field-no { color: var(--brand); font-weight: 900; }
+.remove { color: #f04b4b; font-size: 24rpx; }
+.actions { margin-top: 24rpx; }

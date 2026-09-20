@@ -1,0 +1,56 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/home/home",
+    "pages/directory/directory",
+    "pages/member-detail/member-detail",
+    "pages/activities/activities",
+    "pages/activity-album/activity-album",
+    "pages/activity-poster/activity-poster",
+    "pages/relay-list/relay-list",
+    "pages/relay-detail/relay-detail",
+    "pages/mine/mine",
+    "pages/article-list/article-list",
+    "pages/article-detail/article-detail",
+    "pages/admin-dashboard/admin-dashboard",
+    "pages/admin-articles/admin-articles",
+    "pages/admin-article-editor/admin-article-editor",
+    "pages/admin-activities/admin-activities",
+    "pages/admin-activity-editor/admin-activity-editor",
+    "pages/admin-activity-roster/admin-activity-roster",
+    "pages/admin-activity-checkin/admin-activity-checkin",
+    "pages/admin-members/admin-members",
+    "pages/admin-member-edit/admin-member-edit",
+    "pages/admin-orgs/admin-orgs",
+    "pages/admin-permissions/admin-permissions",
+    "pages/admin-relays/admin-relays",
+    "pages/admin-relay-editor/admin-relay-editor",
+    "pages/admin-relay-responses/admin-relay-responses",
+    "pages/admin-photos/admin-photos",
+    "pages/admin-ai/admin-ai",
+    "pages/my-uploads/my-uploads",
+    "pages/profile-setup/profile-setup",
+    "pages/profile-edit/profile-edit"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "校友商會",
+    "navigationBarBackgroundColor": "#f8fbff",
+    "backgroundColor": "#f4f7fb",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#80878f",
+    "selectedColor": "#1f73ff",
+    "backgroundColor": "#ffffff",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首頁" },
+      { "pagePath": "pages/directory/directory", "text": "通訊錄" },
+      { "pagePath": "pages/activities/activities", "text": "活動" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel"
+}

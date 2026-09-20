@@ -1,0 +1,12 @@
+<view class="page-pad">
+  <view class="page-title">{{copy.title}}</view>
+  <view class="panel">
+    <textarea class="ask" value="{{message}}" placeholder="{{copy.placeholder}}" bindinput="onInput" maxlength="2000" />
+    <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onSend">{{copy.send}}</t-button>
+  </view>
+
+  <view class="answer">
+    <view wx:if="{{answer}}" class="answer-text">{{answer}}</view>
+    <view wx:else class="muted">{{copy.empty}}</view>
+  </view>
+</view>

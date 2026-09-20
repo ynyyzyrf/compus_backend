@@ -1,0 +1,71 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <view class="card">
+    <view class="title">{{t.t('profile.edit_title', lang)}}</view>
+    <view class="muted">{{t.t('profile.edit_desc', lang)}}</view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.name', lang)}}</view>
+    <view class="readonly">{{profile ? profile.name : ''}}</view>
+    <view class="field">
+      <view class="label-sub">{{t.t('profile.name_en', lang)}}</view>
+      <t-input value="{{profile.name_en}}" placeholder="English name" bind:change="onNameEn" maxlength="100" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.contact', lang)}}</view>
+    <view class="field">
+      <view class="label-sub">{{t.t('profile.phone', lang)}}</view>
+      <t-input value="{{profile.phone}}" type="number" placeholder="13800000000" bind:change="onPhone" maxlength="32" />
+    </view>
+    <view class="field">
+      <view class="label-sub">{{t.t('profile.wechat_id', lang)}}</view>
+      <t-input value="{{profile.wechat_id}}" placeholder="{{t.t('profile.wechat_id', lang)}}" bind:change="onWechatId" maxlength="64" />
+    </view>
+    <view class="field">
+      <view class="label-sub">{{t.t('profile.email', lang)}}</view>
+      <t-input value="{{profile.email}}" placeholder="email@example.com" bind:change="onEmail" maxlength="128" />
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.company', lang)}}</view>
+    <view class="field"><view class="label-sub">{{t.t('profile.company_name', lang)}}</view><t-input value="{{profile.company_name}}" placeholder="{{t.t('profile.company_name', lang)}}" bind:change="onCompany" maxlength="200" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.company_address', lang)}}</view><t-input value="{{profile.company_address}}" placeholder="{{t.t('profile.company_address', lang)}}" bind:change="onCompanyAddr" maxlength="500" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.company_founded', lang)}}</view><t-input value="{{profile.company_founded_at}}" placeholder="YYYY-MM-DD" bind:change="onCompanyDate" maxlength="10" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.position', lang)}}</view><t-input value="{{profile.position}}" placeholder="{{t.t('profile.position', lang)}}" bind:change="onPosition" maxlength="100" /></view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.profession', lang)}}</view>
+    <view class="field"><view class="label-sub">{{t.t('profile.profession_zh', lang)}}</view><t-input value="{{profile.profession}}" placeholder="{{t.t('profile.profession_zh', lang)}}" bind:change="onProfession" maxlength="128" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.profession_en', lang)}}</view><t-input value="{{profile.profession_en}}" placeholder="e.g. International Logistics" bind:change="onProfessionEn" maxlength="128" /></view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.business', lang)}}</view>
+    <view class="field"><view class="label-sub">{{t.t('profile.business_desc', lang)}}</view><t-textarea value="{{profile.business_description}}" placeholder="{{t.t('profile.business_desc', lang)}}" bind:change="onBusiness" maxlength="1000" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.referrals_needed', lang)}}</view><t-textarea value="{{profile.referrals_needed}}" placeholder="{{t.t('profile.referrals_needed', lang)}}" bind:change="onReferrals" maxlength="500" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.experience', lang)}}</view><t-textarea value="{{profile.personal_experience}}" placeholder="{{t.t('profile.experience', lang)}}" bind:change="onExperience" maxlength="1000" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.resources', lang)}}</view><t-textarea value="{{profile.resources_offered}}" placeholder="{{t.t('profile.resources', lang)}}" bind:change="onResources" maxlength="1000" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.chamber', lang)}}</view>
+    <view class="field"><view class="label-sub">{{t.t('profile.chapter', lang)}}</view><t-input value="{{profile.chamber_chapter}}" placeholder="{{t.t('profile.chapter', lang)}}" bind:change="onChamber" maxlength="128" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.member_no', lang)}}</view><t-input value="{{profile.chamber_member_no}}" placeholder="{{t.t('profile.member_no_placeholder', lang)}}" bind:change="onChamberNo" maxlength="64" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.join_date', lang)}}</view><t-input value="{{profile.chamber_join_date}}" placeholder="YYYY-MM-DD" bind:change="onChamberJoin" maxlength="10" /></view>
+    <view class="field"><view class="label-sub">{{t.t('profile.score', lang)}}</view><t-input value="{{profile.chamber_score}}" type="number" placeholder="100" bind:change="onChamberScore" /></view>
+  </view>
+
+  <view class="card">
+    <view class="label">{{t.t('profile.bio_section', lang)}}</view>
+    <view class="field"><view class="label-sub">{{t.t('profile.bio', lang)}}</view><t-textarea value="{{profile.bio}}" placeholder="{{t.t('profile.bio', lang)}}" bind:change="onBio" maxlength="500" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
+  </view>
+
+  <view class="actions">
+    <t-button theme="primary" size="large" loading="{{saving}}" bindtap="onSave" block>{{t.t('common.save', lang)}}</t-button>
+  </view>
+</view>

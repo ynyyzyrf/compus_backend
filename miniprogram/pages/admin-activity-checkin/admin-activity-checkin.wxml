@@ -1,0 +1,20 @@
+<view class="page-pad">
+  <view class="card qr-card">
+    <view class="muted small">請讓用戶用小程序掃一掃掃描下方簽到碼</view>
+    <view class="qr-box">
+      <view class="qr-placeholder">
+        <view class="big-icon">📱</view>
+        <view class="muted tiny">活動 #{{activityId}}</view>
+        <view class="muted tiny">到期: {{expiresAtText}}</view>
+      </view>
+    </view>
+    <view class="token-label">簽到 token（粘貼到小程序的簽到輸入框）</view>
+    <view class="token-box">{{token || '生成中...'}}</view>
+  </view>
+
+  <view class="actions">
+    <t-button theme="primary" size="large" block bindtap="copyToken">複製 token</t-button>
+    <t-button theme="default" variant="outline" size="large" block bindtap="refresh">刷新簽到碼</t-button>
+  </view>
+  <view class="muted hint">每次刷新生成新 token（舊的 8 小時內仍可使用）。下一步切片會用 canvas 渲染真正的二維碼。</view>
+</view>

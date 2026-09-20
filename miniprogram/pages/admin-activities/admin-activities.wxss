@@ -1,0 +1,35 @@
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+.title { font-size: 44rpx; font-weight: 800; }
+.list { display: flex; flex-direction: column; gap: 20rpx; }
+.item {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+}
+.title2 {
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+.row2 {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin: 12rpx 0;
+  font-size: 24rpx;
+}
+.actions-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid var(--line);
+}
+.action { font-size: 26rpx; }
+.action.danger { color: #f04b4b; margin-left: auto; }

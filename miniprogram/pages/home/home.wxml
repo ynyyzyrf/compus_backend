@@ -1,0 +1,50 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <view class="hero">
+    <image class="hero-img" src="/assets/campus-hero.jpg" mode="aspectFill" />
+    <view class="hero-mask"></view>
+    <view class="hero-copy">
+      <view class="eyebrow">{{t.t('home.eyebrow', lang)}}</view>
+      <view class="hello">
+        <view>{{t.t('home.hero.line1', lang)}}</view>
+        <view>{{t.t('home.hero.line2', lang)}}</view>
+      </view>
+      <view class="desc">Hi {{name}}，{{t.t('home.hero.welcome_suffix', lang)}}</view>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <text class="t">{{t.t('home.recent_articles', lang)}}</text>
+    <text class="more" bindtap="goArticles">{{t.t('common.more', lang)}}</text>
+  </view>
+  <view class="news-list card" bindtap="goArticles">
+    <view class="news-row">
+      <view class="dot"></view>
+      <view class="news-copy">
+        <view class="news-title">{{t.t('home.demo.news_1', lang)}}</view>
+        <view class="news-date">2024-04-10</view>
+      </view>
+    </view>
+    <view class="news-row">
+      <view class="dot blue-dot"></view>
+      <view class="news-copy">
+        <view class="news-title">{{t.t('home.demo.news_2', lang)}}</view>
+        <view class="news-date">2024-03-28</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <text class="t">{{t.t('home.recent_activities', lang)}}</text>
+    <text class="more" data-tab="activities" bindtap="goTab">{{t.t('common.more', lang)}}</text>
+  </view>
+  <view class="activity-card" bindtap="goTab" data-tab="activities">
+    <image class="activity-thumb" src="/assets/campus-hero.jpg" mode="aspectFill" />
+    <view class="activity-meta">
+      <view class="activity-title">{{t.t('home.demo.activity_title', lang)}}</view>
+      <view class="activity-row"><text class="mini-label">{{t.t('home.label.time', lang)}}</text>10/26 09:00</view>
+      <view class="activity-row"><text class="mini-label">址</text>{{t.t('home.demo.activity_location', lang)}}</view>
+    </view>
+    <view class="activity-cta">{{t.t('home.demo.signup', lang)}}</view>
+  </view>
+</view>

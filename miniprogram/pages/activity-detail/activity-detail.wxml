@@ -1,0 +1,102 @@
+<view class="page-pad">
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+  <t-empty wx:elif="{{!activity}}" description="活動不存在" />
+
+  <block wx:elif="{{activity}}">
+    <view class="hero">
+      <image class="hero-img" src="/assets/campus-hero.jpg" mode="aspectFill" />
+      <view class="hero-mask"></view>
+      <view class="hero-copy">
+        <view class="title">{{activity.title}}</view>
+        <view class="muted-light">{{activity.organizer || '校友商會'}}</view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="line"><text class="lbl">時間</text><text>{{activity.dateText}} - {{activity.endText}}</text></view>
+      <view class="line"><text class="lbl">地點</text><text>{{activity.location}}</text></view>
+      <view class="line"><text class="lbl">報名截止</text><text>{{activity.signupEndText}}</text></view>
+      <view class="line">
+        <text class="lbl">名額</text>
+        <text>{{activity.capacity ? activity.signup_count + ' / ' + activity.capacity : activity.signup_count + ' 已報名'}}</text>
+      </view>
+      <view wx:if="{{activity.checkin_count > 0}}" class="line">
+        <text class="lbl">簽到</text>
+        <text>{{activity.checkin_count}} 人</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title">活動介紹</view>
+      <view class="desc">{{activity.description || '暫無介紹'}}</view>
+    </view>
+
+    <view class="quick-row">
+      <view class="quick-action" bindtap="goAlbum">
+        <view class="qa-icon">相</view>
+        <view class="qa-title">活動相冊</view>
+        <view class="qa-sub">查看與投稿照片</view>
+      </view>
+      <view class="quick-action" bindtap="goPoster">
+        <view class="qa-icon blue">海</view>
+        <view class="qa-title">分享海報</view>
+        <view class="qa-sub">生成保存到相冊</view>
+      </view>
+    </view>
+
+    <view wx:if="{{activity.my_checked_in}}" class="status-tag status-ok">
+      ✓ 您已簽到
+    </view>
+    <view wx:elif="{{activity.my_signed_up}}" class="status-tag status-signed">
+      ✓ 您已報名
+    </view>
+
+    <view class="actions">
+      <t-button
+        wx:if="{{!activity.my_signed_up && !activity.my_checked_in}}"
+        theme="primary"
+        size="large"
+        block
+        bindtap="openSignupSheet"
+      >立即報名</t-button>
+      <t-button
+        wx:if="{{activity.my_signed_up && !activity.my_checked_in}}"
+        theme="default"
+        variant="outline"
+        size="large"
+        block
+        bindtap="onCancelSignup"
+      >取消報名</t-button>
+      <t-button
+        wx:if="{{activity.my_signed_up}}"
+        theme="success"
+        size="large"
+        block
+        bindtap="openCheckinSheet"
+      >掃碼簽到</t-button>
+    </view>
+
+    <!-- bottom sheet -->
+    <view wx:if="{{sheetOpen}}" class="sheet-mask" bindtap="closeSheet">
+      <view class="sheet" catchtap="">
+        <view class="grab"></view>
+
+        <block wx:if="{{sheetMode === 'signup'}}">
+          <view class="sheet-title">活動報名</view>
+          <view class="field"><view class="lbl2">手機號</view><t-input value="{{phone}}" placeholder="13800000000" bind:change="onPhone" maxlength="32" /></view>
+          <view class="field"><view class="lbl2">備註</view><t-input value="{{remark}}" placeholder="選填" bind:change="onRemark" maxlength="500" /></view>
+          <t-button theme="primary" size="large" loading="{{submitting}}" block bindtap="onConfirmSignup">確認報名</t-button>
+        </block>
+
+        <block wx:elif="{{sheetMode === 'checkin'}}">
+          <view class="sheet-title">掃碼簽到</view>
+          <view class="muted small">請讓管理員出示活動簽到碼，或粘貼 token</view>
+          <view class="field"><view class="lbl2">簽到 token</view><t-input value="{{scanToken}}" placeholder="掃碼後自動填入" bind:change="onScanToken" /></view>
+          <t-button theme="default" variant="outline" size="large" block bindtap="onScanCode">打開掃一掃</t-button>
+          <view style="height: 24rpx"></view>
+          <t-button theme="success" size="large" loading="{{submitting}}" block bindtap="onConfirmCheckin">確認簽到</t-button>
+        </block>
+      </view>
+    </view>
+  </block>
+</view>

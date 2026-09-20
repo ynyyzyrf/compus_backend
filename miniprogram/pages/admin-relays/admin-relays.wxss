@@ -1,0 +1,16 @@
+.head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; }
+.title { font-size: 44rpx; font-weight: 800; }
+.list { display: flex; flex-direction: column; gap: 20rpx; }
+.item {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  box-shadow: var(--shadow);
+  border: 1rpx solid var(--line);
+}
+.row1 { display: flex; align-items: center; gap: 16rpx; margin-bottom: 12rpx; }
+.title2 { flex: 1; min-width: 0; font-size: 30rpx; font-weight: 800; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row2 { display: flex; justify-content: space-between; gap: 20rpx; color: var(--muted); font-size: 24rpx; margin-bottom: 16rpx; }
+.row3 { display: flex; gap: 16rpx; border-top: 1rpx solid var(--line); padding-top: 16rpx; }
+.action { font-size: 26rpx; color: var(--brand); padding: 6rpx 16rpx; }
+.action.danger { color: #f04b4b; margin-left: auto; }

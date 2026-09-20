@@ -1,0 +1,46 @@
+<view class="page-pad">
+  <view class="head">
+    <text class="title">文章管理</text>
+    <t-button theme="primary" size="small" bindtap="onNew">＋ 新建</t-button>
+  </view>
+
+  <t-tabs value="{{current}}" bind:change="onTabChange">
+    <t-tab-panel
+      wx:for="{{tabs}}"
+      wx:key="key"
+      label="{{item.label}}"
+      value="{{index}}"
+    />
+  </t-tabs>
+
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+  <t-empty wx:elif="{{items.length === 0}}" description="暫無文章" />
+
+  <view wx:else class="list">
+    <view class="item" wx:for="{{items}}" wx:key="id">
+      <view class="row1">
+        <text class="title2 {{item.is_pinned ? 'title-strong' : ''}}">{{item.title}}</text>
+        <t-tag
+          wx:if="{{item.status !== 'published'}}"
+          theme="warning"
+          variant="light"
+          size="small"
+        >{{item.status === 'draft' ? '草稿' : '已下架'}}</t-tag>
+        <t-tag
+          wx:if="{{item.is_pinned}}"
+          theme="success"
+          variant="light"
+          size="small"
+        >置頂</t-tag>
+      </view>
+      <view class="row2 muted">
+        <text>{{item.type === 'news' ? '新聞' : item.type === 'announcement' ? '公告' : '通知'}}</text>
+        <text>範圍: {{item.scope_ids && item.scope_ids.length ? item.scope_ids.length + ' 個節點' : '全校可見'}}</text>
+      </view>
+      <view class="row3">
+        <view class="action" data-id="{{item.id}}" bindtap="onEdit">編輯</view>
+        <view class="action danger" data-id="{{item.id}}" bindtap="onDelete">刪除</view>
+      </view>
+    </view>
+  </view>
+</view>

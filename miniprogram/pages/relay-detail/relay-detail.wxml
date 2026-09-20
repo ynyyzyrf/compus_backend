@@ -1,0 +1,65 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+  <t-empty wx:elif="{{!relay}}" description="{{t.t('relays.detail_empty', lang)}}" />
+
+  <block wx:elif="{{relay}}">
+    <view class="head card">
+      <view class="row1">
+        <view class="title">{{relay.title}}</view>
+        <t-tag theme="{{relay.status === 'open' ? 'success' : 'default'}}" variant="light" size="small">{{statusText}}</t-tag>
+      </view>
+      <view wx:if="{{relay.description}}" class="desc">{{relay.description}}</view>
+      <view wx:if="{{deadlineText}}" class="meta">{{t.t('relays.deadline', lang)}} {{deadlineText}}</view>
+    </view>
+
+    <view wx:if="{{relay.my_response}}" class="submitted">{{t.t('relays.submitted', lang)}}</view>
+
+    <view class="card form">
+      <view class="field" wx:for="{{fields}}" wx:for-index="fieldIndex" wx:key="id">
+        <view class="label">
+          <text>{{item.label}}</text>
+          <text wx:if="{{item.required}}" class="required">{{t.t('relays.required_suffix', lang)}}</text>
+        </view>
+
+        <t-textarea
+          wx:if="{{item.field_type === 'textarea'}}"
+          value="{{item.value}}"
+          data-index="{{index}}"
+          disabled="{{relay.my_response || relay.status !== 'open'}}"
+          bind:change="onInput"
+        />
+        <view wx:elif="{{item.field_type === 'radio' || item.field_type === 'checkbox'}}" class="options">
+          <view
+            wx:for="{{item.optionsView}}"
+            wx:for-item="option"
+            wx:key="label"
+            class="option {{option.selected ? 'on' : ''}}"
+            data-index="{{fieldIndex}}"
+            data-option="{{option.label}}"
+            bindtap="onOptionTap"
+          >{{option.label}}</view>
+        </view>
+        <t-input
+          wx:else
+          value="{{item.value}}"
+          type="{{item.field_type === 'number' ? 'number' : 'text'}}"
+          data-index="{{index}}"
+          disabled="{{relay.my_response || relay.status !== 'open'}}"
+          bind:change="onInput"
+        />
+      </view>
+    </view>
+
+    <view class="actions">
+      <t-button
+        theme="primary"
+        size="large"
+        block
+        loading="{{submitting}}"
+        disabled="{{relay.my_response || relay.status !== 'open'}}"
+        bindtap="onSubmit"
+      >{{relay.my_response ? t.t('relays.submitted', lang) : t.t('relays.submit', lang)}}</t-button>
+    </view>
+  </block>
+</view>

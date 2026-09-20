@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>校友組織小程序 Demo</title>
+<style>
+  :root{
+    --brand:#07c160;
+    --brand-2:#0ea968;
+    --ink:#182027;
+    --muted:#77808a;
+    --line:#edf0f2;
+    --bg:#f6f7f8;
+    --card:#fff;
+    --warn:#ff9f0a;
+    --blue:#3a7afe;
+    --purple:#8c5cff;
+    --danger:#f04b4b;
+    --shadow: 0 12px 34px rgba(20,29,38,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans TC",sans-serif;color:var(--ink);background:#15191e}
+  body{display:flex;align-items:center;justify-content:center;padding:22px}
+  .stage{display:flex;gap:26px;align-items:flex-start}
+  .demo-note{
+    width:250px;color:#d8dee5;padding:18px 16px;
+  }
+  .demo-note h1{font-size:20px;margin:0 0 10px;color:white}
+  .demo-note p{font-size:13px;line-height:1.7;color:#aeb7c1;margin:0 0 12px}
+  .demo-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #36404a;border-radius:999px;padding:7px 10px;font-size:12px;color:#cbd2d9;margin:0 6px 8px 0}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
+  .phone{
+    width:390px;height:min(844px,calc(100vh - 44px));min-height:700px;
+    background:var(--bg);border-radius:34px;overflow:hidden;position:relative;
+    box-shadow:0 30px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.08);
+    border:8px solid #24292f;
+  }
+  .status{
+    height:30px;background:rgba(255,255,255,.97);display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;font-size:12px;font-weight:600;position:absolute;left:0;right:0;top:0;z-index:10
+  }
+  .status-icons{display:flex;gap:5px;align-items:center;color:#24292f}
+  .nav{
+    position:absolute;top:30px;left:0;right:0;height:48px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);
+    display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);z-index:9
+  }
+  .nav-title{font-weight:700;font-size:17px}
+  .nav-left,.nav-right{position:absolute;top:0;height:48px;display:flex;align-items:center}
+  .nav-left{left:14px}.nav-right{right:12px}
+  .icon-btn{
+    width:32px;height:32px;border-radius:50%;border:0;background:#f4f5f6;display:grid;place-items:center;font-size:16px;cursor:pointer
+  }
+  .wx-capsule{height:30px;border:1px solid #e6e8ea;border-radius:16px;display:flex;align-items:center;overflow:hidden;background:white}
+  .wx-capsule span{padding:0 9px;font-size:14px}.wx-capsule i{height:16px;width:1px;background:#e6e8ea}
+  .screen{
+    position:absolute;top:78px;left:0;right:0;bottom:64px;overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .screen::-webkit-scrollbar{display:none}
+  .page{display:none;min-height:100%;padding:14px 14px 22px}
+  .page.active{display:block}
+  .hero{
+    position:relative;background:linear-gradient(135deg,#0bbf65,#169e73 58%,#257a7a);border-radius:22px;color:white;
+    padding:20px;overflow:hidden;box-shadow:0 14px 34px rgba(7,193,96,.18)
+  }
+  .hero:after{
+    content:"";position:absolute;width:160px;height:160px;border-radius:50%;
+    background:rgba(255,255,255,.11);right:-45px;top:-65px;
+  }
+  .hero:before{
+    content:"";position:absolute;width:90px;height:90px;border-radius:24px;
+    background:rgba(255,255,255,.08);right:35px;bottom:-45px;transform:rotate(23deg)
+  }
+  .eyebrow{font-size:12px;opacity:.82;letter-spacing:.7px}
+  .hero h2{font-size:24px;margin:8px 0 8px;line-height:1.28}
+  .hero p{font-size:13px;line-height:1.65;margin:0;opacity:.9;max-width:270px}
+  .search{
+    margin-top:14px;background:white;border-radius:16px;height:46px;display:flex;align-items:center;gap:9px;padding:0 14px;color:#98a0a8;box-shadow:var(--shadow);
+    cursor:pointer
+  }
+  .search input{border:0;outline:0;flex:1;font-size:14px;background:transparent;color:var(--ink)}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:18px 2px 10px}
+  .section-title h3{font-size:16px;margin:0}.section-title span{font-size:12px;color:var(--muted);cursor:pointer}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:white;border-radius:20px;padding:16px 8px;box-shadow:0 6px 18px rgba(20,29,38,.05)}
+  .quick{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;cursor:pointer}
+  .qicon{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:22px}
+  .g{background:#eaf9f0}.b{background:#eef4ff}.p{background:#f4efff}.o{background:#fff4e7}
+  .activity-card,.article-card,.relay-card,.panel{
+    background:white;border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(20,29,38,.045)
+  }
+  .activity-cover{
+    height:140px;border-radius:15px;background:linear-gradient(135deg,#daeaf3,#8ec5d8 50%,#4b8296);position:relative;overflow:hidden;
+    display:flex;align-items:flex-end;padding:14px;color:white;
+  }
+  .activity-cover:before{
+    content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.28);top:-24px;right:-14px
+  }
+  .activity-cover:after{
+    content:"";position:absolute;width:110px;height:76px;border-radius:50% 50% 0 0;background:rgba(255,255,255,.22);left:36px;bottom:-30px;transform:rotate(-8deg)
+  }
+  .cover-badge{position:absolute;left:12px;top:12px;background:rgba(10,20,30,.45);padding:5px 8px;border-radius:999px;font-size:11px;backdrop-filter:blur(8px)}
+  .cover-title{position:relative;z-index:1;font-size:18px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+  .card-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:11px;color:#6e7781;font-size:12px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .left{display:flex;align-items:center;gap:10px;min-width:0}
+  .avatar{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#dbe4ef,#bbc7d8);display:grid;place-items:center;font-weight:800;color:#4f6274;flex:0 0 auto}
+  .title{font-weight:700;font-size:14px}.sub{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{font-size:11px;padding:5px 8px;border-radius:999px;background:#eef8f2;color:#0f9d57;white-space:nowrap}
+  .mini-pills{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}.mini-pills::-webkit-scrollbar{display:none}
+  .mini-pill{padding:8px 12px;border-radius:999px;background:white;border:1px solid #e6e9ec;font-size:12px;white-space:nowrap;cursor:pointer}
+  .mini-pill.active{background:#111;color:white;border-color:#111}
+  .directory-list{display:flex;flex-direction:column;gap:10px}
+  .directory-item{background:white;border-radius:16px;padding:12px;display:flex;align-items:center;gap:11px;box-shadow:0 4px 14px rgba(20,29,38,.04);cursor:pointer}
+  .directory-item .meta{flex:1;min-width:0}
+  .directory-item .name{font-size:14px;font-weight:700}.directory-item .org{font-size:12px;color:var(--muted);margin-top:3px}
+  .tel{width:34px;height:34px;border-radius:50%;background:#edf9f2;display:grid;place-items:center;color:var(--brand);font-size:16px}
+  .bottom{
+    position:absolute;bottom:0;left:0;right:0;height:64px;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);
+    border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);z-index:20;padding-bottom:6px
+  }
+  .tab{border:0;background:none;color:#80878f;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+  .tab .ico{font-size:20px}.tab.active{color:var(--brand);font-weight:700}
+  .page-title{font-size:22px;margin:2px 2px 13px;font-weight:800}
+  .profile{
+    background:linear-gradient(135deg,#ffffff,#f5fbf8);border-radius:20px;padding:16px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(20,29,38,.05)
+  }
+  .avatar.big{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#0bbf65,#55d39a);color:white;font-size:20px}
+  .admin-entry{margin-top:14px;background:linear-gradient(135deg,#182027,#29343f);color:white;border-radius:18px;padding:16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+  .admin-entry b{font-size:15px}.admin-entry p{font-size:12px;color:#c8d0d8;margin:4px 0 0}
+  .menu{margin-top:12px;background:white;border-radius:18px;overflow:hidden}
+  .menu-item{height:52px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}.menu-item:last-child{border:0}
+  .menu-item .mi-left{display:flex;gap:10px;align-items:center}.chev{color:#b2b9c0}
+  .back{font-size:22px;background:none;border:0;padding:4px;cursor:pointer}
+  .detail-hero{margin:-14px -14px 14px;height:220px;background:linear-gradient(135deg,#a8d6e5,#4c8fa4 55%,#2a6675);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:18px}
+  .detail-hero:after{content:"";position:absolute;right:-18px;top:32px;width:190px;height:190px;border-radius:46% 54% 50% 50%;background:rgba(255,255,255,.18)}
+  .detail-hero h2{position:relative;z-index:1;color:white;font-size:24px;margin:0;text-shadow:0 3px 14px rgba(0,0,0,.28)}
+  .info-list{background:white;border-radius:18px;padding:12px 14px;margin-bottom:12px}
+  .info-line{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}.info-line:last-child{border:0}
+  .info-label{width:62px;color:var(--muted);flex:0 0 auto}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .btn{height:44px;border-radius:13px;border:0;font-size:14px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--brand);color:white}.btn.secondary{background:#eef8f2;color:#0a9a52}.btn.dark{background:#182027;color:white}.btn.ghost{background:#fff;border:1px solid #e4e7ea}
+  .sticky-actions{position:sticky;bottom:-12px;background:linear-gradient(to top,var(--bg) 75%,transparent);padding:16px 0 4px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .stat{background:white;border-radius:16px;padding:14px 10px}.stat b{font-size:20px}.stat span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .admin-card{background:white;border-radius:18px;padding:15px;min-height:102px;cursor:pointer;box-shadow:0 5px 16px rgba(20,29,38,.04)}
+  .admin-card .ac-ico{font-size:24px;margin-bottom:12px}.admin-card b{font-size:14px}.admin-card p{font-size:11px;color:var(--muted);margin:5px 0 0;line-height:1.5}
+  .ai-card{margin-top:12px;border-radius:20px;padding:16px;color:white;background:linear-gradient(135deg,#6b4df6,#8a5cf6 45%,#5d8df6);position:relative;overflow:hidden;cursor:pointer}
+  .ai-card:after{content:"✦";position:absolute;font-size:88px;right:-4px;top:-20px;color:rgba(255,255,255,.12)}
+  .ai-card b{font-size:16px}.ai-card p{font-size:12px;color:#eeeaff;margin:6px 0 0}
+  .chat{display:flex;flex-direction:column;gap:10px;padding-bottom:66px}
+  .bubble{max-width:83%;padding:11px 13px;border-radius:16px;font-size:13px;line-height:1.6}
+  .bubble.ai{align-self:flex-start;background:white;border-top-left-radius:6px;box-shadow:0 4px 14px rgba(20,29,38,.05)}
+  .bubble.me{align-self:flex-end;background:var(--brand);color:white;border-top-right-radius:6px}
+  .suggestions{display:flex;gap:8px;overflow-x:auto;padding:3px 0 8px;scrollbar-width:none}.suggestions::-webkit-scrollbar{display:none}
+  .suggest{white-space:nowrap;border:1px solid #dddfe3;background:white;border-radius:999px;padding:8px 11px;font-size:12px;cursor:pointer}
+  .chatbar{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;width:calc(min(390px,100vw - 44px) - 44px);display:flex;gap:8px;background:rgba(246,247,248,.96);padding:8px 0 10px;z-index:25}
+  .chatbar input{flex:1;height:42px;border-radius:13px;border:1px solid #e0e4e7;background:white;padding:0 12px;outline:0;font-size:13px}
+  .send{width:42px;border:0;border-radius:13px;background:#6b4df6;color:white;font-size:18px;cursor:pointer}
+  .toast{
+    position:absolute;left:50%;bottom:86px;transform:translate(-50%,12px);background:#15191e;color:white;padding:10px 14px;border-radius:10px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:50
+  }
+  .toast.show{opacity:.95;transform:translate(-50%,0)}
+  .modal{
+    position:absolute;inset:0;background:rgba(12,16,20,.45);z-index:60;display:none;align-items:flex-end;backdrop-filter:blur(2px)
+  }
+  .modal.show{display:flex}
+  .sheet{width:100%;background:white;border-radius:24px 24px 0 0;padding:12px 16px 20px;max-height:78%;overflow:auto}
+  .grab{width:42px;height:4px;background:#dce1e5;border-radius:999px;margin:0 auto 14px}
+  .sheet h3{margin:0 0 14px;font-size:18px}
+  .field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #e1e5e8;border-radius:12px;padding:11px 12px;font-size:14px;outline:none;background:#fff}.field textarea{min-height:76px;resize:none}
+  .org-tree{background:white;border-radius:18px;padding:12px 14px}
+  .tree-line{padding:9px 0;font-size:13px}.indent1{padding-left:18px}.indent2{padding-left:38px}
+  .badge-admin{font-size:10px;background:#1c252e;color:#fff;padding:4px 7px;border-radius:999px;margin-left:6px}
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .photo{aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#dceaf3,#8fb9ca);position:relative;overflow:hidden}
+  .photo:nth-child(2n){background:linear-gradient(135deg,#eddccf,#d0a988)} .photo:nth-child(3n){background:linear-gradient(135deg,#d8eadf,#90bd9e)}
+  .poster{border-radius:20px;background:linear-gradient(160deg,#0aab5a,#08744a);padding:20px;color:white;text-align:center;min-height:390px;display:flex;flex-direction:column;justify-content:space-between}
+  .poster .poster-photo{height:190px;border-radius:18px;background:linear-gradient(135deg,#b6ddea,#4c8fa4);margin:15px 0}
+  .qr{width:74px;height:74px;margin:0 auto;background:
+    linear-gradient(90deg,#111 10px,transparent 10px) 0 0/18px 18px,
+    linear-gradient(#111 10px,transparent 10px) 0 0/18px 18px,#fff;border:8px solid white;border-radius:8px}
+  .muted{color:var(--muted)}
+  .spacer{height:10px}
+  @media (max-width:760px){
+    body{padding:0;background:var(--bg)}
+    .demo-note{display:none}
+    .phone{width:100vw;height:100vh;min-height:0;border:0;border-radius:0}
+    .chatbar{width:calc(100vw - 28px);bottom:64px}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="demo-note">
+    <h1>校友組織小程序 Demo</h1>
+    <p>依照目前需求還原：通訊錄、分院/系/班、活動宣傳、報名、簽到、活動相冊、朋友圈分享海報、新聞公告、接龍、手機管理端、AI 數據分析。</p>
+    <div>
+      <span class="demo-tag"><i class="dot"></i> 小程序用戶端</span>
+      <span class="demo-tag"><i class="dot"></i> 超級管理員</span>
+      <span class="demo-tag"><i class="dot"></i> AI 數據助手</span>
+    </div>
+    <p style="margin-top:8px">可直接點擊底部 Tab、活動卡片、「管理中心」與 AI 入口進行互動。</p>
+  </aside>
+
+  <main class="phone" id="phone">
+    <div class="status">
+      <span>9:41</span>
+      <div class="status-icons"><span>▮▮▮</span><span>◔</span><span>▰</span></div>
+    </div>
+
+    <div class="nav">
+      <div class="nav-left" id="navLeft"></div>
+      <div class="nav-title" id="navTitle">校友之家</div>
+      <div class="nav-right">
+        <div class="wx-capsule"><span>•••</span><i></i><span>◉</span></div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen">
+
+      <!-- 首頁 -->
+      <section class="page active" data-page="home">
+        <div class="hero">
+          <div class="eyebrow">XX 校友組織</div>
+          <h2>歡迎回家 👋</h2>
+          <p>連接同窗、參與活動、查看公告，讓每一次相聚都更有溫度。</p>
+        </div>
+
+        <div class="search" onclick="go('directory')">
+          <span>⌕</span><span>搜索姓名、分院、系、班級</span>
+        </div>
+
+        <div class="section-title"><h3>常用服務</h3></div>
+        <div class="grid4">
+          <div class="quick" onclick="go('directory')"><div class="qicon g">👥</div><span>通訊錄</span></div>
+          <div class="quick" onclick="go('activities')"><div class="qicon b">📅</div><span>活動</span></div>
+          <div class="quick" onclick="openRelay()"><div class="qicon p">🧩</div><span>接龍</span></div>
+          <div class="quick" onclick="openArticle()"><div class="qicon o">📣</div><span>公告</span></div>
+        </div>
+
+        <div class="section-title"><h3>最新活動</h3><span onclick="go('activities')">查看全部 ›</span></div>
+        <div class="activity-card" onclick="go('activityDetail')">
+          <div class="activity-cover">
+            <span class="cover-badge">報名中 · 剩餘 3 天</span>
+            <div class="cover-title">2026 秋季校友交流會</div>
+          </div>
+          <div class="card-meta"><span>🗓 9月26日 14:00</span><span>📍 校友中心</span><span>👤 138人已報名</span></div>
+        </div>
+
+        <div class="section-title"><h3>最新公告</h3><span onclick="openArticle()">更多 ›</span></div>
+        <div class="article-card" onclick="openArticle()">
+          <div class="row">
+            <div class="left">
+              <div class="avatar" style="background:#fff0e4;color:#d67825">告</div>
+              <div>
+                <div class="title">關於校友資料更新的通知</div>
+                <div class="sub">請各位校友於 9 月底前完成聯絡資訊確認</div>
+              </div>
+            </div>
+            <span class="pill">置頂</span>
+          </div>
+        </div>
+
+        <div class="section-title"><h3>正在接龍</h3></div>
+        <div class="relay-card" onclick="openRelay()">
+          <div class="row">
+            <div class="left">
+              <div class="avatar" style="background:#f1edff;color:#7a57d7">接</div>
+              <div>
+                <div class="title">國慶返校聚餐接龍</div>
+                <div class="sub">已接龍 62 人 · 截止 9月23日</div>
+              </div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 通訊錄 -->
+      <section class="page" data-page="directory">
+        <div class="page-title">通訊錄</div>
+        <div class="search" style="margin-top:0;box-shadow:none;border:1px solid #e7eaed">
+          <span>⌕</span><input id="dirSearch" placeholder="搜索姓名、分院、系、班級" oninput="filterDirectory()" />
+        </div>
+        <div class="mini-pills" id="orgFilters">
+          <div class="mini-pill active" data-filter="all">全部</div>
+          <div class="mini-pill" data-filter="信息工程分院">信息工程分院</div>
+          <div class="mini-pill" data-filter="商學分院">商學分院</div>
+          <div class="mini-pill" data-filter="藝術設計分院">藝術設計分院</div>
+        </div>
+
+        <div class="section-title"><h3>校友名錄</h3><span id="memberCount">6 人</span></div>
+        <div class="directory-list" id="directoryList">
+          <div class="directory-item" data-name="張晨" data-org="信息工程分院 計算機系 2016級1班">
+            <div class="avatar">張</div><div class="meta"><div class="name">張晨</div><div class="org">信息工程分院 · 計算機系 · 2016級1班</div></div><div class="tel">☎</div>
+          </div>
+          <div class="directory-item" data-name="林嘉怡" data-org="商學分院 工商管理系 2017級2班">
+            <div class="avatar" style="background:#efe8ff;color:#7357c8">林</div><div class="meta"><div class="name">林嘉怡</div><div class="org">商學分院 · 工商管理系 · 2017級2班</div></div><div class="tel">☎</div>
+          </div>
+          <div class="directory-item" data-name="王子謙" data-org="藝術設計分院 視覺設計系 2015級1班">
+            <div class="avatar" style="background:#e7f5ec;color:#39895b">王</div><div class="meta"><div class="name">王子謙</div><div class="org">藝術設計分院 · 視覺設計系 · 2015級1班</div></div><div class="tel">☎</div>
+          </div>
+          <div class="directory-item" data-name="陳思遠" data-org="信息工程分院 軟件工程系 2018級3班">
+            <div class="avatar" style="background:#fff1e5;color:#c96b28">陳</div><div class="meta"><div class="name">陳思遠</div><div class="org">信息工程分院 · 軟件工程系 · 2018級3班</div></div><div class="tel">☎</div>
+          </div>
+          <div class="directory-item" data-name="周可欣" data-org="商學分院 市場營銷系 2019級1班">
+            <div class="avatar" style="background:#eaf1ff;color:#466dbc">周</div><div class="meta"><div class="name">周可欣</div><div class="org">商學分院 · 市場營銷系 · 2019級1班</div></div><div class="tel">☎</div>
+          </div>
+          <div class="directory-item" data-name="黃俊傑" data-org="信息工程分院 計算機系 2016級1班">
+            <div class="avatar" style="background:#e8f3f7;color:#447886">黃</div><div class="meta"><div class="name">黃俊傑</div><div class="org">信息工程分院 · 計算機系 · 2016級1班</div></div><div class="tel">☎</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 活動列表 -->
+      <section class="page" data-page="activities">
+        <div class="page-title">活動中心</div>
+        <div class="mini-pills">
+          <div class="mini-pill active">全部</div><div class="mini-pill">報名中</div><div class="mini-pill">即將開始</div><div class="mini-pill">已結束</div>
+        </div>
+        <div class="activity-card" onclick="go('activityDetail')">
+          <div class="activity-cover">
+            <span class="cover-badge">報名中</span>
+            <div class="cover-title">2026 秋季校友交流會</div>
+          </div>
+          <div class="card-meta"><span>🗓 9月26日</span><span>📍 校友中心</span><span>👤 138 / 200</span></div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-cover" style="background:linear-gradient(135deg,#dfd1bd,#b58962 55%,#7b593c)">
+            <span class="cover-badge">即將開始</span>
+            <div class="cover-title">創業校友圓桌沙龍</div>
+          </div>
+          <div class="card-meta"><span>🗓 10月12日</span><span>📍 創新中心</span><span>👤 48 / 80</span></div>
+        </div>
+      </section>
+
+      <!-- 我的 -->
+      <section class="page" data-page="mine">
+        <div class="page-title">我的</div>
+        <div class="profile">
+          <div class="avatar big">MAG</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center"><b style="font-size:16px">MAG</b><span class="badge-admin">超級管理員</span></div>
+            <div class="sub">信息工程分院 · 計算機系 · 2016級1班</div>
+          </div>
+          <span class="chev">›</span>
+        </div>
+
+        <div class="admin-entry" onclick="go('admin')">
+          <div><b>管理中心</b><p>活動、公告、接龍、人員與 AI 數據分析</p></div>
+          <span style="font-size:24px">›</span>
+        </div>
+
+        <div class="menu">
+          <div class="menu-item"><span class="mi-left"><span>🎫</span>我的活動</span><span class="chev">›</span></div>
+          <div class="menu-item"><span class="mi-left"><span>🧩</span>我的接龍</span><span class="chev">›</span></div>
+          <div class="menu-item"><span class="mi-left"><span>🖼</span>我的上傳</span><span class="chev">›</span></div>
+          <div class="menu-item"><span class="mi-left"><span>⚙️</span>資料與隱私</span><span class="chev">›</span></div>
+        </div>
+      </section>
+
+      <!-- 活動詳情 -->
+      <section class="page" data-page="activityDetail">
+        <div class="detail-hero"><h2>2026 秋季校友交流會</h2></div>
+        <div class="info-list">
+          <div class="info-line"><div class="info-label">時間</div><div>2026年9月26日 14:00–18:00</div></div>
+          <div class="info-line"><div class="info-label">地點</div><div>XX校友中心 · 一樓多功能廳</div></div>
+          <div class="info-line"><div class="info-label">主辦</div><div>XX校友會</div></div>
+          <div class="info-line"><div class="info-label">名額</div><div>138 / 200 人已報名</div></div>
+        </div>
+        <div class="panel">
+          <div class="title">活動介紹</div>
+          <p class="muted" style="font-size:13px;line-height:1.7;margin-bottom:0">歡迎各屆校友返校交流。本次活動包含主題分享、自由交流、校友專案展示與晚間茶敘。</p>
+        </div>
+        <div class="panel">
+          <div class="title">活動相冊</div>
+          <div class="photo-grid" style="margin-top:12px">
+            <div class="photo"></div><div class="photo"></div><div class="photo"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" onclick="openPoster()">生成分享海報</button>
+          <button class="btn ghost" onclick="showToast('已打開活動相冊')">查看全部照片</button>
+        </div>
+        <div class="sticky-actions">
+          <div class="actions">
+            <button class="btn ghost" onclick="showToast('已開啟掃碼簽到')">掃碼簽到</button>
+            <button class="btn primary" onclick="openSignup()">立即報名</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 管理中心 -->
+      <section class="page" data-page="admin">
+        <div class="page-title">管理中心</div>
+        <div class="stats">
+          <div class="stat"><b>2,831</b><span>通訊錄成員</span></div>
+          <div class="stat"><b>138</b><span>本期報名</span></div>
+          <div class="stat"><b>87%</b><span>近三場簽到率</span></div>
+        </div>
+
+        <div class="ai-card" onclick="go('ai')">
+          <b>✦ AI 數據助手</b>
+          <p>直接問：哪個系參與最積極？哪些人報名未簽到？</p>
+        </div>
+
+        <div class="section-title"><h3>內容與活動</h3></div>
+        <div class="admin-grid">
+          <div class="admin-card" onclick="openPublish('activity')"><div class="ac-ico">📅</div><b>活動管理</b><p>發布活動、查看報名與簽到</p></div>
+          <div class="admin-card" onclick="openPublish('article')"><div class="ac-ico">📣</div><b>新聞公告</b><p>發布通知、新聞與置頂內容</p></div>
+          <div class="admin-card" onclick="openPublish('relay')"><div class="ac-ico">🧩</div><b>接龍管理</b><p>建立接龍、查看回覆進度</p></div>
+          <div class="admin-card" onclick="showToast('已進入相冊審核')"><div class="ac-ico">🖼</div><b>相冊管理</b><p>管理活動照片與投稿審核</p></div>
+        </div>
+
+        <div class="section-title"><h3>組織與人員</h3></div>
+        <div class="admin-grid">
+          <div class="admin-card" onclick="showToast('已進入人員管理')"><div class="ac-ico">👥</div><b>人員管理</b><p>新增、編輯、導入通訊錄</p></div>
+          <div class="admin-card" onclick="go('org')"><div class="ac-ico">🏫</div><b>組織架構</b><p>分院 → 系 → 班級</p></div>
+        </div>
+      </section>
+
+      <!-- 組織 -->
+      <section class="page" data-page="org">
+        <div class="page-title">組織架構</div>
+        <div class="org-tree">
+          <div class="tree-line"><b>▾ XX校友組織</b></div>
+          <div class="tree-line indent1"><b>▾ 信息工程分院</b> <span class="muted">1,082人</span></div>
+          <div class="tree-line indent2">├ 計算機系 <span class="muted">486人</span></div>
+          <div class="tree-line indent2">├ 軟件工程系 <span class="muted">351人</span></div>
+          <div class="tree-line indent2">└ 數據科學系 <span class="muted">245人</span></div>
+          <div class="tree-line indent1"><b>▾ 商學分院</b> <span class="muted">936人</span></div>
+          <div class="tree-line indent2">├ 工商管理系 <span class="muted">510人</span></div>
+          <div class="tree-line indent2">└ 市場營銷系 <span class="muted">426人</span></div>
+          <div class="tree-line indent1"><b>▾ 藝術設計分院</b> <span class="muted">813人</span></div>
+          <div class="tree-line indent2">├ 視覺設計系 <span class="muted">460人</span></div>
+          <div class="tree-line indent2">└ 工業設計系 <span class="muted">353人</span></div>
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:12px" onclick="showToast('新增組織節點')">＋ 新增分院 / 系 / 班級</button>
+      </section>
+
+      <!-- AI -->
+      <section class="page" data-page="ai">
+        <div class="page-title">AI 數據助手</div>
+        <div class="suggestions">
+          <button class="suggest" onclick="askAI('這次活動報名情況如何？')">這次活動報名情況</button>
+          <button class="suggest" onclick="askAI('哪個系最活躍？')">哪個系最活躍</button>
+          <button class="suggest" onclick="askAI('有哪些人報名未簽到？')">報名未簽到</button>
+        </div>
+        <div class="chat" id="chat">
+          <div class="bubble ai">你好，我可以分析小程序中的通訊錄、活動、報名、簽到、接龍與內容數據。你可以直接用自然語言問我。</div>
+        </div>
+        <div class="chatbar">
+          <input id="aiInput" placeholder="問問目前的運營數據…" onkeydown="if(event.key==='Enter') sendAI()" />
+          <button class="send" onclick="sendAI()">↑</button>
+        </div>
+      </section>
+
+      <!-- 文章 -->
+      <section class="page" data-page="article">
+        <div class="page-title">公告詳情</div>
+        <div class="panel">
+          <div class="pill" style="display:inline-block">置頂公告</div>
+          <h2 style="font-size:21px;margin:12px 0 8px">關於校友資料更新的通知</h2>
+          <div class="sub">校友會秘書處 · 2026年9月18日</div>
+          <p style="font-size:14px;line-height:1.8;margin-top:18px">為方便後續活動聯絡與校友服務，請大家於本月底前完成個人資料確認。您可以在「我的 → 個人資料」中更新所屬分院、系、班級以及可公開聯絡方式。</p>
+          <p style="font-size:14px;line-height:1.8">如有資料異常，可直接聯繫校友會秘書處。</p>
+        </div>
+      </section>
+
+      <!-- 接龍 -->
+      <section class="page" data-page="relay">
+        <div class="page-title">國慶返校聚餐接龍</div>
+        <div class="panel">
+          <div class="row"><div><div class="title">已接龍 62 人</div><div class="sub">截止 9月23日 18:00</div></div><span class="pill">進行中</span></div>
+        </div>
+        <div class="field"><label>姓名</label><input value="MAG" /></div>
+        <div class="field"><label>是否參加</label><select><option>參加</option><option>暫不確定</option><option>不參加</option></select></div>
+        <div class="field"><label>同行人數</label><input type="number" value="1" /></div>
+        <div class="field"><label>備註</label><textarea placeholder="如有飲食需求可填寫"></textarea></div>
+        <button class="btn primary" style="width:100%" onclick="showToast('接龍已提交')">提交接龍</button>
+      </section>
+
+      <!-- 分享海報 -->
+      <section class="page" data-page="poster">
+        <div class="page-title">分享海報</div>
+        <div class="poster">
+          <div><div style="font-size:12px;opacity:.85">XX校友組織</div><h2 style="margin:8px 0 0">2026 秋季校友交流會</h2></div>
+          <div class="poster-photo"></div>
+          <div>
+            <div style="font-size:13px;margin-bottom:10px">9月26日 · 校友中心</div>
+            <div class="qr"></div>
+            <div style="font-size:11px;opacity:.8;margin-top:8px">長按識別小程序碼查看活動</div>
+          </div>
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:12px" onclick="showToast('海報已保存到相冊')">保存圖片，分享到朋友圈</button>
+      </section>
+
+    </div>
+
+    <nav class="bottom" id="bottomNav">
+      <button class="tab active" data-tab="home" onclick="go('home',true)"><span class="ico">⌂</span><span>首頁</span></button>
+      <button class="tab" data-tab="directory" onclick="go('directory',true)"><span class="ico">👥</span><span>通訊錄</span></button>
+      <button class="tab" data-tab="activities" onclick="go('activities',true)"><span class="ico">◫</span><span>活動</span></button>
+      <button class="tab" data-tab="mine" onclick="go('mine',true)"><span class="ico">◉</span><span>我的</span></button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- 報名 Sheet -->
+    <div class="modal" id="signupModal" onclick="closeOnBackdrop(event,'signupModal')">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3>活動報名</h3>
+        <div class="field"><label>姓名</label><input value="MAG"></div>
+        <div class="field"><label>手機號</label><input value="138****8899"></div>
+        <div class="field"><label>所屬組織</label><input value="信息工程分院 / 計算機系 / 2016級1班"></div>
+        <div class="field"><label>備註</label><textarea placeholder="選填"></textarea></div>
+        <button class="btn primary" style="width:100%" onclick="submitSignup()">確認報名</button>
+      </div>
+    </div>
+
+    <!-- 發布 Sheet -->
+    <div class="modal" id="publishModal" onclick="closeOnBackdrop(event,'publishModal')">
+      <div class="sheet">
+        <div class="grab"></div>
+        <h3 id="publishTitle">發布內容</h3>
+        <div class="field"><label>標題</label><input placeholder="請輸入標題"></div>
+        <div class="field"><label>發布範圍</label>
+          <select><option>全部成員</option><option>指定分院</option><option>指定系</option><option>指定班級</option></select>
+        </div>
+        <div class="field"><label>內容</label><textarea placeholder="請輸入內容"></textarea></div>
+        <button class="btn primary" style="width:100%" onclick="submitPublish()">確認發布</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const titles={
+  home:'校友之家', directory:'通訊錄', activities:'活動中心', mine:'我的',
+  activityDetail:'活動詳情', admin:'管理中心', org:'組織架構',
+  ai:'AI 數據助手', article:'公告詳情', relay:'接龍', poster:'分享海報'
+};
+const rootTabs=['home','directory','activities','mine'];
+let historyStack=['home'];
+
+function go(page, fromTab=false){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target=document.querySelector(`[data-page="${page}"]`);
+  if(!target)return;
+  target.classList.add('active');
+  document.getElementById('navTitle').textContent=titles[page]||'';
+  document.getElementById('screen').scrollTop=0;
+
+  if(!fromTab && historyStack[historyStack.length-1]!==page) historyStack.push(page);
+  if(fromTab) historyStack=[page];
+
+  const left=document.getElementById('navLeft');
+  if(rootTabs.includes(page)){ left.innerHTML=''; }
+  else { left.innerHTML='<button class="back" onclick="back()">‹</button>'; }
+
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===page));
+  document.getElementById('bottomNav').style.display = page==='ai' ? 'grid' : 'grid';
+}
+function back(){
+  if(historyStack.length>1) historyStack.pop();
+  const page=historyStack[historyStack.length-1];
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  document.getElementById('navTitle').textContent=titles[page];
+  document.getElementById('navLeft').innerHTML=rootTabs.includes(page)?'':'<button class="back" onclick="back()">‹</button>';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===page));
+  document.getElementById('screen').scrollTop=0;
+}
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800)
+}
+function openSignup(){document.getElementById('signupModal').classList.add('show')}
+function submitSignup(){document.getElementById('signupModal').classList.remove('show');showToast('報名成功，已加入「我的活動」')}
+function closeOnBackdrop(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('show')}
+function openArticle(){go('article')}
+function openRelay(){go('relay')}
+function openPoster(){go('poster')}
+function openPublish(type){
+  const map={activity:'新建活動',article:'發布新聞 / 公告',relay:'新建接龍'};
+  document.getElementById('publishTitle').textContent=map[type]||'發布內容';
+  document.getElementById('publishModal').classList.add('show')
+}
+function submitPublish(){document.getElementById('publishModal').classList.remove('show');showToast('已發布成功')}
+function filterDirectory(){
+  const q=document.getElementById('dirSearch').value.trim().toLowerCase();
+  const active=document.querySelector('#orgFilters .mini-pill.active')?.dataset.filter||'all';
+  let count=0;
+  document.querySelectorAll('#directoryList .directory-item').forEach(el=>{
+    const text=(el.dataset.name+' '+el.dataset.org).toLowerCase();
+    const okQ=!q||text.includes(q);
+    const okF=active==='all'||el.dataset.org.includes(active);
+    const show=okQ&&okF; el.style.display=show?'flex':'none'; if(show)count++;
+  });
+  document.getElementById('memberCount').textContent=count+' 人';
+}
+document.querySelectorAll('#orgFilters .mini-pill').forEach(p=>{
+  p.addEventListener('click',()=>{
+    document.querySelectorAll('#orgFilters .mini-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');filterDirectory();
+  })
+});
+
+function aiReply(q){
+  if(q.includes('報名')){
+    return '目前「2026 秋季校友交流會」共有 <b>138 人</b>報名，名額使用率 69%。其中信息工程分院 56 人、商學分院 43 人、藝術設計分院 39 人。相比上一場同類活動，目前同期報名數提升約 16%。';
+  }
+  if(q.includes('活躍')||q.includes('哪個系')){
+    return '按近 90 天「活動報名 + 簽到 + 接龍參與」綜合看，<b>計算機系</b>參與度最高，其次是工商管理系。計算機系近三場活動平均簽到率約 91%。';
+  }
+  if(q.includes('未簽到')||q.includes('簽到')){
+    return '最近一場活動共有 12 位已報名成員未完成簽到，其中 7 位來自信息工程分院。建議活動開始前 2 小時發送一次提醒。';
+  }
+  if(q.includes('新聞')||q.includes('總結')){
+    return '可以。我可以根據活動時間、報名人數、簽到率、活動照片與現場要點，自動生成一版活動新聞稿，並提供「正式版 / 輕量朋友圈版」兩種文案。';
+  }
+  return '我已根據目前的小程序業務數據進行分析。你也可以繼續問我「哪個分院參與率最低」、「近三個月活動趨勢」或「幫我生成本月運營總結」。';
+}
+function askAI(q){
+  const chat=document.getElementById('chat');
+  chat.insertAdjacentHTML('beforeend',`<div class="bubble me">${q}</div>`);
+  setTimeout(()=>{
+    chat.insertAdjacentHTML('beforeend',`<div class="bubble ai">${aiReply(q)}</div>`);
+    document.getElementById('screen').scrollTop=99999;
+  },250)
+}
+function sendAI(){
+  const input=document.getElementById('aiInput');const q=input.value.trim();if(!q)return;
+  input.value='';askAI(q)
+}
+</script>
+</body>
+</html>

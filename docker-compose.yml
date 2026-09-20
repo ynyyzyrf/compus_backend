@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: campus_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-campus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-campus_dev_pwd}
+      POSTGRES_DB: ${POSTGRES_DB:-campus}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - campus_pg_data:/var/lib/postgresql/data
+      - ./backend/docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-campus} -d ${POSTGRES_DB:-campus}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  campus_pg_data:

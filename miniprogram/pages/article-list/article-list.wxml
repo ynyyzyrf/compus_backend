@@ -1,0 +1,42 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <text class="page-title">{{t.t('articles.title', lang)}}</text>
+
+  <t-tabs value="{{current}}" bind:change="onTabChange" t-class="tabs-bar">
+    <t-tab-panel
+      wx:for="{{tabs}}"
+      wx:key="key"
+      label="{{item.label}}"
+      value="{{index}}"
+    />
+  </t-tabs>
+
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+
+  <t-empty wx:elif="{{articles.length === 0}}" description="{{t.t('articles.empty', lang)}}" />
+
+  <view wx:else class="list">
+    <view
+      class="item {{item.is_pinned ? 'pinned' : ''}}"
+      wx:for="{{articles}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onItemTap"
+    >
+      <image class="thumb" src="/assets/campus-hero.jpg" mode="aspectFill" />
+      <view class="content">
+        <view class="row1">
+          <text class="type">{{item.typeLabel}}</text>
+          <t-tag
+            wx:if="{{item.is_pinned}}"
+            theme="primary"
+            variant="light"
+            size="small"
+          >{{t.t('articles.pinned', lang)}}</t-tag>
+        </view>
+        <text class="title {{item.is_pinned ? 'title-strong' : ''}}">{{item.title}}</text>
+        <view wx:if="{{item.summary}}" class="summary muted">{{item.summary}}</view>
+      </view>
+    </view>
+  </view>
+</view>

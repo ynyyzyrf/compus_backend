@@ -1,0 +1,50 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <view class="card">
+    <view class="label">{{t.t('relays.field.title', lang)}}</view>
+    <t-input value="{{title}}" bind:change="onTitle" maxlength="200" />
+    <view class="label sub">{{t.t('relays.field.desc', lang)}}</view>
+    <t-textarea value="{{description}}" bind:change="onDesc" />
+    <view class="label sub">{{t.t('relays.field.deadline', lang)}}</view>
+    <t-input value="{{deadline}}" placeholder="2030-01-01 23:59" bind:change="onDeadline" />
+    <view class="label sub">{{t.t('relays.field.status', lang)}}</view>
+    <view class="seg">
+      <view class="seg-btn {{status === 'open' ? 'on' : ''}}" data-status="open" bindtap="onStatusTap">{{t.t('relays.status.open', lang)}}</view>
+      <view class="seg-btn {{status === 'closed' ? 'on' : ''}}" data-status="closed" bindtap="onStatusTap">{{t.t('relays.status.closed', lang)}}</view>
+    </view>
+  </view>
+
+  <view class="section-title">{{t.t('relays.field.fields', lang)}}</view>
+  <view class="field-card card" wx:for="{{fields}}" wx:for-index="fieldIndex" wx:key="sort_order">
+    <view class="field-head">
+      <view class="field-no">#{{index + 1}}</view>
+      <view class="remove" data-index="{{fieldIndex}}" bindtap="onRemoveField">{{t.t('relays.field.remove', lang)}}</view>
+    </view>
+    <view class="label">{{t.t('relays.field.label', lang)}}</view>
+    <t-input value="{{item.label}}" data-index="{{fieldIndex}}" bind:change="onFieldLabel" />
+    <view class="label sub">{{t.t('relays.field.type', lang)}}</view>
+    <view class="type-grid">
+      <view
+        wx:for="{{typeOptions}}"
+        wx:for-item="type"
+        wx:key="value"
+        class="type {{item.field_type === type.value ? 'on' : ''}}"
+        data-index="{{fieldIndex}}"
+        data-type="{{type.value}}"
+        bindtap="onFieldType"
+      >{{type.label}}</view>
+    </view>
+    <view class="check {{item.required ? 'on' : ''}}" data-index="{{fieldIndex}}" bindtap="onRequired">
+      {{t.t('relays.field.required', lang)}}
+    </view>
+    <view wx:if="{{item.field_type === 'radio' || item.field_type === 'checkbox'}}">
+      <view class="label sub">{{t.t('relays.field.options', lang)}}</view>
+      <t-textarea value="{{item.optionsText}}" data-index="{{fieldIndex}}" bind:change="onFieldOptions" />
+    </view>
+  </view>
+
+  <t-button theme="default" variant="outline" size="large" block bindtap="onAddField">＋ {{t.t('relays.field.add', lang)}}</t-button>
+  <view class="actions">
+    <t-button theme="primary" size="large" block loading="{{saving}}" bindtap="onSave">{{t.t('relays.save', lang)}}</t-button>
+  </view>
+</view>

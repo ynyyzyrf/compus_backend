@@ -1,0 +1,43 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="login-page">
+  <view class="brand-space">
+    <view class="logo-row">
+      <view class="seal">商</view>
+      <view class="logo-text">
+        <view>{{t.t('login.org_name', lang)}}</view>
+        <text>Alumni Chamber of Commerce</text>
+      </view>
+    </view>
+    <view class="title">{{t.t('login.app_name', lang)}}</view>
+  </view>
+
+  <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onLogin">
+    {{t.t('login.button', lang)}}
+  </t-button>
+  <view class="skip-login" bindtap="skipLogin">{{t.t('login.skip', lang)}}</view>
+
+  <view wx:if="{{phoneSheetOpen}}" class="sheet-mask" bindtap="closePhoneSheet">
+    <view class="phone-sheet" catchtap="">
+      <view class="sheet-head">
+        <view class="mini-seal">商</view>
+        <view class="sheet-org">{{t.t('login.org_name', lang)}}</view>
+        <view class="info-dot">i</view>
+      </view>
+      <view class="sheet-title">{{t.t('login.phone_title', lang)}}</view>
+      <view class="sheet-sub">{{t.t('login.phone_subtitle', lang)}}</view>
+
+      <view class="phone-card">
+        <view class="phone-option" data-phone="135****5123" bindtap="choosePhone">
+          <view class="phone-number">135****5123</view>
+          <view class="phone-note">{{t.t('login.bound_phone', lang)}}</view>
+        </view>
+        <view class="phone-option" data-phone="151****5530" bindtap="choosePhone">
+          <view class="phone-number">151****5530</view>
+        </view>
+      </view>
+
+      <view class="deny" bindtap="closePhoneSheet">{{t.t('login.deny', lang)}}</view>
+      <view class="manage" bindtap="managePhone">{{t.t('login.manage_phone', lang)}}</view>
+    </view>
+  </view>
+</view>

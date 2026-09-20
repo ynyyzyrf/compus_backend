@@ -1,0 +1,11 @@
+.label {
+  font-size: 28rpx;
+  font-weight: 700;
+  margin-bottom: 20rpx;
+}
+.sub-label {
+  font-size: 24rpx;
+  color: #77808a;
+  margin: 24rpx 0 12rpx;
+}
+.actions { margin-top: 40rpx; }

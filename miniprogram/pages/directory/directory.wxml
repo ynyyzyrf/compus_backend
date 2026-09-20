@@ -1,0 +1,66 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <view class="search-wrap">
+    <text class="search-mark">搜</text>
+    <input
+      class="search-input"
+      value="{{keyword}}"
+      placeholder="{{t.t('directory.search_placeholder', lang)}}"
+      confirm-type="search"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchSubmit"
+    />
+    <text wx:if="{{keyword}}" class="search-clear" bindtap="onSearchClear">×</text>
+  </view>
+
+  <view wx:if="{{scopeText}}" class="scope-line">
+    <text class="scope-tag">{{scopeText}}</text>
+  </view>
+
+  <scroll-view scroll-x class="chips" enhanced show-scrollbar="{{false}}">
+    <view
+      class="chip {{activeCollege === 'all' ? 'chip-on' : ''}}"
+      data-value="all"
+      bindtap="onSelectCollege"
+    >{{t.t('directory.all_chip', lang)}}</view>
+    <view
+      wx:for="{{colleges}}"
+      wx:key="id"
+      class="chip {{activeCollege === item.name ? 'chip-on' : ''}}"
+      data-value="{{item.name}}"
+      bindtap="onSelectCollege"
+    >{{item.name}}</view>
+  </scroll-view>
+
+  <view class="list-head">
+    <text class="t">{{t.t('directory.roster', lang)}}</text>
+    <text class="muted">{{total}} 人</text>
+  </view>
+
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+
+  <t-empty
+    wx:elif="{{members.length === 0}}"
+    description="{{t.t('directory.empty', lang)}}"
+  />
+
+  <view wx:else class="members">
+    <view
+      class="member"
+      wx:for="{{members}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onMemberTap"
+    >
+      <view class="avatar">{{item.initial}}</view>
+      <view class="meta">
+        <view class="name-line">
+          <text class="name">{{item.name}}</text>
+          <text class="tag">校友</text>
+        </view>
+        <view class="org muted">{{item.org_path}}</view>
+      </view>
+      <text class="contact">›</text>
+    </view>
+  </view>
+</view>

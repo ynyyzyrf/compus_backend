@@ -1,0 +1,12 @@
+.title {
+  font-size: 30rpx;
+  font-weight: 800;
+  margin-bottom: 16rpx;
+}
+.label-sub {
+  font-size: 24rpx;
+  color: #77808a;
+  margin: 24rpx 0 12rpx;
+}
+.row { margin-bottom: 12rpx; }
+.actions { margin-top: 40rpx; }

@@ -1,0 +1,17 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="page-pad">
+  <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
+  <block wx:else>
+    <text class="page-title">{{relay ? relay.title : t.t('relays.results', lang)}}</text>
+    <t-empty wx:if="{{rows.length === 0}}" description="{{t.t('relays.no_results', lang)}}" />
+    <view wx:else class="list">
+      <view class="item" wx:for="{{rows}}" wx:key="id">
+        <view class="user">{{item.user_name}}</view>
+        <view class="line" wx:for="{{item.pairs}}" wx:for-item="pair" wx:key="label">
+          <text class="label">{{pair.label}}</text>
+          <text class="value">{{pair.value || '-'}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

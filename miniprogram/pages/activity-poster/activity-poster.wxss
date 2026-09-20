@@ -1,0 +1,16 @@
+.poster-page { padding-bottom: 40rpx; }
+.page-title { font-size: 40rpx; font-weight: 900; margin-bottom: 24rpx; }
+.canvas-wrap {
+  width: 750rpx;
+  transform: scale(0.86);
+  transform-origin: top left;
+  height: 1148rpx;
+  margin-bottom: -120rpx;
+}
+.poster-canvas {
+  width: 375px;
+  height: 667px;
+  background: #f7f3ef;
+  border-radius: 24rpx;
+  box-shadow: var(--shadow);
+}

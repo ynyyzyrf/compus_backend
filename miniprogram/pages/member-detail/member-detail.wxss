@@ -1,0 +1,134 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background:
+    linear-gradient(135deg, rgba(185, 39, 34, 0.1), rgba(255, 255, 255, 0) 66%),
+    #fff;
+}
+.avatar,
+.avatar-img {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.avatar {
+  background: linear-gradient(135deg, #c83a34, #8f1f1a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42rpx;
+  font-weight: 900;
+  box-shadow: 0 12rpx 26rpx rgba(185, 39, 34, 0.24);
+}
+.profile-main {
+  flex: 1;
+  min-width: 0;
+}
+.name-line {
+  display: flex;
+  align-items: baseline;
+  gap: 14rpx;
+  flex-wrap: wrap;
+}
+.name {
+  color: var(--ink);
+  font-size: 36rpx;
+  font-weight: 900;
+}
+.name-en {
+  color: var(--muted);
+  font-size: 24rpx;
+}
+.org {
+  margin-top: 10rpx;
+  color: var(--muted);
+  font-size: 26rpx;
+  line-height: 1.45;
+}
+.quick-contact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18rpx;
+  padding: 22rpx;
+}
+.contact-box {
+  height: 116rpx;
+  border-radius: 20rpx;
+  background: #fff9f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  color: var(--ink);
+  font-size: 24rpx;
+  font-weight: 700;
+}
+.contact-box.disabled {
+  opacity: 0.38;
+}
+.contact-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+.contact-icon.green { background: #20c17a; }
+.contact-icon.blue { background: var(--brand); }
+.contact-icon.mail { background: #d7aa44; }
+.info-card {
+  padding: 8rpx 28rpx;
+}
+.card-title {
+  padding: 22rpx 0 12rpx;
+  color: var(--ink);
+  font-size: 30rpx;
+  font-weight: 900;
+}
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  padding: 22rpx 0;
+  border-top: 1rpx solid var(--line);
+}
+.label {
+  width: 136rpx;
+  color: var(--muted);
+  font-size: 25rpx;
+  flex: 0 0 auto;
+}
+.value {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-size: 27rpx;
+  line-height: 1.5;
+  word-break: break-word;
+}
+.story-row {
+  padding: 22rpx 0;
+  border-top: 1rpx solid var(--line);
+}
+.story-label {
+  display: block;
+  color: var(--muted);
+  font-size: 25rpx;
+  margin-bottom: 10rpx;
+}
+.story-value {
+  display: block;
+  color: var(--ink);
+  font-size: 27rpx;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

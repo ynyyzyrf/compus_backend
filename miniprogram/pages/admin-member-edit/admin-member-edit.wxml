@@ -1,0 +1,44 @@
+<view class="page-pad">
+  <view wx:if="{{m}}" class="card">
+    <view class="title">身份</view>
+    <view class="label-sub">角色</view>
+    <t-radio-group value="{{m.role}}" bind:change="onRole">
+      <view class="row"><t-radio value="user" label="用戶" /></view>
+      <view class="row"><t-radio value="super_admin" label="超級管理員" /></view>
+    </t-radio-group>
+
+    <view class="label-sub">狀態</view>
+    <t-radio-group value="{{m.status}}" bind:change="onStatus">
+      <view class="row"><t-radio value="active" label="啟用" /></view>
+      <view class="row"><t-radio value="disabled" label="停用" /></view>
+    </t-radio-group>
+  </view>
+
+  <view wx:if="{{m}}" class="card">
+    <view class="title">聯絡</view>
+    <view class="label-sub">手機</view>
+    <t-input value="{{m.phone}}" bind:change="onPhone" maxlength="32" />
+  </view>
+
+  <view wx:if="{{m}}" class="card">
+    <view class="title">業務</view>
+    <view class="label-sub">職位</view>
+    <t-input value="{{m.position}}" bind:change="onPosition" maxlength="100" />
+    <view class="label-sub">公司名稱</view>
+    <t-input value="{{m.company_name}}" bind:change="onCompany" maxlength="200" />
+    <view class="label-sub">主要業務</view>
+    <t-textarea value="{{m.business_description}}" bind:change="onBiz" maxlength="1000" disable-default-padding="{{true}}" autosize="{{true}}" />
+  </view>
+
+  <view wx:if="{{m}}" class="card">
+    <view class="title">商會</view>
+    <view class="label-sub">所屬分會</view>
+    <t-input value="{{m.chamber_chapter}}" bind:change="onChamber" maxlength="128" />
+    <view class="label-sub">當前積分</view>
+    <t-input value="{{m.chamber_score}}" type="number" bind:change="onChamberScore" />
+  </view>
+
+  <view wx:if="{{m}}" class="actions">
+    <t-button theme="primary" size="large" loading="{{saving}}" block bindtap="onSave">保存</t-button>
+  </view>
+</view>

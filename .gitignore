@@ -1,0 +1,32 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+backend/.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Env / secrets ----
+.env
+backend/.env
+*.local
+
+# ---- Node / miniprogram ----
+node_modules/
+miniprogram/node_modules/
+miniprogram/miniprogram_npm/
+
+# ---- Storage / uploads (dev local driver) ----
+backend/storage_data/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# ---- WeChat devtools ----
+project.private.config.json

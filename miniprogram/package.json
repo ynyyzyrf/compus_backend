@@ -1,0 +1,8 @@
+{
+  "name": "campus-miniprogram",
+  "version": "1.0.0",
+  "description": "小程序運行時依賴（微信開發者工具對此目錄執行構建 npm）",
+  "dependencies": {
+    "tdesign-miniprogram": "^1.16.1"
+  }
+}

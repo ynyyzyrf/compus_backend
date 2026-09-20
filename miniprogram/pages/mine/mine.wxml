@@ -1,0 +1,78 @@
+<wxs src="../../utils/i18n.wxs" module="t" />
+<view class="mine-page">
+  <view class="profile-hero">
+    <view class="avatar big">{{initial}}</view>
+    <view class="hero-info">
+      <view class="name-line">
+        <text class="login-name">{{user ? user.name : (t.t('mine.login_now', lang))}}</text>
+        <text wx:if="{{isAdmin}}" class="badge">{{t.t('mine.admin_badge', lang)}}</text>
+      </view>
+      <view class="hero-sub">{{user && user.openid ? user.openid : t.t('mine.member_center_sub', lang)}}</view>
+    </view>
+    <view class="profile-pill" bindtap="goProfileEdit">{{t.t('mine.menu.profile', lang)}}</view>
+  </view>
+
+  <view class="service-card">
+    <view class="section-title">{{t.t('mine.service_title', lang)}}</view>
+    <view class="service-grid">
+      <view class="service-item" bindtap="comingSoon">
+        <view class="service-icon">活</view>
+        <text>{{t.t('mine.menu.my_activities', lang)}}</text>
+      </view>
+      <view class="service-item" bindtap="goDirectory">
+        <view class="service-icon">脈</view>
+        <text>{{t.t('mine.service.network', lang)}}</text>
+      </view>
+      <view class="service-item" bindtap="goRelays">
+        <view class="service-icon">表</view>
+        <text>{{t.t('mine.menu.my_relays', lang)}}</text>
+      </view>
+      <view class="service-item" bindtap="goMyUploads">
+        <view class="service-icon">傳</view>
+        <text>{{t.t('mine.menu.my_uploads', lang)}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="menu-card">
+    <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdminDashboard">
+      <text>{{t.t('mine.admin_entry', lang)}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdminActivities">
+      <text>{{t.t('mine.admin_activities', lang)}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view class="menu-item" bindtap="onSwitchLang">
+      <text>{{t.t('mine.menu.language', lang)}}</text>
+      <text class="lang-label muted">{{langLabel}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view class="menu-item" bindtap="comingSoon">
+      <text>{{t.t('mine.contact_us', lang)}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view class="menu-item" bindtap="comingSoon">
+      <text>{{t.t('mine.agreement', lang)}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+  </view>
+
+  <view wx:if="{{isDev}}" class="dev card">
+    <view class="dev-title">{{t.t('mine.dev_title', lang)}}</view>
+    <view class="muted dev-tip">{{t.t('mine.dev_tip', lang)}}</view>
+    <view class="dev-users">
+      <view
+        wx:for="{{devUsers}}"
+        wx:key="id"
+        class="dev-user {{user && item.id === user.id ? 'on' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSwitchUser"
+      >
+        <text>{{item.name}}</text>
+        <text class="muted role">{{item.role === 'super_admin' ? (t.t('mine.dev_role_admin', lang)) : (t.t('mine.dev_role_user', lang))}}</text>
+      </view>
+    </view>
+    <view class="dev-row" bindtap="resetOnboarding">{{t.t('mine.dev_reset_onboard', lang)}}</view>
+  </view>
+</view>

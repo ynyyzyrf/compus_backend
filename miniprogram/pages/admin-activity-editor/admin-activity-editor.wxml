@@ -1,0 +1,49 @@
+<view class="page-pad">
+  <view class="card">
+    <view class="label">標題</view>
+    <t-input value="{{form.title}}" placeholder="活動名稱" bind:change="onTitle" maxlength="200" />
+  </view>
+
+  <view class="card">
+    <view class="label">地點</view>
+    <t-input value="{{form.location}}" placeholder="活動地點" bind:change="onLocation" maxlength="200" />
+    <view class="sub-label">主辦方</view>
+    <t-input value="{{form.organizer}}" placeholder="校友會 / 公司" bind:change="onOrganizer" maxlength="200" />
+    <view class="sub-label">封面圖 URL</view>
+    <t-input value="{{form.cover_url}}" placeholder="可選，留空用默認" bind:change="onCover" />
+    <view class="sub-label">人數上限</view>
+    <t-input value="{{form.capacity}}" type="number" placeholder="留空 = 不限" bind:change="onCapacity" />
+  </view>
+
+  <view class="card">
+    <view class="label">活動時間</view>
+    <view class="sub-label">開始</view>
+    <t-input value="{{form.start_at}}" placeholder="YYYY-MM-DDTHH:mm" bind:change="onStart" />
+    <view class="sub-label">結束</view>
+    <t-input value="{{form.end_at}}" placeholder="YYYY-MM-DDTHH:mm" bind:change="onEnd" />
+  </view>
+
+  <view class="card">
+    <view class="label">報名時間</view>
+    <view class="sub-label">報名開始</view>
+    <t-input value="{{form.signup_start_at}}" placeholder="YYYY-MM-DDTHH:mm" bind:change="onSignupStart" />
+    <view class="sub-label">報名截止</view>
+    <t-input value="{{form.signup_end_at}}" placeholder="YYYY-MM-DDTHH:mm" bind:change="onSignupEnd" />
+  </view>
+
+  <view class="card">
+    <view class="label">活動介紹</view>
+    <t-textarea
+      value="{{form.description}}"
+      placeholder="活動內容、流程、注意事項"
+      bind:change="onDesc"
+      maxlength="2000"
+      disable-default-padding="{{true}}"
+      autosize="{{true}}"
+    />
+  </view>
+
+  <view class="actions">
+    <t-button theme="primary" size="large" loading="{{saving}}" block bindtap="onSave">保存</t-button>
+  </view>
+</view>

@@ -1,0 +1,7 @@
+<view class="page-pad poster-page">
+  <view class="page-title">{{title}}</view>
+  <view class="canvas-wrap">
+    <canvas canvas-id="posterCanvas" class="poster-canvas" />
+  </view>
+  <t-button theme="primary" size="large" block loading="{{drawing}}" bindtap="onSave">{{saveText}}</t-button>
+</view>

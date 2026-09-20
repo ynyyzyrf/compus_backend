@@ -1,0 +1,48 @@
+.page-title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 800;
+  margin-bottom: 20rpx;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+.stat {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  text-align: center;
+  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.big { font-size: 40rpx; font-weight: 800; color: #07c160; }
+.org-strip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #77808a;
+  padding: 16rpx 0 24rpx;
+}
+.org-strip .dot { margin: 0 12rpx; color: #c8d0d8; }
+.section-title {
+  display: flex;
+  margin: 32rpx 4rpx 20rpx;
+}
+.section-title .t { font-size: 30rpx; font-weight: 700; }
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+.admin-card {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  min-height: 180rpx;
+  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+}
+.ac-ico { font-size: 48rpx; margin-bottom: 16rpx; }
+.ac-title { font-size: 28rpx; font-weight: 700; }

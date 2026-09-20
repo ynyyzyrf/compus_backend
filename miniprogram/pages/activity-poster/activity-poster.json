@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "分享海报",
+  "usingComponents": {
+    "t-button": "tdesign-miniprogram/button/button"
+  }
+}

@@ -1,0 +1,15 @@
+.intro .title {
+  font-size: 32rpx;
+  font-weight: 800;
+  margin-bottom: 8rpx;
+}
+.small { font-size: 24rpx; line-height: 1.6; }
+.list { display: flex; flex-direction: column; gap: 20rpx; margin-top: 24rpx; }
+.item {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  box-shadow: 0 6rpx 18rpx rgba(20, 29, 38, 0.04);
+}
+.row { display: flex; align-items: center; gap: 16rpx; }
+.name { font-size: 28rpx; font-weight: 700; flex: 1; }

@@ -1,0 +1,130 @@
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.subtitle {
+  color: var(--muted);
+  font-size: 25rpx;
+  margin-top: -8rpx;
+}
+.head-icon {
+  width: 78rpx;
+  height: 78rpx;
+  border-radius: 24rpx;
+  background: var(--brand-soft);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pill-scroll {
+  height: 86rpx;
+  margin: 20rpx 0 24rpx;
+  white-space: nowrap;
+}
+.pill-scroll .pill-tabs {
+  display: inline-flex;
+  margin: 0;
+  min-width: 100%;
+}
+.pill-scroll .pill-tab {
+  flex: 0 0 auto;
+}
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+.activity-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1rpx solid var(--line);
+  border-radius: 24rpx;
+  box-shadow: var(--shadow);
+}
+.image-wrap {
+  position: relative;
+  height: 250rpx;
+}
+.cover {
+  width: 100%;
+  height: 100%;
+}
+.date-badge {
+  position: absolute;
+  top: 18rpx;
+  left: 18rpx;
+  width: 82rpx;
+  height: 92rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 22rpx rgba(17, 24, 39, 0.12);
+}
+.month {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+.day {
+  font-size: 34rpx;
+  line-height: 1.05;
+  font-weight: 900;
+}
+.body {
+  padding: 24rpx;
+}
+.title {
+  font-size: 31rpx;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 14rpx;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: var(--muted);
+  font-size: 25rpx;
+  line-height: 1.7;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+}
+.count {
+  flex: 1;
+}
+.status {
+  height: 52rpx;
+  min-width: 128rpx;
+  padding: 0 22rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+.status.primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+}
+.status.soft {
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+.status.warm {
+  color: #bb6400;
+  background: #fff4df;
+}
+.status.muted {
+  color: var(--muted);
+  background: #eef3fb;
+}

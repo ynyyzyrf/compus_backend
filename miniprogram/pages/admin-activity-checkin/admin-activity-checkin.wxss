@@ -1,0 +1,36 @@
+.qr-card { padding: 36rpx; }
+.qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 480rpx;
+  height: 480rpx;
+  margin: 32rpx auto;
+  background: #fff;
+  border: 4rpx solid var(--ink);
+  border-radius: 24rpx;
+}
+.qr-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+.big-icon { font-size: 120rpx; }
+.token-label { font-size: 24rpx; color: #77808a; margin-bottom: 12rpx; }
+.token-box {
+  font-size: 18rpx;
+  word-break: break-all;
+  background: #f7f3ef;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  font-family: monospace;
+  color: var(--ink);
+  line-height: 1.5;
+  max-height: 240rpx;
+  overflow: auto;
+}
+.actions { display: flex; flex-direction: column; gap: 16rpx; }
+.hint { margin-top: 24rpx; font-size: 22rpx; line-height: 1.6; }
+.small { font-size: 24rpx; }
+.tiny { font-size: 22rpx; }

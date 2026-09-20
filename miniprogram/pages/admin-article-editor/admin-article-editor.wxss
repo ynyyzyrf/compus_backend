@@ -1,0 +1,15 @@
+.label {
+  font-size: 28rpx;
+  font-weight: 700;
+  margin-bottom: 20rpx;
+}
+.row { margin-bottom: 16rpx; }
+.hint { font-size: 22rpx; margin-bottom: 16rpx; }
+.scope-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 10rpx 0;
+}
+.small { font-size: 22rpx; flex: 1; }
+.actions { margin-top: 32rpx; }
