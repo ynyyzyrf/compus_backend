@@ -17,6 +17,10 @@
 
   <view class="card">
     <view class="label">{{t.t('profile.contact', lang)}}</view>
+    <view wx:if="{{profile.verified_phone}}" class="field">
+      <view class="label-sub">{{t.t('profile.verified_phone', lang)}}</view>
+      <view>{{profile.verified_phone}}</view>
+    </view>
     <view class="field">
       <view class="label-sub">{{t.t('profile.phone', lang)}}</view>
       <t-input value="{{profile.phone}}" type="number" placeholder="13800000000" bind:change="onPhone" maxlength="32" />

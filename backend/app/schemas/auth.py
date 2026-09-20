@@ -14,6 +14,7 @@ class UserBase(BaseModel):
 class UserProfile(UserBase):
     openid: str | None = None
     phone: str | None = None
+    verified_phone: str | None = None
     wechat_id: str | None = None
     email: str | None = None
     bio: str | None = None
@@ -22,6 +23,8 @@ class UserProfile(UserBase):
 class LoginRequest(BaseModel):
     # value returned by wx.login()
     code: str
+    # Separate, one-use code returned by the getPhoneNumber button.
+    phone_code: str | None = None
 
 
 class DevImpersonateRequest(BaseModel):

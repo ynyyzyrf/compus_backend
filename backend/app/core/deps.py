@@ -35,6 +35,10 @@ def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="用戶不可用"
         )
+    if payload.get("ver", 0) != user.auth_version:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="登錄已過期，請重新登錄"
+        )
     return user
 
 

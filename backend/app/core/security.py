@@ -7,12 +7,13 @@ from app.core.config import settings
 _ALGORITHM = "HS256"
 
 
-def create_access_token(user_id: int, role: str) -> str:
+def create_access_token(user_id: int, role: str, auth_version: int = 0) -> str:
     now = datetime.now(timezone.utc)
     payload = {
         "sub": str(user_id),
         "uid": user_id,
         "role": role,
+        "ver": auth_version,
         "iat": now,
         "exp": now + timedelta(minutes=settings.jwt_expire_minutes),
     }

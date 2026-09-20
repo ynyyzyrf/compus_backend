@@ -60,6 +60,7 @@
   --td-button-primary-color: #333;
   border-radius: 18rpx;
 }
+.phone-entry,
 .skip-login {
   margin-top: 28rpx;
   text-align: center;
@@ -134,36 +135,22 @@
   border-radius: 16rpx;
   overflow: hidden;
 }
-.phone-option {
-  min-height: 128rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1rpx solid #eee;
+.phone-auth-button {
+  width: 100%;
+  height: 108rpx;
+  line-height: 108rpx;
+  border: 0;
+  border-radius: 16rpx;
+  background: #17633e;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 700;
 }
-.phone-option:last-child { border-bottom: 0; }
-.phone-number {
-  font-size: 34rpx;
-  font-weight: 500;
-  color: #222;
-}
-.phone-note {
-  margin-top: 8rpx;
-  color: #aaa;
-  font-size: 24rpx;
-}
+.phone-auth-button::after { border: 0; }
 .deny {
   height: 108rpx;
   line-height: 108rpx;
   text-align: center;
   font-size: 34rpx;
   color: #222;
-}
-.manage {
-  margin-top: 76rpx;
-  text-align: center;
-  color: #65739a;
-  font-size: 28rpx;
-  font-weight: 800;
 }

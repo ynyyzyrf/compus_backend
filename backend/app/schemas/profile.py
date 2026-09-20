@@ -15,6 +15,7 @@ class MyProfile(BaseModel):
 
     # contact
     phone: str | None = None
+    verified_phone: str | None = None
     wechat_id: str | None = None
     email: str | None = None
 

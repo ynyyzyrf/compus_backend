@@ -18,6 +18,10 @@ class User(Base):
 
     # ---- contact ----
     phone: Mapped[str | None] = mapped_column(String(32))
+    # Verified through WeChat phone authorization; never set from profile edits.
+    verified_phone: Mapped[str | None] = mapped_column(String(32), unique=True, index=True)
+    phone_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    auth_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     wechat_id: Mapped[str | None] = mapped_column(String(64))
     email: Mapped[str | None] = mapped_column(String(128))
     bio: Mapped[str | None] = mapped_column(Text)

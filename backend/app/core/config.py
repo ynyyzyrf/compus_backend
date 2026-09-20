@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     wechat_secret: str = ""
     # True only in local dev: bypass jscode2session and enable dev impersonation.
     wechat_mock_login: bool = False
+    # Enable only after getPhoneNumber is available for the deployed AppID.
+    wechat_phone_login_required: bool = False
 
     cors_origins: str = ""
 

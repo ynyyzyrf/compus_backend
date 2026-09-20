@@ -14,6 +14,7 @@
   <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onLogin">
     {{t.t('login.button', lang)}}
   </t-button>
+  <view class="phone-entry" bindtap="openPhoneSheet">{{t.t('login.phone_entry', lang)}}</view>
   <view class="skip-login" bindtap="skipLogin">{{t.t('login.skip', lang)}}</view>
 
   <view wx:if="{{phoneSheetOpen}}" class="sheet-mask" bindtap="closePhoneSheet">
@@ -27,17 +28,12 @@
       <view class="sheet-sub">{{t.t('login.phone_subtitle', lang)}}</view>
 
       <view class="phone-card">
-        <view class="phone-option" data-phone="135****5123" bindtap="choosePhone">
-          <view class="phone-number">135****5123</view>
-          <view class="phone-note">{{t.t('login.bound_phone', lang)}}</view>
-        </view>
-        <view class="phone-option" data-phone="151****5530" bindtap="choosePhone">
-          <view class="phone-number">151****5530</view>
-        </view>
+        <button class="phone-auth-button" open-type="getPhoneNumber" bindgetphonenumber="onPhoneAuthorized">
+          {{t.t('login.authorize_phone', lang)}}
+        </button>
       </view>
 
       <view class="deny" bindtap="closePhoneSheet">{{t.t('login.deny', lang)}}</view>
-      <view class="manage" bindtap="managePhone">{{t.t('login.manage_phone', lang)}}</view>
     </view>
   </view>
 </view>

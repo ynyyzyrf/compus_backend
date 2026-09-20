@@ -11,6 +11,7 @@ export interface UserProfile {
   status: string
   openid?: string | null
   phone?: string | null
+  verified_phone?: string | null
   wechat_id?: string | null
   email?: string | null
   bio?: string | null
@@ -116,6 +117,7 @@ export interface MyProfile {
   avatar_url: string | null
 
   phone: string | null
+  verified_phone: string | null
   wechat_id: string | null
   email: string | null
 
