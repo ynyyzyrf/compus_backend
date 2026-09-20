@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class MyProfile(BaseModel):
@@ -45,8 +45,9 @@ class MyProfile(BaseModel):
 
 
 class MyProfileUpdate(BaseModel):
-    """Editable subset of the profile (display name is NOT editable for V1)."""
+    """Editable subset of the current user's profile."""
 
+    name: str | None = Field(default=None, max_length=64)
     name_en: str | None = Field(default=None, max_length=100)
     phone: str | None = Field(default=None, max_length=32)
     wechat_id: str | None = Field(default=None, max_length=64)
@@ -69,3 +70,10 @@ class MyProfileUpdate(BaseModel):
     chamber_member_no: str | None = Field(default=None, max_length=64)
     chamber_join_date: date | None = None
     chamber_score: int | None = Field(default=None, ge=0, le=10000)
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str | None) -> str:
+        if value is None or not value.strip():
+            raise ValueError("請填寫姓名")
+        return value.strip()

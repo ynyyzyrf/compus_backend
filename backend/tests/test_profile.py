@@ -63,6 +63,7 @@ def test_my_profile_returns_all_extended_fields(ctx, client):
 def test_my_profile_update_persists(ctx, client):
     headers = _auth(ctx.user("張晨"))
     payload = {
+        "name": "張晨新名",
         "name_en": "Zhang Chen",
         "phone": "13900000001",
         "company_name": "跨易國際物流",
@@ -83,13 +84,23 @@ def test_my_profile_update_persists(ctx, client):
     resp = client.put("/api/v1/me/profile", json=payload, headers=headers)
     assert resp.status_code == 200, resp.text
     body = resp.json()
+    assert body["name"] == "張晨新名"
     assert body["company_name"] == "跨易國際物流"
     assert body["chamber_score"] == 100
     assert body["company_founded_at"] == "2010-06-15"
 
     # read-back verifies persistence
     resp2 = client.get("/api/v1/me/profile", headers=headers)
+    assert resp2.json()["name"] == "張晨新名"
     assert resp2.json()["business_description"].startswith("全航線")
+
+
+def test_profile_name_rejects_blank_or_too_long(ctx, client):
+    headers = _auth(ctx.user("張晨"))
+    for name in (None, "  ", "x" * 65):
+        resp = client.put("/api/v1/me/profile", json={"name": name}, headers=headers)
+        assert resp.status_code == 422, resp.text
+    assert client.get("/api/v1/me/profile", headers=headers).json()["name"] == "張晨"
 
 
 def test_my_profile_partial_update_only_touches_provided_fields(ctx, client):

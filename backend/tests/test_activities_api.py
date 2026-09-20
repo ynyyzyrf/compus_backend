@@ -60,6 +60,20 @@ def test_user_list_excludes_drafts(ctx, client):
     assert "hidden" not in titles
 
 
+def test_listed_activity_opens_matching_detail(ctx, client):
+    activity = _mk(ctx.db, title="可進入的活動", capacity=10)
+    headers = _auth(ctx.user("周可欣"))
+    listing = client.get("/api/v1/activities", headers=headers)
+    assert listing.status_code == 200, listing.text
+    assert activity.id in [item["id"] for item in listing.json()]
+
+    detail = client.get(f"/api/v1/activities/{activity.id}", headers=headers)
+    assert detail.status_code == 200, detail.text
+    assert detail.json()["id"] == activity.id
+    assert detail.json()["title"] == "可進入的活動"
+    assert detail.json()["my_signed_up"] is False
+
+
 def test_user_can_signup_and_cancel(ctx, client):
     a = _mk(ctx.db, capacity=10)
     headers = _auth(ctx.user("周可欣"))
