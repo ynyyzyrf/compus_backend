@@ -47,6 +47,7 @@
 
     <view class="section-title"><text class="t">{{t.t('admin.dashboard.org_section', lang)}}</text></view>
     <view class="admin-grid">
+      <view class="admin-card" bindtap="goAffiliations"><view class="ac-ico">✅</view><view class="ac-title">組織申請審核</view><view class="muted">核對校友所屬班級</view></view>
       <view class="admin-card" bindtap="goMembers"><view class="ac-ico">👥</view><view class="ac-title">{{t.t('admin.dashboard.members', lang)}}</view><view class="muted">{{t.t('admin.dashboard.members_sub', lang)}}</view></view>
       <view class="admin-card" bindtap="goOrgs"><view class="ac-ico">🏫</view><view class="ac-title">{{t.t('admin.dashboard.orgs', lang)}}</view><view class="muted">{{t.t('admin.dashboard.orgs_sub', lang)}}</view></view>
       <view class="admin-card" bindtap="goPermissions"><view class="ac-ico">🔐</view><view class="ac-title">{{t.t('admin.dashboard.permissions', lang)}}</view><view class="muted">{{t.t('admin.dashboard.permissions_sub', lang)}}</view></view>

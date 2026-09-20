@@ -1,0 +1,26 @@
+<view class="page-pad">
+  <view class="card intro">
+    <view class="title">選擇所屬組織</view>
+    <view class="muted">請按學校、學院、系、班級選擇。管理員核對後開通通訊錄。</view>
+  </view>
+  <view wx:if="{{loading}}" class="card">載入中...</view>
+  <view wx:elif="{{error}}" class="card"><text>{{error}}</text><button bindtap="load">重試</button></view>
+  <view wx:elif="{{pendingPath}}" class="card">
+    <view class="title">等待管理員審核</view>
+    <view class="path">{{pendingPath}}</view>
+    <view class="muted">審核通過後即可查看所屬組織的通訊錄。</view>
+    <button class="primary" bindtap="enterHome">進入首頁</button>
+  </view>
+  <view wx:else class="card">
+    <view class="label">學校</view>
+    <picker mode="selector" range="{{schoolNames}}" bindchange="onSchool"><view class="choice">{{schoolName || '請選擇學校'}}</view></picker>
+    <view class="label">學院</view>
+    <picker mode="selector" range="{{collegeNames}}" bindchange="onCollege"><view class="choice">{{collegeName || '請選擇學院'}}</view></picker>
+    <view class="label">系</view>
+    <picker mode="selector" range="{{departmentNames}}" bindchange="onDepartment"><view class="choice">{{departmentName || '請選擇系'}}</view></picker>
+    <view class="label">班級</view>
+    <picker mode="selector" range="{{classNames}}" bindchange="onClass"><view class="choice">{{className || '請選擇班級'}}</view></picker>
+    <button class="primary" loading="{{submitting}}" bindtap="submit">提交所屬組織</button>
+  </view>
+  <view class="sign-out" bindtap="signOut">退出登錄</view>
+</view>

@@ -155,6 +155,15 @@ def _merge_unique_user_rows(db: Session, model, scope_field: str, source: User, 
 def _merge_users(db: Session, source: User, target: User) -> None:
     """Move a transient account's data to the verified phone owner."""
     _merge_unique_user_rows(db, Membership, "organization_id", source, target)
+    has_primary = db.scalars(select(Membership.id).where(
+        Membership.user_id == target.id, Membership.is_primary.is_(True)
+    )).first() is not None
+    if has_primary:
+        target.pending_class_id = None
+        target.affiliation_requested_at = None
+    elif target.pending_class_id is None and source.pending_class_id is not None:
+        target.pending_class_id = source.pending_class_id
+        target.affiliation_requested_at = source.affiliation_requested_at
     _merge_unique_user_rows(db, ActivitySignup, "activity_id", source, target)
     _merge_unique_user_rows(db, ActivityCheckin, "activity_id", source, target)
     _merge_unique_user_rows(db, RelayResponse, "relay_id", source, target)

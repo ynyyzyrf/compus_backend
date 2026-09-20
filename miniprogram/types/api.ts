@@ -30,6 +30,20 @@ export interface LoginResult {
   user: UserProfile
 }
 
+export interface Affiliation {
+  class_id: number | null
+  org_path: string
+  pending_class_id?: number | null
+  pending_org_path?: string
+}
+
+export interface AffiliationOption {
+  id: number
+  name: string
+  type: OrgType
+  parent_id: number | null
+}
+
 export interface Page<T> {
   items: T[]
   total: number

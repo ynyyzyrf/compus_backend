@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/login/login",
+    "pages/org-select/org-select",
     "pages/home/home",
     "pages/directory/directory",
     "pages/member-detail/member-detail",
@@ -22,6 +23,7 @@
     "pages/admin-activity-roster/admin-activity-roster",
     "pages/admin-activity-checkin/admin-activity-checkin",
     "pages/admin-members/admin-members",
+    "pages/admin-affiliations/admin-affiliations",
     "pages/admin-member-edit/admin-member-edit",
     "pages/admin-orgs/admin-orgs",
     "pages/admin-permissions/admin-permissions",

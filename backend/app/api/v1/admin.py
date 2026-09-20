@@ -3,6 +3,7 @@ from sqlalchemy import func, select
 
 from app.core.deps import DbSession, SuperAdmin
 from app.models.organization import Membership, Organization
+from app.models.user import User
 from app.schemas.admin import (
     DashboardStats,
     DirectoryPermissionBatchUpdate,
@@ -14,7 +15,7 @@ from app.schemas.admin import (
     OrgNodeCreate,
     OrgNodeUpdate,
 )
-from app.services import admin_service
+from app.services import admin_service, affiliation_service
 from app.services.directory_permission import get_primary_class_id
 from app.services.org_tree import load_org_tree
 
@@ -30,6 +31,35 @@ def dashboard(_: SuperAdmin, db: DbSession) -> DashboardStats:
 
 
 # ===== members =====
+
+
+@router.get("/affiliation-requests")
+def list_affiliation_requests(_: SuperAdmin, db: DbSession) -> list[dict]:
+    tree = load_org_tree(db)
+    users = db.scalars(select(User).where(User.pending_class_id.is_not(None)).order_by(User.affiliation_requested_at, User.id)).all()
+    return [
+        {
+            "user_id": user.id,
+            "name": user.name,
+            "verified_phone": user.verified_phone,
+            "class_id": user.pending_class_id,
+            "org_path": affiliation_service.full_path(tree, user.pending_class_id) if user.pending_class_id in tree.nodes else "班級已失效",
+            "requested_at": user.affiliation_requested_at,
+        }
+        for user in users
+    ]
+
+
+@router.post("/affiliation-requests/{user_id}/approve")
+def approve_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> dict:
+    affiliation_service.review_affiliation(db, user_id, approve=True)
+    return {"ok": True}
+
+
+@router.post("/affiliation-requests/{user_id}/reject")
+def reject_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> dict:
+    affiliation_service.review_affiliation(db, user_id, approve=False)
+    return {"ok": True}
 
 
 def _member_view(db, user, class_id: int | None, org_path: str) -> MemberAdminOut:

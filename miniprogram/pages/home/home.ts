@@ -1,9 +1,11 @@
 import { ensureLogin, goLogin } from '../../services/auth'
+import { getMyAffiliation } from '../../services/affiliation'
 import { listActivities } from '../../services/activities'
 import { listArticles } from '../../services/articles'
 import { listRelays } from '../../services/relays'
 import type { ActivityListItem, ArticleListItem, RelayListItem } from '../../types/api'
 import { locale, t } from '../../utils/i18n'
+import { session } from '../../utils/session'
 
 type HomeArticle = ArticleListItem & {
   dateText: string
@@ -71,6 +73,18 @@ Page({
     if (!user) {
       goLogin()
       return
+    }
+    if (!session.isGuest() && user.role !== 'super_admin') {
+      try {
+        const affiliation = await getMyAffiliation()
+        if (!affiliation.class_id && !affiliation.pending_class_id) {
+          wx.reLaunch({ url: '/pages/org-select/org-select' })
+          return
+        }
+      } catch (error) {
+        wx.showToast({ title: (error as Error).message || '組織資料載入失敗', icon: 'none' })
+        return
+      }
     }
     this.setData({ lang: locale.get(), name: user?.name || '校友' })
     this.fetchHomeContent()

@@ -4,8 +4,15 @@ from fastapi import APIRouter
 
 from app.core.deps import CurrentUser, DbSession
 from app.schemas.activity import ActivityListItem
-from app.schemas.profile import MyProfile, MyProfileUpdate
-from app.services import activity_service, profile_service
+from app.schemas.profile import (
+    AffiliationRequest,
+    MyAffiliation,
+    MyProfile,
+    MyProfileUpdate,
+    OrganizationOption,
+)
+from app.services import activity_service, affiliation_service, profile_service
+from app.services.org_tree import load_org_tree
 
 router = APIRouter(prefix="/me", tags=["me"])
 
@@ -21,6 +28,22 @@ def update_my_profile(
 ) -> MyProfile:
     user = profile_service.update_my_profile(db, current_user, payload)
     return MyProfile.model_validate(user)
+
+
+@router.get("/affiliation", response_model=MyAffiliation)
+def get_my_affiliation(current_user: CurrentUser, db: DbSession) -> MyAffiliation:
+    return affiliation_service.my_affiliation(db, current_user)
+
+
+@router.post("/affiliation", response_model=MyAffiliation)
+def submit_affiliation(payload: AffiliationRequest, current_user: CurrentUser, db: DbSession) -> MyAffiliation:
+    return affiliation_service.request_affiliation(db, current_user.id, payload.class_id)
+
+
+@router.get("/affiliation/options", response_model=list[OrganizationOption])
+def list_affiliation_options(_: CurrentUser, db: DbSession) -> list[OrganizationOption]:
+    tree = load_org_tree(db)
+    return [OrganizationOption.model_validate(node) for node in tree.nodes.values()]
 
 
 @router.get("/activities", response_model=list[ActivityListItem])

@@ -1,5 +1,6 @@
 import { IS_DEV } from '../../config/env'
 import { loginWithWechat } from '../../services/auth'
+import { getMyAffiliation } from '../../services/affiliation'
 import { ApiError } from '../../services/request'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
@@ -25,11 +26,29 @@ Page({
     phoneSheetOpen: false,
   },
 
-  onShow() {
+  async onShow() {
     this.setData({ lang: locale.get() })
     if (session.getToken() && session.getUser()) {
-      wx.switchTab({ url: '/pages/home/home' })
+      await this.routeAfterLogin()
     }
+  },
+
+  async routeAfterLogin() {
+    const user = session.getUser()
+    if (!user) return
+    if (user.role !== 'super_admin') {
+      try {
+        const affiliation = await getMyAffiliation()
+        if (!affiliation.class_id && !affiliation.pending_class_id) {
+          wx.redirectTo({ url: '/pages/org-select/org-select' })
+          return
+        }
+      } catch (error) {
+        showLoginError(loginErrorMessage(error))
+        return
+      }
+    }
+    wx.switchTab({ url: '/pages/home/home', fail: (error) => showLoginError(loginErrorMessage(error)) })
   },
 
   onLogin() {
@@ -94,9 +113,6 @@ Page({
     const app = getApp<IAppOption>()
     app.globalData.pendingOnboarding = !session.hasOnboarded()
     this.setData({ phoneSheetOpen: false })
-    wx.switchTab({
-      url: '/pages/home/home',
-      fail: (error) => showLoginError(loginErrorMessage(error)),
-    })
+    await this.routeAfterLogin()
   },
 })

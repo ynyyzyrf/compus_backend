@@ -23,6 +23,23 @@ export function getDashboard(): Promise<DashboardStats> {
 }
 
 // ===== members =====
+export interface AffiliationReviewItem {
+  user_id: number
+  name: string
+  verified_phone: string | null
+  class_id: number
+  org_path: string
+  requested_at: string | null
+}
+
+export function listAffiliationRequests(): Promise<AffiliationReviewItem[]> {
+  return request<AffiliationReviewItem[]>({ url: '/admin/affiliation-requests' })
+}
+
+export function reviewAffiliation(userId: number, action: 'approve' | 'reject'): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>({ url: `/admin/affiliation-requests/${userId}/${action}`, method: 'POST' })
+}
+
 export function listMembers(params: {
   q?: string
   role?: 'user' | 'super_admin'

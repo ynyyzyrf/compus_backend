@@ -78,3 +78,23 @@ class MyProfileUpdate(BaseModel):
         if value is None or not value.strip():
             raise ValueError("請填寫姓名")
         return value.strip()
+
+
+class OrganizationOption(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    type: str
+    parent_id: int | None
+
+
+class MyAffiliation(BaseModel):
+    class_id: int | None = None
+    org_path: str = ""
+    pending_class_id: int | None = None
+    pending_org_path: str = ""
+
+
+class AffiliationRequest(BaseModel):
+    class_id: int

@@ -1,6 +1,15 @@
 from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Date, DateTime, Integer, String, Text, func
+from sqlalchemy import (
+    BigInteger,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -22,6 +31,10 @@ class User(Base):
     verified_phone: Mapped[str | None] = mapped_column(String(32), unique=True, index=True)
     phone_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     auth_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    pending_class_id: Mapped[int | None] = mapped_column(
+        ForeignKey("organizations.id", ondelete="SET NULL"), index=True
+    )
+    affiliation_requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     wechat_id: Mapped[str | None] = mapped_column(String(64))
     email: Mapped[str | None] = mapped_column(String(128))
     bio: Mapped[str | None] = mapped_column(Text)

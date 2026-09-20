@@ -1,0 +1,17 @@
+<view class="page-pad">
+  <view class="card intro">核對校友的所屬組織，通過後才會開通相應通訊錄權限。</view>
+  <view wx:if="{{loading}}" class="card">載入中...</view>
+  <view wx:elif="{{error}}" class="card"><text>{{error}}</text><button bindtap="load">重試</button></view>
+  <view wx:elif="{{!items.length}}" class="card">暫無待審核申請</view>
+  <view wx:else>
+    <view wx:for="{{items}}" wx:key="user_id" class="card">
+      <view class="name">{{item.name}}</view>
+      <view wx:if="{{item.verified_phone}}" class="muted">{{item.verified_phone}}</view>
+      <view class="path">{{item.org_path}}</view>
+      <view class="actions">
+        <button data-id="{{item.user_id}}" bindtap="reject" disabled="{{busyId !== 0}}">退回</button>
+        <button class="approve" data-id="{{item.user_id}}" bindtap="approve" disabled="{{busyId !== 0}}">通過</button>
+      </view>
+    </view>
+  </view>
+</view>

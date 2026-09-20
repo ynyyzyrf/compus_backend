@@ -47,6 +47,7 @@ Page({
   },
 
   goMembers() { wx.navigateTo({ url: '/pages/admin-members/admin-members' }) },
+  goAffiliations() { wx.navigateTo({ url: '/pages/admin-affiliations/admin-affiliations' }) },
   goOrgs() { wx.navigateTo({ url: '/pages/admin-orgs/admin-orgs' }) },
   goPermissions() { wx.navigateTo({ url: '/pages/admin-permissions/admin-permissions' }) },
   goArticles() { wx.navigateTo({ url: '/pages/admin-articles/admin-articles' }) },

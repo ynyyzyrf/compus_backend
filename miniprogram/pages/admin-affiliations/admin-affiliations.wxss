@@ -1,0 +1,6 @@
+.intro { line-height: 1.6; }
+.name { font-size: 32rpx; font-weight: 800; margin-bottom: 10rpx; }
+.path { margin: 18rpx 0; line-height: 1.5; }
+.actions { display: flex; gap: 20rpx; }
+.actions button { flex: 1; }
+.approve { background: var(--brand); color: #fff; }

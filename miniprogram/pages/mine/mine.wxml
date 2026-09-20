@@ -29,6 +29,10 @@
   </view>
 
   <view class="menu-card">
+    <view wx:if="{{affiliationText}}" class="menu-item" bindtap="goAffiliation">
+      <text>{{affiliationText}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
     <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdminDashboard">
       <text>{{t.t('mine.admin_entry', lang)}}</text>
       <t-icon class="arrow muted" name="chevron-right" size="30rpx" />

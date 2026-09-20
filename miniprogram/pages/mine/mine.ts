@@ -6,6 +6,7 @@ import {
   listDevUsers,
 } from '../../services/auth'
 import { getMyProfile } from '../../services/profile'
+import { getMyAffiliation } from '../../services/affiliation'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
 import type { DevUser, UserProfile } from '../../types/api'
@@ -24,6 +25,7 @@ Page({
     devUsers: [] as DevUser[],
     langLabel: '',
     heroSub: '',
+    affiliationText: '',
   },
 
   onShow() {
@@ -52,6 +54,8 @@ Page({
       name: latestUser.name === DEFAULT_PROFILE_NAME && latestUser.name_en ? latestUser.name_en : latestUser.name,
     }
     if (!isGuest) session.setUser(displayUser)
+    const affiliation = !isGuest && displayUser.role !== 'super_admin'
+      ? await getMyAffiliation().catch(() => null) : null
     this.setData({
       user: displayUser,
       initial: displayUser.name.charAt(0) || '·',
@@ -59,9 +63,12 @@ Page({
       needsProfileName: !isGuest && displayUser.name === DEFAULT_PROFILE_NAME,
       isAdmin: displayUser.role === 'super_admin',
       heroSub: isGuest ? t('mine.member_center_sub') : '',
+      affiliationText: affiliation?.pending_class_id ? `審核中：${affiliation.pending_org_path}` : '',
     })
     if (IS_DEV) this.loadDevUsers()
   },
+
+  goAffiliation() { wx.navigateTo({ url: '/pages/org-select/org-select' }) },
 
   async loadDevUsers() {
     try {
