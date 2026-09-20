@@ -1,8 +1,4 @@
 <view class="page-pad">
-  <view class="card intro">
-    <view class="title">選擇所屬組織</view>
-    <view class="muted">請按學校、學院、系、班級選擇。管理員核對後開通通訊錄。</view>
-  </view>
   <view wx:if="{{loading}}" class="card">載入中...</view>
   <view wx:elif="{{error}}" class="card"><text>{{error}}</text><button bindtap="load">重試</button></view>
   <view wx:elif="{{pendingPath}}" class="card">
@@ -12,6 +8,8 @@
     <button class="primary" bindtap="enterHome">進入首頁</button>
   </view>
   <view wx:else class="card">
+    <view class="label">姓名</view>
+    <input class="choice name-input" type="text" maxlength="64" value="{{name}}" placeholder="請輸入姓名" bindinput="onNameInput" />
     <view class="label">學校</view>
     <picker mode="selector" range="{{schoolNames}}" bindchange="onSchool"><view class="choice">{{schoolName || '請選擇學校'}}</view></picker>
     <view class="label">學院</view>

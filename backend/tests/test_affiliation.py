@@ -65,7 +65,8 @@ def test_affiliation_requires_review_before_directory_access(db, client, ctx):
     db.add(user)
     db.flush()
     class_id = ctx.class_id_for("張晨")
-    assert client.post("/api/v1/me/affiliation", headers=_auth(user), json={"class_id": class_id}).status_code == 200
+    assert client.post("/api/v1/me/affiliation", headers=_auth(user), json={"class_id": class_id, "name": "  王小明  "}).status_code == 200
+    assert client.get("/api/v1/me/profile", headers=_auth(user)).json()["name"] == "王小明"
     assert client.get("/api/v1/me/affiliation", headers=_auth(user)).json()["pending_class_id"] == class_id
     assert db.scalars(select(Membership).where(Membership.user_id == user.id)).first() is None
     tree_before = client.get("/api/v1/directory/tree", headers=_auth(user)).json()
@@ -76,7 +77,7 @@ def test_affiliation_requires_review_before_directory_access(db, client, ctx):
     admin = db.scalars(select(User).where(User.role == Role.SUPER_ADMIN)).first()
     requests = client.get("/api/v1/admin/affiliation-requests", headers=_auth(admin))
     assert requests.status_code == 200
-    assert any(row["user_id"] == user.id for row in requests.json())
+    assert any(row["user_id"] == user.id and row["name"] == "王小明" for row in requests.json())
     assert client.get("/api/v1/admin/affiliation-requests", headers=_auth(user)).status_code == 403
     assert client.post(f"/api/v1/admin/affiliation-requests/{user.id}/approve", headers=_auth(user)).status_code == 403
     approved = client.post(f"/api/v1/admin/affiliation-requests/{user.id}/approve", headers=_auth(admin))
@@ -94,6 +95,7 @@ def test_invalid_class_and_reject(db, client, ctx):
     db.flush()
     nodes = client.get("/api/v1/me/affiliation/options", headers=_auth(user)).json()
     school_id = next(n["id"] for n in nodes if n["type"] == "school")
+    assert client.post("/api/v1/me/affiliation", headers=_auth(user), json={"class_id": school_id, "name": "  "}).status_code == 422
     assert client.post("/api/v1/me/affiliation", headers=_auth(user), json={"class_id": school_id}).status_code == 400
     class_id = ctx.class_id_for("張晨")
     assert client.post("/api/v1/me/affiliation", headers=_auth(user), json={"class_id": class_id}).status_code == 200

@@ -14,7 +14,6 @@
   <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onLogin">
     {{t.t('login.button', lang)}}
   </t-button>
-  <view class="phone-entry" bindtap="openPhoneSheet">{{t.t('login.phone_entry', lang)}}</view>
   <view class="skip-login" bindtap="skipLogin">{{t.t('login.skip', lang)}}</view>
 
   <view wx:if="{{phoneSheetOpen}}" class="sheet-mask" bindtap="closePhoneSheet">

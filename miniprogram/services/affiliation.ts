@@ -9,11 +9,11 @@ export function getAffiliationOptions(): Promise<AffiliationOption[]> {
   return request<AffiliationOption[]>({ url: '/me/affiliation/options' })
 }
 
-export function submitAffiliation(classId: number): Promise<Affiliation> {
+export function submitAffiliation(classId: number, name: string): Promise<Affiliation> {
   return request<Affiliation>({
     url: '/me/affiliation',
     method: 'POST',
-    data: { class_id: classId },
+    data: { class_id: classId, name },
     silent: true,
   })
 }

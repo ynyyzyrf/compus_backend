@@ -37,7 +37,7 @@ def get_my_affiliation(current_user: CurrentUser, db: DbSession) -> MyAffiliatio
 
 @router.post("/affiliation", response_model=MyAffiliation)
 def submit_affiliation(payload: AffiliationRequest, current_user: CurrentUser, db: DbSession) -> MyAffiliation:
-    return affiliation_service.request_affiliation(db, current_user.id, payload.class_id)
+    return affiliation_service.request_affiliation(db, current_user.id, payload.class_id, payload.name)
 
 
 @router.get("/affiliation/options", response_model=list[OrganizationOption])

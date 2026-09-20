@@ -98,3 +98,13 @@ class MyAffiliation(BaseModel):
 
 class AffiliationRequest(BaseModel):
     class_id: int
+    name: str | None = Field(default=None, max_length=64)
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        if not value.strip():
+            raise ValueError("請填寫姓名")
+        return value.strip()

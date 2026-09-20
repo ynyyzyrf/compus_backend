@@ -63,12 +63,10 @@ Page({
       needsProfileName: !isGuest && displayUser.name === DEFAULT_PROFILE_NAME,
       isAdmin: displayUser.role === 'super_admin',
       heroSub: isGuest ? t('mine.member_center_sub') : '',
-      affiliationText: affiliation?.pending_class_id ? `審核中：${affiliation.pending_org_path}` : '',
+      affiliationText: affiliation?.pending_class_id ? affiliation.pending_org_path : '',
     })
     if (IS_DEV) this.loadDevUsers()
   },
-
-  goAffiliation() { wx.navigateTo({ url: '/pages/org-select/org-select' }) },
 
   async loadDevUsers() {
     try {

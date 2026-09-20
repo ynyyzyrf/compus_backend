@@ -3,6 +3,16 @@
   background: #f6f6f6;
   padding-bottom: 40rpx;
 }
+.pending-notice {
+  margin: 20rpx 28rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 14rpx;
+  background: #fff4e1;
+  border: 1rpx solid #e9d8ae;
+  color: #704c16;
+}
+.pending-notice-title { font-size: 28rpx; font-weight: 800; }
+.pending-notice-path { margin-top: 8rpx; font-size: 24rpx; line-height: 1.5; }
 .profile-hero {
   min-height: 230rpx;
   box-sizing: border-box;

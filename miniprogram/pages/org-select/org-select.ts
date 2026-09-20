@@ -1,6 +1,7 @@
 import { ensureLogin, goLogin, logout } from '../../services/auth'
 import { getAffiliationOptions, getMyAffiliation, submitAffiliation } from '../../services/affiliation'
 import type { AffiliationOption } from '../../types/api'
+import { session } from '../../utils/session'
 
 const levels = ['school', 'college', 'department', 'class'] as const
 type Level = typeof levels[number]
@@ -14,6 +15,7 @@ Page({
     departmentNames: [] as string[], classNames: [] as string[],
     schoolId: 0, collegeId: 0, departmentId: 0, classId: 0,
     schoolName: '', collegeName: '', departmentName: '', className: '',
+    name: '',
     pendingPath: '', loading: true, submitting: false, error: '',
   },
 
@@ -22,6 +24,7 @@ Page({
   async load() {
     const user = await ensureLogin().catch(() => null)
     if (!user) { goLogin(); return }
+    if (user.name !== '未命名校友') this.setData({ name: user.name })
     this.setData({ loading: true, error: '' })
     try {
       const affiliation = await getMyAffiliation()
@@ -61,13 +64,18 @@ Page({
   onCollege(e: WechatMiniprogram.PickerChange) { this.select('college', Number(e.detail.value)) },
   onDepartment(e: WechatMiniprogram.PickerChange) { this.select('department', Number(e.detail.value)) },
   onClass(e: WechatMiniprogram.PickerChange) { this.select('class', Number(e.detail.value)) },
+  onNameInput(e: WechatMiniprogram.Input) { this.setData({ name: e.detail.value }) },
 
   async submit() {
     if (this.data.submitting) return
+    const name = this.data.name.trim()
+    if (!name) { wx.showToast({ title: '請輸入姓名', icon: 'none' }); return }
     if (!this.data.classId) { wx.showToast({ title: '請選擇所屬班級', icon: 'none' }); return }
     this.setData({ submitting: true })
     try {
-      const result = await submitAffiliation(this.data.classId)
+      const result = await submitAffiliation(this.data.classId, name)
+      const user = session.getUser()
+      if (user) session.setUser({ ...user, name })
       this.setData({ pendingPath: result.pending_org_path })
       wx.showToast({ title: '已提交審核', icon: 'success' })
     } catch (error) {

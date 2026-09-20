@@ -56,11 +56,6 @@ Page({
     return this.confirmLogin()
   },
 
-  openPhoneSheet() {
-    if (this.data.loading) return
-    this.setData({ phoneSheetOpen: true })
-  },
-
   skipLogin() {
     session.enterGuest()
     const app = getApp<IAppOption>()

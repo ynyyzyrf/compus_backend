@@ -36,7 +36,7 @@ def my_affiliation(db: Session, user: User) -> MyAffiliation:
     )
 
 
-def request_affiliation(db: Session, user_id: int, class_id: int) -> MyAffiliation:
+def request_affiliation(db: Session, user_id: int, class_id: int, name: str | None = None) -> MyAffiliation:
     user = db.scalars(select(User).where(User.id == user_id).with_for_update()).one()
     if get_primary_class_id(db, user_id) is not None:
         raise HTTPException(status_code=409, detail="已加入組織，請聯絡管理員修改")
@@ -45,9 +45,12 @@ def request_affiliation(db: Session, user_id: int, class_id: int) -> MyAffiliati
         raise HTTPException(status_code=400, detail="請選擇有效的學校、學院、系和班級")
     if user.pending_class_id and user.pending_class_id != class_id:
         raise HTTPException(status_code=409, detail="已有待審核申請，請等待管理員處理")
+    if name is not None:
+        user.name = name
     if not user.pending_class_id:
         user.pending_class_id = class_id
         user.affiliation_requested_at = datetime.now(UTC)
+    if db.is_modified(user):
         db.commit()
     return my_affiliation(db, user)
 

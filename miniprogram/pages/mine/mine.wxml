@@ -1,5 +1,9 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="mine-page">
+  <view wx:if="{{affiliationText}}" class="pending-notice">
+    <view class="pending-notice-title">組織申請審核中</view>
+    <view class="pending-notice-path">{{affiliationText}}</view>
+  </view>
   <view class="profile-hero">
     <view class="guest-login-hit {{isGuest ? 'active' : ''}}" bindtap="goLoginIfGuest">
     <view class="avatar big">{{initial}}</view>
@@ -29,10 +33,6 @@
   </view>
 
   <view class="menu-card">
-    <view wx:if="{{affiliationText}}" class="menu-item" bindtap="goAffiliation">
-      <text>{{affiliationText}}</text>
-      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
-    </view>
     <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdminDashboard">
       <text>{{t.t('mine.admin_entry', lang)}}</text>
       <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
