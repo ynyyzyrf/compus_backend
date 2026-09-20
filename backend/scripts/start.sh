@@ -3,7 +3,17 @@ set -eu
 
 PORT="${PORT:-8000}"
 
-python - <<'PY'
+if [ -z "${JWT_SECRET:-}" ]; then
+  echo "Missing required environment variable: JWT_SECRET"
+  exit 1
+fi
+
+if [ -z "${DATABASE_URL:-}" ] && [ -z "${POSTGRES_CONNECTION_STRING:-}" ] && [ -z "${POSTGRES_URL:-}" ]; then
+  echo "Missing required database environment variable: set DATABASE_URL or POSTGRES_CONNECTION_STRING"
+  exit 1
+fi
+
+uv run --no-sync python - <<'PY'
 import os
 
 from app.core.config import settings
