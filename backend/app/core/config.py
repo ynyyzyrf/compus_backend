@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,7 +11,13 @@ class Settings(BaseSettings):
 
     app_env: str = "development"
 
-    database_url: str
+    database_url: str = Field(
+        validation_alias=AliasChoices(
+            "DATABASE_URL",
+            "POSTGRES_CONNECTION_STRING",
+            "POSTGRES_URL",
+        )
+    )
     test_database_url: str | None = None
 
     jwt_secret: str
@@ -29,6 +36,15 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = ""
+
+    @field_validator("database_url")
+    @classmethod
+    def normalize_database_url(cls, value: str) -> str:
+        if value.startswith("postgres://"):
+            return "postgresql+psycopg://" + value.removeprefix("postgres://")
+        if value.startswith("postgresql://"):
+            return "postgresql+psycopg://" + value.removeprefix("postgresql://")
+        return value
 
     @property
     def is_dev(self) -> bool:
