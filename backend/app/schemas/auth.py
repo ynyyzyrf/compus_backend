@@ -23,8 +23,6 @@ class UserProfile(UserBase):
 class LoginRequest(BaseModel):
     # value returned by wx.login()
     code: str
-    # Separate, one-use code returned by the getPhoneNumber button.
-    phone_code: str | None = None
 
 
 class DevImpersonateRequest(BaseModel):

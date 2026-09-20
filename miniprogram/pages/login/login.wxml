@@ -16,23 +16,4 @@
   </t-button>
   <view class="skip-login" bindtap="skipLogin">{{t.t('login.skip', lang)}}</view>
 
-  <view wx:if="{{phoneSheetOpen}}" class="sheet-mask" bindtap="closePhoneSheet">
-    <view class="phone-sheet" catchtap="">
-      <view class="sheet-head">
-        <view class="mini-seal">商</view>
-        <view class="sheet-org">{{t.t('login.org_name', lang)}}</view>
-        <view class="info-dot">i</view>
-      </view>
-      <view class="sheet-title">{{t.t('login.phone_title', lang)}}</view>
-      <view class="sheet-sub">{{t.t('login.phone_subtitle', lang)}}</view>
-
-      <view class="phone-card">
-        <button class="phone-auth-button" open-type="getPhoneNumber" bindgetphonenumber="onPhoneAuthorized">
-          {{t.t('login.authorize_phone', lang)}}
-        </button>
-      </view>
-
-      <view class="deny" bindtap="closePhoneSheet">{{t.t('login.deny', lang)}}</view>
-    </view>
-  </view>
 </view>

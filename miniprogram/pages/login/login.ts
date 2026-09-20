@@ -1,7 +1,6 @@
 import { IS_DEV } from '../../config/env'
 import { loginWithWechat } from '../../services/auth'
 import { getMyAffiliation } from '../../services/affiliation'
-import { ApiError } from '../../services/request'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
 
@@ -23,7 +22,6 @@ Page({
     lang: locale.get(),
     loading: false,
     isDev: IS_DEV,
-    phoneSheetOpen: false,
   },
 
   async onShow() {
@@ -63,42 +61,18 @@ Page({
     wx.switchTab({ url: '/pages/home/home' })
   },
 
-  closePhoneSheet() {
-    this.setData({ phoneSheetOpen: false })
-  },
-
-  onPhoneAuthorized(e: WechatMiniprogram.CustomEvent<{ code?: string; errMsg?: string }>) {
-    const phoneCode = e.detail.code
-    if (!phoneCode) {
-      if (e.detail.errMsg && !e.detail.errMsg.includes('deny')) {
-        showLoginError(e.detail.errMsg)
-      }
-      return
-    }
-    return this.confirmLogin(phoneCode)
-  },
-
-  async confirmLogin(phoneCode?: string) {
+  async confirmLogin() {
     if (this.data.loading) return
     this.setData({ loading: true })
     wx.showLoading({ title: t('login.loading'), mask: true })
-    let phoneRequired = false
     let loginError: string | null = null
     try {
-      await loginWithWechat(phoneCode)
+      await loginWithWechat()
     } catch (e) {
-      if (e instanceof ApiError && e.statusCode === 428 && !phoneCode) {
-        phoneRequired = true
-      } else {
-        loginError = loginErrorMessage(e)
-      }
+      loginError = loginErrorMessage(e)
     } finally {
       wx.hideLoading()
       this.setData({ loading: false })
-    }
-    if (phoneRequired) {
-      this.setData({ phoneSheetOpen: true })
-      return
     }
     if (loginError) {
       showLoginError(loginError)
@@ -107,7 +81,6 @@ Page({
 
     const app = getApp<IAppOption>()
     app.globalData.pendingOnboarding = !session.hasOnboarded()
-    this.setData({ phoneSheetOpen: false })
     await this.routeAfterLogin()
   },
 })

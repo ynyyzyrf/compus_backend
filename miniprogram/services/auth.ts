@@ -10,12 +10,12 @@ function wxLoginCode(): Promise<string> {
 }
 
 /** wx.login -> 後端換 token（dev 為 mock 通道，默認進入種子超管）。 */
-export async function loginWithWechat(phoneCode?: string): Promise<UserProfile> {
+export async function loginWithWechat(): Promise<UserProfile> {
   const code = await wxLoginCode()
   const result = await request<LoginResult>(
     {
       url: '/auth/wechat-login', method: 'POST',
-      data: phoneCode ? { code, phone_code: phoneCode } : { code },
+      data: { code },
       silent: true,
     },
   )

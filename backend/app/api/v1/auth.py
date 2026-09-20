@@ -18,10 +18,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/wechat-login", response_model=LoginResult)
 def wechat_login(payload: LoginRequest, db: DbSession) -> LoginResult:
     try:
-        return auth_service.wechat_login(db, payload.code, payload.phone_code)
-    except auth_service.PhoneRequiredError as exc:
-        raise HTTPException(status_code=428, detail=str(exc))
-    except auth_service.PhoneConflictError as exc:
+        return auth_service.wechat_login(db, payload.code)
+    except auth_service.AccountUnavailableError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     except auth_service.WeChatLoginError as exc:
         raise HTTPException(

@@ -52,19 +52,14 @@ uv run pytest
 - 生產部署時設置 `WECHAT_MOCK_LOGIN=false` 並配置 `WECHAT_APPID/WECHAT_SECRET`，
   後端會走真實 `jscode2session`，上述 dev 接口自動關閉。
 
-## 已驗證手機號登入
+## 微信 OpenID 登入
 
-`users.phone` 是可編輯的聯絡電話，不可用於證明身份。遷移 `0003` 新增
-`users.verified_phone` 唯一索引；只有微信 `getPhoneNumber` 授權碼經後端核驗後
-才會寫入此欄位。`wx.login` 的 code 與手機號授權的 code 不可混用。
-
-預設 `WECHAT_PHONE_LOGIN_REQUIRED=true`。新微信身份先收到 HTTP 428，
-小程序再顯示微信手機號授權按鈕；授權成功後，後端以真實 `openid` 和已驗證手機號
-綁定已有帳號或建立新帳號。正式部署需確認 AppID 已具備微信「獲取手機號」能力，
-並在體驗版用真機驗證授權、舊帳號合併及再次登入。
-
-同一已驗證手機號只對應一個用戶。普通舊帳號若有唯一匹配的聯絡電話，登入時會
-合併到該舊帳號；重複號碼、已停用帳號和超級管理員帳號須人工核對。
+小程序使用 `wx.login()` 取得一次性 code，後端使用正式環境的
+`WECHAT_APPID` / `WECHAT_SECRET` 調用 `jscode2session`。以返回的 `openid`
+查詢 `users`；已有活躍用戶直接簽發 Token，未找到時建立新用戶。停用用戶不能登入。
+`users.phone` 僅作為可編輯的聯絡資料，`users.verified_phone` 不參與登入；
+登入流程不請求微信手機號授權。更換 AppID 時，不能僅憑資料庫中的 `openid`
+字串判斷是否屬於新 AppID；需用對應小程序的真實 `wx.login` code 兌換並核對。
 
 種子用戶 id：8=MAG(超管) 9=張晨 10=黃俊傑 11=陳思遠 12=林嘉怡 13=周可欣 14=王子謙。
 
