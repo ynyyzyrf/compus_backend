@@ -3,8 +3,9 @@
   <view class="profile-header {{affiliationText ? 'has-notice' : ''}}">
     <view wx:if="{{affiliationText}}" class="pending-notice">
       <view class="pending-notice-pill">
-        <t-icon class="pending-notice-icon" name="sound-high-filled" size="32rpx" color="#ffffff" />
+        <t-icon class="pending-notice-icon" name="sound-high-filled" size="30rpx" color="#FFE0A3" />
         <text class="pending-notice-title">組織申請審核中</text>
+        <view class="pending-notice-divider" />
         <text class="pending-notice-path">{{affiliationText}}</text>
       </view>
     </view>
