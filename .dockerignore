@@ -1,0 +1,17 @@
+.git
+.gitignore
+
+node_modules
+miniprogram/node_modules
+miniprogram/miniprogram_npm
+
+backend/.venv
+backend/.pytest_cache
+backend/.env
+backend/storage_data
+
+__pycache__
+*.py[cod]
+*.log
+
+project.private.config.json
