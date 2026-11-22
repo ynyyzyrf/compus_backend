@@ -111,20 +111,20 @@ Page({
   async onSave() {
     if (this.data.saving) return
     if (!this.data.profile?.name.trim() && !this.data.profile?.name_en?.trim()) {
-      wx.showToast({ title: '請填寫姓名', icon: 'none' })
+      wx.showToast({ title: '请填写姓名', icon: 'none' })
       return
     }
     const payload = this._buildPayload()
     this.setData({ saving: true })
     try {
       const profile = await updateMyProfile(payload)
-      if (profile.name !== payload.name) throw new Error('姓名未保存，請稍後重試')
+      if (profile.name !== payload.name) throw new Error('姓名未保存，请稍后重试')
       session.setUser(profile)
       session.markOnboarded()
       wx.showToast({ title: '已保存', icon: 'success' })
       leaveProfilePage()
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '保存失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '保存失败', icon: 'none' })
     } finally {
       this.setData({ saving: false })
     }

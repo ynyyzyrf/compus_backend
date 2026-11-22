@@ -53,5 +53,6 @@
     ],
     "include": []
   },
-  "appid": "wxc2b7726dfb13895b"
+  "appid": "wxc2b7726dfb13895b",
+  "isGameTourist": false
 }

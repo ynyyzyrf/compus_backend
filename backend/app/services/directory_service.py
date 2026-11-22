@@ -13,11 +13,27 @@ from app.schemas.directory import (
     MemberDetail,
     OrgNodeOut,
 )
-from app.services.directory_permission import readable_scope
-from app.services.org_tree import load_org_tree
+from app.services.directory_permission import get_primary_class_id, readable_scope
+from app.services.org_tree import load_org_tree, normalize_org_keyword
 
 DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
+
+
+def alumni_school(db, tree, user_id: int) -> int | None:
+    class_id = get_primary_class_id(db, user_id)
+    return tree.school_for_class(class_id) if class_id is not None else None
+
+
+def can_find_alumnus(db, tree, viewer, target, target_class_id: int) -> bool:
+    """A contact request requires an approved sender and a visible recipient."""
+    school_id = alumni_school(db, tree, viewer.id)
+    target_school = tree.school_for_class(target_class_id)
+    if school_id is None or target_school is None or target.status != Status.ACTIVE:
+        return False
+    return target_class_id in readable_scope(db, tree, viewer).class_ids or (
+        target.alumni_discoverable and school_id == target_school
+    )
 
 
 def directory_tree(db: Session, user: User) -> DirectoryTreeOut:
@@ -54,13 +70,17 @@ def directory_tree(db: Session, user: User) -> DirectoryTreeOut:
                 parent_id=node.parent_id,
                 sort_order=node.sort_order,
                 member_count=member_count,
+                entry_year=node.entry_year,
             )
         )
     return DirectoryTreeOut(nodes=nodes, scope_level=scope.scope_level)
 
 
 def list_members(
-    db: Session, user: User, q: str | None, page: int, page_size: int
+    db: Session, user: User, q: str | None, page: int, page_size: int,
+    *, discover: bool = False, entry_year: int | None = None,
+    college_id: int | None = None, department_id: int | None = None,
+    major_id: int | None = None, class_id: int | None = None,
 ) -> Page[MemberBrief]:
     tree = load_org_tree(db)
     scope = readable_scope(db, tree, user)
@@ -68,7 +88,22 @@ def list_members(
     page = max(page, 1)
     page_size = min(max(page_size, 1), MAX_PAGE_SIZE)
 
-    if not scope.class_ids:
+    keyword = (q or "").strip()
+    filters = {
+        "college": college_id, "department": department_id,
+        "major": major_id, "class": class_id,
+    }
+    school_id = alumni_school(db, tree, user.id) if discover else None
+    search_classes = scope.class_ids
+    visibility = Membership.organization_id.in_(scope.class_ids)
+    if school_id is not None and (keyword or entry_year or any(filters.values())):
+        same_school = tree.classes_under(tree.descendants(school_id))
+        search_classes = scope.class_ids | same_school
+        visibility = or_(
+            visibility,
+            (User.alumni_discoverable.is_(True) & Membership.organization_id.in_(same_school)),
+        )
+    if not search_classes:
         return Page(items=[], total=0, page=page, page_size=page_size)
 
     stmt = (
@@ -76,17 +111,25 @@ def list_members(
         .join(Membership, Membership.user_id == User.id)
         .where(
             Membership.is_primary.is_(True),
-            Membership.organization_id.in_(scope.class_ids),
+            visibility,
             User.status == Status.ACTIVE,
         )
     )
 
-    keyword = (q or "").strip()
-    if keyword:
-        org_hits = tree.find_by_path_keyword(keyword) & scope.class_ids
+    for node_type, node_id in filters.items():
+        if node_id is not None:
+            node = tree.nodes.get(node_id)
+            hits = tree.classes_under(tree.descendants(node_id)) if node and node.type == node_type else set()
+            search_classes = search_classes & hits
+    if entry_year is not None:
+        search_classes = {cid for cid in search_classes if tree.nodes[cid].entry_year == entry_year}
+    stmt = stmt.where(Membership.organization_id.in_(search_classes))
+    for term in normalize_org_keyword(keyword).split():
+        org_hits = tree.find_by_path_keyword(term) & search_classes
         stmt = stmt.where(
             or_(
-                User.name.ilike(f"%{keyword}%"),
+                User.name.icontains(term, autoescape=True),
+                User.name_en.icontains(term, autoescape=True),
                 Membership.organization_id.in_(org_hits),
             )
         )
@@ -111,6 +154,7 @@ def list_members(
             avatar_url=member.avatar_url,
             class_id=class_id,
             org_path=tree.path_name(class_id),
+            can_view_profile=class_id in scope.class_ids,
         )
         for member, class_id in rows
     ]

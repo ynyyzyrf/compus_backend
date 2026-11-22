@@ -76,7 +76,7 @@ class MyProfileUpdate(BaseModel):
     @classmethod
     def validate_name(cls, value: str | None) -> str:
         if value is None or not value.strip():
-            raise ValueError("請填寫姓名")
+            raise ValueError("请填写姓名")
         return value.strip()
 
 
@@ -87,6 +87,11 @@ class OrganizationOption(BaseModel):
     name: str
     type: str
     parent_id: int | None
+    entry_year: int | None = None
+
+
+class MissingClassReport(BaseModel):
+    note: str = Field(min_length=2, max_length=200)
 
 
 class MyAffiliation(BaseModel):
@@ -106,5 +111,5 @@ class AffiliationRequest(BaseModel):
         if value is None:
             return None
         if not value.strip():
-            raise ValueError("請填寫姓名")
+            raise ValueError("请填写姓名")
         return value.strip()

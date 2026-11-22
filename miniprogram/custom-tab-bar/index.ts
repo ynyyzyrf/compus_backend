@@ -1,4 +1,4 @@
-import { locale, t } from '../utils/i18n'
+import { t } from '../utils/i18n'
 
 interface TabBarComponentOptions {
   data: Record<string, unknown>
@@ -17,18 +17,9 @@ function buildList() {
 Component({
   data: {
     value: 'home',
-    lang: locale.get(),
     list: buildList(),
   },
-  pageLifetimes: {
-    show(this: TabBarComponentOptions) {
-      this.setData({ lang: locale.get(), list: buildList() })
-    },
-  },
   methods: {
-    refreshLocale(this: TabBarComponentOptions) {
-      this.setData({ lang: locale.get(), list: buildList() })
-    },
     onChange(this: TabBarComponentOptions, e: WechatMiniprogram.CustomEvent<{ value: string }>) {
       const value = e.detail.value
       this.setData({ value })

@@ -181,11 +181,6 @@
 .muted {
   color: #888;
 }
-.lang-label {
-  margin-left: auto;
-  margin-right: 12rpx;
-  font-size: 24rpx;
-}
 .dev {
   padding: 28rpx;
 }
@@ -227,3 +222,5 @@
   font-size: 26rpx;
   color: #333;
 }
+.requests-count { margin-left: auto; color: #fff; background: var(--brand); border-radius: 16rpx; padding: 4rpx 14rpx; font-size: 22rpx; }
+.discover-status { margin-left: auto; font-size: 24rpx; }

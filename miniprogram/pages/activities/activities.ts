@@ -122,14 +122,14 @@ Page({
 
   openActivityDetail(id: number) {
     if (!Number.isFinite(id) || id <= 0) {
-      wx.showToast({ title: '活動信息異常', icon: 'none' })
+      wx.showToast({ title: '活动信息异常', icon: 'none' })
       return
     }
     wx.navigateTo({
       url: `/pages/activity-detail/activity-detail?id=${id}`,
       fail: (err) => {
         console.error('open activity detail failed', err)
-        wx.showToast({ title: err.errMsg || '無法打開活動詳情', icon: 'none' })
+        wx.showToast({ title: err.errMsg || '无法打开活动详情', icon: 'none' })
       },
     })
   },

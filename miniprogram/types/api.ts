@@ -42,6 +42,7 @@ export interface AffiliationOption {
   name: string
   type: OrgType
   parent_id: number | null
+  entry_year?: number | null
 }
 
 export interface Page<T> {
@@ -51,7 +52,7 @@ export interface Page<T> {
   page_size: number
 }
 
-export type OrgType = 'school' | 'college' | 'department' | 'class'
+export type OrgType = 'school' | 'college' | 'department' | 'major' | 'class'
 
 export interface OrgNode {
   id: number
@@ -60,6 +61,7 @@ export interface OrgNode {
   parent_id: number | null
   sort_order: number
   member_count: number
+  entry_year?: number | null
 }
 
 export interface DirectoryTree {
@@ -73,6 +75,7 @@ export interface MemberBrief {
   avatar_url: string | null
   class_id: number | null
   org_path: string
+  can_view_profile?: boolean
 }
 
 // ===== Articles (slice 2) =====
@@ -432,11 +435,12 @@ export interface MemberListPage {
 export interface OrgNodeAdminOut {
   id: number
   name: string
-  type: 'school' | 'college' | 'department' | 'class'
+  type: OrgType
   parent_id: number | null
   sort_order: number
   status: 'active' | 'disabled'
   member_count: number
+  entry_year: number | null
 }
 
 export interface DirectoryPermissionOut {

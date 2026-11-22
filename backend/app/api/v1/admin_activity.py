@@ -67,7 +67,7 @@ def update_activity(
 ) -> ActivityAdminOut:
     a = activity_service.update_activity(db, activity_id, payload)
     if a is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活動不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活动不存在")
     stats = activity_service._stats_for(db, [a.id])[0]
     return _admin_view(a, stats)
 
@@ -75,7 +75,7 @@ def update_activity(
 @router.delete("/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_activity(activity_id: int, _: SuperAdmin, db: DbSession) -> None:
     if not activity_service.delete_activity(db, activity_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活動不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活动不存在")
 
 
 @router.post("/{activity_id}/checkin-code", response_model=CheckinCodeOut)
@@ -84,7 +84,7 @@ def issue_checkin_code(
 ) -> CheckinCodeOut:
     a = db.get(activity_service.Activity, activity_id)  # type: ignore[attr-defined]
     if a is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活動不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活动不存在")
     token, expires_at = issue_checkin_token(activity_id)
     return CheckinCodeOut(activity_id=activity_id, token=token, expires_at=expires_at)
 
@@ -93,6 +93,6 @@ def issue_checkin_code(
 def list_signups(activity_id: int, _: SuperAdmin, db: DbSession) -> SignupList:
     a = db.get(activity_service.Activity, activity_id)  # type: ignore[attr-defined]
     if a is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活動不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="活动不存在")
     roster = activity_service.admin_roster(db, activity_id)
     return SignupList(**roster)

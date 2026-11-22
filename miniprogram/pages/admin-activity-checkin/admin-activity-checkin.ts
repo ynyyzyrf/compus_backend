@@ -31,7 +31,7 @@ Page({
       const r = await adminIssueCheckinCode(this.data.activityId)
       this.setData({ token: r.token, expiresAtText: fmt(r.expires_at) })
     } catch {
-      wx.showToast({ title: '生成失敗', icon: 'none' })
+      wx.showToast({ title: '生成失败', icon: 'none' })
     } finally {
       this.setData({ loading: false })
     }
@@ -40,6 +40,6 @@ Page({
   copyToken() {
     if (!this.data.token) return
     wx.setClipboardData({ data: this.data.token })
-    wx.showToast({ title: '已複製 token', icon: 'success' })
+    wx.showToast({ title: '已复制 token', icon: 'success' })
   },
 })

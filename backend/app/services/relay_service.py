@@ -149,19 +149,19 @@ def _validate_response(fields: list[RelayField], response: dict[str, Any]) -> No
     for field in fields:
         value = response.get(field.label)
         if field.required and (value is None or value == "" or value == []):
-            raise RelayValidationError(f"{field.label} 為必填")
+            raise RelayValidationError(f"{field.label} 为必填")
         if value is None or value == "":
             continue
         options = field.options_json or []
         if field.field_type == "number" and not isinstance(value, (int, float)):
-            raise RelayValidationError(f"{field.label} 必須是數字")
+            raise RelayValidationError(f"{field.label} 必须是数字")
         if field.field_type == "radio" and options and value not in options:
-            raise RelayValidationError(f"{field.label} 選項無效")
+            raise RelayValidationError(f"{field.label} 选项无效")
         if field.field_type == "checkbox":
             if not isinstance(value, list):
-                raise RelayValidationError(f"{field.label} 必須是多選列表")
+                raise RelayValidationError(f"{field.label} 必须是多选列表")
             if options and any(item not in options for item in value):
-                raise RelayValidationError(f"{field.label} 選項無效")
+                raise RelayValidationError(f"{field.label} 选项无效")
 
     unknown = set(response) - set(by_label)
     if unknown:
@@ -171,9 +171,9 @@ def _validate_response(fields: list[RelayField], response: dict[str, Any]) -> No
 def submit_response(db: Session, relay_id: int, user: User, response: dict[str, Any]) -> RelayResponse:
     relay = db.get(Relay, relay_id)
     if relay is None:
-        raise RelayError("接龍不存在")
+        raise RelayError("接龙不存在")
     if _is_closed(relay):
-        raise RelayClosed("接龍已截止")
+        raise RelayClosed("接龙已截止")
     exists = db.execute(
         select(RelayResponse.id).where(
             RelayResponse.relay_id == relay_id,
@@ -181,7 +181,7 @@ def submit_response(db: Session, relay_id: int, user: User, response: dict[str, 
         )
     ).first()
     if exists is not None:
-        raise RelayAlreadySubmitted("已提交，無需重複")
+        raise RelayAlreadySubmitted("已提交，无需重复")
     fields = relay_fields(db, relay_id)
     _validate_response(fields, response)
     row = RelayResponse(relay_id=relay_id, user_id=user.id, response_json=response)

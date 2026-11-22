@@ -36,11 +36,11 @@ def _code2session(code: str) -> tuple[str, str | None]:
     try:
         data = httpx.get(JSCODE2SESSION_URL, params=params, timeout=8).json()
     except Exception as exc:
-        raise WeChatLoginError("微信登錄服務暫不可用") from exc
+        raise WeChatLoginError("微信登录服务暂不可用") from exc
     if data.get("errcode"):
-        raise WeChatLoginError(f"微信登錄失敗: {data.get('errmsg', data['errcode'])}")
+        raise WeChatLoginError(f"微信登录失败: {data.get('errmsg', data['errcode'])}")
     if not data.get("openid"):
-        raise WeChatLoginError("微信未返回用戶身份")
+        raise WeChatLoginError("微信未返回用户身份")
     return data["openid"], data.get("unionid")
 
 
@@ -53,7 +53,7 @@ def wechat_login(db: Session, code: str) -> dict:
             .limit(1)
         ).first()
         if user is None:
-            raise WeChatLoginError("開發庫缺少種子超管，請先執行 seed_dev")
+            raise WeChatLoginError("开发库缺少种子超管，请先执行 seed_dev")
         return _issue(user)
 
     openid, unionid = _code2session(code)
@@ -62,7 +62,7 @@ def wechat_login(db: Session, code: str) -> dict:
     ).first()
     if current:
         if current.status != Status.ACTIVE:
-            raise AccountUnavailableError("用戶已停用，請聯絡管理員")
+            raise AccountUnavailableError("用户已停用，请联络管理员")
         return _issue(current)
 
     user = User(
@@ -77,9 +77,9 @@ def wechat_login(db: Session, code: str) -> dict:
         db.rollback()
         user = db.scalars(select(User).where(User.openid == openid)).first()
         if user is None:
-            raise WeChatLoginError("微信身份建立失敗，請重試")
+            raise WeChatLoginError("微信身份建立失败，请重试")
         if user.status != Status.ACTIVE:
-            raise AccountUnavailableError("用戶已停用，請聯絡管理員")
+            raise AccountUnavailableError("用户已停用，请联络管理员")
         return _issue(user)
     db.refresh(user)
     return _issue(user)
@@ -87,14 +87,14 @@ def wechat_login(db: Session, code: str) -> dict:
 
 def dev_impersonate(db: Session, user_id: int) -> dict:
     if not settings.wechat_mock_login:
-        raise WeChatLoginError("dev-impersonate 僅在 WECHAT_MOCK_LOGIN=true 時可用")
+        raise WeChatLoginError("dev-impersonate 仅在 WECHAT_MOCK_LOGIN=true 时可用")
     user = db.get(User, user_id)
     if user is None or user.status != Status.ACTIVE:
-        raise WeChatLoginError("目標用戶不存在或已停用")
+        raise WeChatLoginError("目标用户不存在或已停用")
     return _issue(user)
 
 
 def list_dev_users(db: Session) -> list[User]:
     if not settings.wechat_mock_login:
-        raise WeChatLoginError("僅開發模式可用")
+        raise WeChatLoginError("仅开发模式可用")
     return list(db.scalars(select(User).order_by(User.id)))

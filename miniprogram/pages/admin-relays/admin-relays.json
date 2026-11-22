@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "接龍管理",
+  "navigationBarTitleText": "接龙管理",
   "usingComponents": {
     "t-button": "tdesign-miniprogram/button/button",
     "t-empty": "tdesign-miniprogram/empty/empty",

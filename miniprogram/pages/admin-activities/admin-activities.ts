@@ -20,7 +20,7 @@ Page({
   async fetch() {
     const user = await ensureLogin().catch(() => session.getUser())
     if (!user || user.role !== 'super_admin') {
-      wx.showToast({ title: '僅超級管理員可進入', icon: 'none' })
+      wx.showToast({ title: '仅超级管理员可进入', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 800)
       return
     }
@@ -50,14 +50,14 @@ Page({
   },
   async onDelete(e: WechatMiniprogram.BaseEvent) {
     const id = Number(e.currentTarget.dataset.id)
-    const r = await wx.showModal({ title: '確認刪除', content: '刪除後無法恢復' })
+    const r = await wx.showModal({ title: '确认删除', content: '删除后无法恢复' })
     if (!r.confirm) return
     try {
       await adminDeleteActivity(id)
-      wx.showToast({ title: '已刪除', icon: 'success' })
+      wx.showToast({ title: '已删除', icon: 'success' })
       this.fetch()
     } catch (err) {
-      wx.showToast({ title: (err as Error).message || '刪除失敗', icon: 'none' })
+      wx.showToast({ title: (err as Error).message || '删除失败', icon: 'none' })
     }
   },
 })

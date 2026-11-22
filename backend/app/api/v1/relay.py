@@ -30,7 +30,7 @@ def list_relays(
 def get_relay(relay_id: int, current_user: CurrentUser, db: DbSession) -> RelayDetail:
     payload = relay_service.get_relay_detail(db, relay_id, current_user)
     if payload is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龍不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龙不存在")
     return RelayDetail(**payload)
 
 

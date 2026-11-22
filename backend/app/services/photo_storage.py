@@ -27,13 +27,13 @@ class LocalStorageDriver(StorageDriver):
     def normalize_image_url(self, file_url: str) -> StoredImage:
         value = file_url.strip()
         if not value:
-            raise StorageError("圖片地址不能為空")
+            raise StorageError("图片地址不能为空")
         if len(value) > 512:
-            raise StorageError("圖片地址過長")
+            raise StorageError("图片地址过长")
         return StoredImage(file_url=value)
 
 
 def get_storage_driver() -> StorageDriver:
     if settings.storage_driver != "local":
-        raise StorageError(f"不支持的圖片存儲驅動: {settings.storage_driver}")
+        raise StorageError(f"不支持的图片存储驱动: {settings.storage_driver}")
     return LocalStorageDriver()

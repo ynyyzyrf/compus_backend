@@ -5,7 +5,7 @@
       <view class="seal">商</view>
       <view class="logo-text">
         <view>{{t.t('login.org_name', lang)}}</view>
-        <text>Alumni Chamber of Commerce</text>
+        <text>{{t.t('home.brand_sub', lang)}}</text>
       </view>
     </view>
     <view class="title">{{t.t('login.app_name', lang)}}</view>

@@ -17,6 +17,7 @@
       </view>
     </view>
 
+    <button wx:if="{{canAdd}}" class="add-alumni" bindtap="addFriend">添加好友</button>
     <view class="quick-contact card">
       <view
         class="contact-box {{member.wechat_id ? '' : 'disabled'}}"
@@ -31,7 +32,7 @@
         data-value="{{member.phone}}"
         bindtap="copyText"
       >
-        <view class="contact-icon blue">電</view>
+        <view class="contact-icon blue">电</view>
         <text>{{t.t('member.phone', lang)}}</text>
       </view>
       <view
@@ -39,7 +40,7 @@
         data-value="{{member.email}}"
         bindtap="copyText"
       >
-        <view class="contact-icon mail">郵</view>
+        <view class="contact-icon mail">邮</view>
         <text>{{t.t('member.email', lang)}}</text>
       </view>
     </view>

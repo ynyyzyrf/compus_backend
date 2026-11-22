@@ -1,0 +1,12 @@
+.tabs { display: flex; gap: 40rpx; margin-bottom: 24rpx; color: var(--muted); }
+.tabs view { padding: 14rpx 0; }
+.tabs .selected { color: var(--brand); border-bottom: 4rpx solid var(--brand); font-weight: 700; }
+.connection { margin-bottom: 18rpx; }
+.headline { display: flex; align-items: center; justify-content: space-between; gap: 20rpx; }
+.name { font-size: 32rpx; font-weight: 700; }
+.message { margin: 18rpx 0; padding: 18rpx; border-radius: 12rpx; background: #f6f7f9; overflow-wrap: anywhere; }
+.actions { display: flex; justify-content: flex-end; gap: 14rpx; }
+.connection button { margin: 16rpx 0 0; font-size: 24rpx; }
+.primary { background: var(--brand); color: #fff; }
+.link { color: var(--brand); padding: 8rpx; }
+.wechat { margin-top: 12rpx; }

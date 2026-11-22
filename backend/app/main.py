@@ -5,7 +5,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 
 app = FastAPI(
-    title="校友組織小程序 API",
+    title="校友组织小程序 API",
     version="1.0.0",
     docs_url="/docs",
     openapi_url="/openapi.json",

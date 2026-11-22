@@ -1,17 +1,20 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.core.deps import CurrentUser, DbSession
+from app.models.user import User
 from app.schemas.activity import ActivityListItem
 from app.schemas.profile import (
     AffiliationRequest,
+    MissingClassReport,
     MyAffiliation,
     MyProfile,
     MyProfileUpdate,
     OrganizationOption,
 )
 from app.services import activity_service, affiliation_service, profile_service
+from app.services.directory_permission import get_primary_class_id
 from app.services.org_tree import load_org_tree
 
 router = APIRouter(prefix="/me", tags=["me"])
@@ -43,7 +46,23 @@ def submit_affiliation(payload: AffiliationRequest, current_user: CurrentUser, d
 @router.get("/affiliation/options", response_model=list[OrganizationOption])
 def list_affiliation_options(_: CurrentUser, db: DbSession) -> list[OrganizationOption]:
     tree = load_org_tree(db)
-    return [OrganizationOption.model_validate(node) for node in tree.nodes.values()]
+    class_ids = tree.classes_under(set(tree.nodes))
+    visible_ids = {ancestor for cid in class_ids for ancestor in tree.ancestors(cid)}
+    return [OrganizationOption.model_validate(node) for node in tree.nodes.values() if node.id in visible_ids]
+
+
+@router.post("/affiliation/missing-class", status_code=204)
+def report_missing_class(payload: MissingClassReport, current_user: CurrentUser, db: DbSession):
+    user = db.get(User, current_user.id, with_for_update=True, populate_existing=True)
+    if user is None:
+        raise HTTPException(404, "校友不存在")
+    if user.pending_class_id or get_primary_class_id(db, user.id) is not None:
+        raise HTTPException(409, "你已有班级归属或待审核申请")
+    note = payload.note.strip()
+    if len(note) < 2:
+        raise HTTPException(422, "请填写所记得的学校、专业或班级")
+    user.missing_class_note = note
+    db.commit()
 
 
 @router.get("/activities", response_model=list[ActivityListItem])

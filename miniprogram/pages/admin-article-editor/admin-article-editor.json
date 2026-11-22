@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "編輯文章",
+  "navigationBarTitleText": "编辑文章",
   "usingComponents": {
     "t-button": "tdesign-miniprogram/button/button",
     "t-input": "tdesign-miniprogram/input/input",

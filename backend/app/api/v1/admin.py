@@ -43,7 +43,7 @@ def list_affiliation_requests(_: SuperAdmin, db: DbSession) -> list[dict]:
             "name": user.name,
             "verified_phone": user.verified_phone,
             "class_id": user.pending_class_id,
-            "org_path": affiliation_service.full_path(tree, user.pending_class_id) if user.pending_class_id in tree.nodes else "班級已失效",
+            "org_path": affiliation_service.full_path(tree, user.pending_class_id) if user.pending_class_id in tree.nodes else "班级已失效",
             "requested_at": user.affiliation_requested_at,
         }
         for user in users
@@ -60,6 +60,21 @@ def approve_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> d
 def reject_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> dict:
     affiliation_service.review_affiliation(db, user_id, approve=False)
     return {"ok": True}
+
+
+@router.get("/missing-classes")
+def list_missing_classes(_: SuperAdmin, db: DbSession) -> list[dict]:
+    users = db.scalars(select(User).where(User.missing_class_note.is_not(None)).order_by(User.id))
+    return [{"user_id": user.id, "name": user.name, "note": user.missing_class_note} for user in users]
+
+
+@router.post("/missing-classes/{user_id}/resolve", status_code=204)
+def resolve_missing_class(user_id: int, _: SuperAdmin, db: DbSession):
+    user = db.get(User, user_id, with_for_update=True)
+    if user is None:
+        raise HTTPException(404, "校友不存在")
+    user.missing_class_note = None
+    db.commit()
 
 
 def _member_view(db, user, class_id: int | None, org_path: str) -> MemberAdminOut:
@@ -129,7 +144,7 @@ def update_member(
 ) -> MemberAdminOut:
     user = admin_service.update_member(db, user_id, payload)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="成員不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="成员不存在")
     class_id = get_primary_class_id(db, user_id)
     tree = load_org_tree(db)
     return _member_view(
@@ -146,10 +161,10 @@ def set_member_status(
 ) -> MemberAdminOut:
     new_status = payload.get("status")
     if new_status not in {"active", "disabled"}:
-        raise HTTPException(status_code=400, detail="status 必須為 active 或 disabled")
+        raise HTTPException(status_code=400, detail="status 必须为 active 或 disabled")
     user = admin_service.set_member_status(db, user_id, new_status)
     if user is None:
-        raise HTTPException(status_code=404, detail="成員不存在")
+        raise HTTPException(status_code=404, detail="成员不存在")
     class_id = get_primary_class_id(db, user_id)
     tree = load_org_tree(db)
     return _member_view(
@@ -183,6 +198,7 @@ def list_organizations(_: SuperAdmin, db: DbSession) -> list[OrgNodeAdminOut]:
             parent_id=o.parent_id,
             sort_order=o.sort_order,
             status=o.status,
+            entry_year=o.entry_year,
             member_count=member_counts.get(o.id, 0),
         )
         for o in rows
@@ -204,6 +220,7 @@ def create_organization(
         parent_id=o.parent_id,
         sort_order=o.sort_order,
         status=o.status,
+        entry_year=o.entry_year,
         member_count=0,
     )
 
@@ -217,7 +234,7 @@ def update_organization(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     if o is None:
-        raise HTTPException(status_code=404, detail="節點不存在")
+        raise HTTPException(status_code=404, detail="节点不存在")
     return OrgNodeAdminOut(
         id=o.id,
         name=o.name,
@@ -225,14 +242,19 @@ def update_organization(
         parent_id=o.parent_id,
         sort_order=o.sort_order,
         status=o.status,
+        entry_year=o.entry_year,
         member_count=0,
     )
 
 
 @router.delete("/organizations/{org_id}", status_code=204)
 def delete_organization(org_id: int, _: SuperAdmin, db: DbSession) -> None:
-    if not admin_service.delete_org(db, org_id):
-        raise HTTPException(status_code=404, detail="節點不存在")
+    try:
+        deleted = admin_service.delete_org(db, org_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    if not deleted:
+        raise HTTPException(status_code=404, detail="节点不存在")
 
 
 # ===== directory permissions =====

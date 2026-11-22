@@ -50,6 +50,7 @@
 .indent-1 { padding-left: 32rpx; }
 .indent-2 { padding-left: 64rpx; }
 .indent-3 { padding-left: 96rpx; }
+.indent-4 { padding-left: 112rpx; }
 .row {
   display: flex;
   align-items: center;

@@ -1,1 +1,6 @@
-{"navigationBarTitleText":"選擇所屬組織"}
+{
+  "navigationBarTitleText": "找回组织",
+  "usingComponents": {
+    "academic-filters": "/components/academic-filters/index"
+  }
+}

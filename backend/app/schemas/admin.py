@@ -102,13 +102,15 @@ class OrgNodeAdminOut(BaseModel):
     sort_order: int
     status: str
     member_count: int = 0
+    entry_year: int | None = None
 
 
 class OrgNodeCreate(BaseModel):
     name: str = Field(min_length=1, max_length=128)
-    type: str = Field(pattern="^(school|college|department|class)$")
+    type: str = Field(pattern="^(school|college|department|major|class)$")
     parent_id: int | None = None
     sort_order: int = 0
+    entry_year: int | None = Field(default=None, ge=1900, le=2100)
 
 
 class OrgNodeUpdate(BaseModel):
@@ -116,6 +118,7 @@ class OrgNodeUpdate(BaseModel):
     parent_id: int | None = None
     sort_order: int | None = None
     status: str | None = Field(default=None, pattern="^(active|disabled)$")
+    entry_year: int | None = Field(default=None, ge=1900, le=2100)
 
 
 # ===== directory permissions =====

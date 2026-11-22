@@ -132,3 +132,4 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
+.add-alumni { margin: 18rpx 0; background: var(--brand); color: #fff; font-size: 28rpx; }

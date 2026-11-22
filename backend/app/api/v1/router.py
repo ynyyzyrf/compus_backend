@@ -10,6 +10,7 @@ from app.api.v1 import (
     admin_relays,
     articles,
     auth,
+    connections,
     directory,
     photos,
     profile,
@@ -19,6 +20,7 @@ from app.api.v1 import (
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth.router)
 api_router.include_router(directory.router)
+api_router.include_router(connections.router)
 api_router.include_router(articles.router)
 api_router.include_router(admin_articles.router)
 api_router.include_router(profile.router)

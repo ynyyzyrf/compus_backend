@@ -7,6 +7,7 @@ import {
 } from '../../services/auth'
 import { getMyProfile } from '../../services/profile'
 import { getMyAffiliation } from '../../services/affiliation'
+import { connectionSummary, updateDiscoverability } from '../../services/connections'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
 import type { DevUser, UserProfile } from '../../types/api'
@@ -23,9 +24,11 @@ Page({
     isAdmin: false,
     isDev: IS_DEV,
     devUsers: [] as DevUser[],
-    langLabel: '',
     heroSub: '',
     affiliationText: '',
+    connectionsEligible: false,
+    discoverable: false,
+    unreadRequests: 0,
   },
 
   onShow() {
@@ -36,11 +39,6 @@ Page({
   },
 
   async refresh() {
-    const currentLocale = locale.get()
-    this.setData({
-      lang: currentLocale,
-      langLabel: currentLocale === 'zh-TW' ? t('mine.lang.zh-TW') : t('mine.lang.zh-CN'),
-    })
     wx.setNavigationBarTitle({ title: t('tab.mine') })
     const user = await ensureLogin().catch(() => null)
     if (!user) {
@@ -54,8 +52,10 @@ Page({
       name: latestUser.name === DEFAULT_PROFILE_NAME && latestUser.name_en ? latestUser.name_en : latestUser.name,
     }
     if (!isGuest) session.setUser(displayUser)
-    const affiliation = !isGuest && displayUser.role !== 'super_admin'
-      ? await getMyAffiliation().catch(() => null) : null
+    const [affiliation, connections] = await Promise.all([
+      !isGuest && displayUser.role !== 'super_admin' ? getMyAffiliation().catch(() => null) : null,
+      !isGuest ? connectionSummary().catch(() => null) : null,
+    ])
     this.setData({
       user: displayUser,
       initial: displayUser.name.charAt(0) || '·',
@@ -64,6 +64,9 @@ Page({
       isAdmin: displayUser.role === 'super_admin',
       heroSub: isGuest ? t('mine.member_center_sub') : '',
       affiliationText: affiliation?.pending_class_id ? affiliation.pending_org_path : '',
+      connectionsEligible: connections?.eligible ?? false,
+      discoverable: connections?.discoverable ?? false,
+      unreadRequests: connections?.unread ?? 0,
     })
     if (IS_DEV) this.loadDevUsers()
   },
@@ -96,26 +99,6 @@ Page({
     }
   },
 
-  onSwitchLang() {
-    const next = locale.get() === 'zh-TW' ? 'zh-CN' : 'zh-TW'
-    locale.set(next)
-    const app = getApp<IAppOption>()
-    if (app) app.globalData.locale = next
-    this.setData({
-      lang: next,
-      langLabel: next === 'zh-TW' ? t('mine.lang.zh-TW') : t('mine.lang.zh-CN'),
-    })
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar()?.setData({ value: 'mine' })
-      const tabBar = this.getTabBar() as WechatMiniprogram.Component.TrivialInstance & {
-        refreshLocale?: () => void
-      }
-      tabBar.refreshLocale?.()
-    }
-    wx.showToast({ title: t('mine.lang.switched'), icon: 'success' })
-    this.refresh()
-  },
-
   goAdminDashboard() {
     wx.navigateTo({ url: '/pages/admin-dashboard/admin-dashboard' })
   },
@@ -130,6 +113,26 @@ Page({
   },
   goRelays() {
     wx.navigateTo({ url: '/pages/relay-list/relay-list' })
+  },
+  goConnections() { wx.navigateTo({ url: '/pages/connections/connections' }) },
+  setDiscoverability() {
+    const enabled = !this.data.discoverable
+    wx.showModal({
+      title: enabled ? '允许本校校友找到我' : '关闭跨院系查找',
+      content: enabled
+        ? '本校已审核的校友可以搜索到你的姓名、头像和班级，并发送好友申请。'
+        : '关闭后，通讯录范围外的校友无法继续通过搜索找到你。',
+      confirmText: enabled ? '开启' : '关闭',
+      success: async ({ confirm }) => {
+        if (!confirm) return
+        try {
+          const result = await updateDiscoverability(enabled)
+          this.setData({ discoverable: result.discoverable })
+        } catch (error) {
+          wx.showModal({ title: '设置失败', content: (error as Error).message || '请稍后重试', showCancel: false })
+        }
+      },
+    })
   },
   goDirectory() {
     wx.switchTab({ url: '/pages/directory/directory' })
@@ -149,13 +152,13 @@ Page({
     if (this.data.needsProfileName) this.goProfileEdit()
   },
   comingSoon() {
-    wx.showToast({ title: '開發中', icon: 'none' })
+    wx.showToast({ title: '开发中', icon: 'none' })
   },
   resetOnboarding() {
     if (!IS_DEV) return
     wx.showModal({
       title: t('mine.dev_reset_onboard'),
-      content: '清空 onboarded 標記，下次進首頁會重新跳到完善名片。',
+      content: '清空 onboarded 标记，下次进首页会重新跳到完善名片。',
       success: ({ confirm }) => {
         if (confirm) {
           session.resetOnboarded()

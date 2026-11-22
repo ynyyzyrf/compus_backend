@@ -46,10 +46,10 @@ Page({
     const id = Number(opts.id)
     if (Number.isFinite(id) && id > 0) {
       this.setData({ isEdit: true, activityId: id })
-      wx.setNavigationBarTitle({ title: '編輯活動' })
+      wx.setNavigationBarTitle({ title: '编辑活动' })
       this.load(id)
     } else {
-      wx.setNavigationBarTitle({ title: '新建活動' })
+      wx.setNavigationBarTitle({ title: '新建活动' })
     }
   },
 
@@ -72,7 +72,7 @@ Page({
         },
       })
     } catch (e) {
-      wx.showToast({ title: '加載失敗', icon: 'none' })
+      wx.showToast({ title: '加载失败', icon: 'none' })
     }
   },
 
@@ -104,17 +104,17 @@ Page({
   async onSave() {
     const f = this.data.form
     if (!f.title.trim() || !f.location.trim()) {
-      wx.showToast({ title: '請填寫標題與地點', icon: 'none' })
+      wx.showToast({ title: '请填写标题与地点', icon: 'none' })
       return
     }
     if (!this._toIso(f.start_at) || !this._toIso(f.end_at) ||
         !this._toIso(f.signup_start_at) || !this._toIso(f.signup_end_at)) {
-      wx.showToast({ title: '請填寫完整時間', icon: 'none' })
+      wx.showToast({ title: '请填写完整时间', icon: 'none' })
       return
     }
     const capacityNum = f.capacity.trim() ? Number(f.capacity) : null
     if (capacityNum !== null && Number.isNaN(capacityNum)) {
-      wx.showToast({ title: '名額需為數字', icon: 'none' })
+      wx.showToast({ title: '名额需为数字', icon: 'none' })
       return
     }
     this.setData({ saving: true })
@@ -152,7 +152,7 @@ Page({
       wx.showToast({ title: '已保存', icon: 'success' })
       setTimeout(() => wx.navigateBack(), 600)
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '保存失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '保存失败', icon: 'none' })
     } finally {
       this.setData({ saving: false })
     }

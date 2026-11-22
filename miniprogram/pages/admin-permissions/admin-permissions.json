@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "通訊錄權限",
+  "navigationBarTitleText": "通讯录权限",
   "usingComponents": {
     "t-tag": "tdesign-miniprogram/tag/tag",
     "t-button": "tdesign-miniprogram/button/button",

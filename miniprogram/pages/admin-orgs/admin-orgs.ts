@@ -1,153 +1,120 @@
-import {
-  createOrganization,
-  deleteOrganization,
-  listOrganizations,
-  OrgNodePayload,
-  updateOrganization,
-} from '../../services/admin'
-import type { OrgNodeAdminOut } from '../../types/api'
+import { createOrganization, deleteOrganization, listOrganizations, updateOrganization } from '../../services/admin'
+import type { OrgNodeAdminOut, OrgType } from '../../types/api'
 
-const TYPE_LABEL: Record<string, string> = {
-  school: '學校',
-  college: '分院',
-  department: '系',
-  class: '班',
+const LABELS: Record<OrgType, string> = {
+  school: '学校', college: '学院', department: '系别', major: '专业', class: '班级',
 }
-
-interface Decorated extends OrgNodeAdminOut {
-  typeLabel: string
-  path: string
+const CHILD: Partial<Record<OrgType, OrgType>> = {
+  school: 'college', college: 'department', department: 'major', major: 'class',
 }
+type Node = OrgNodeAdminOut & { typeLabel: string; depth: number }
+type Form = { id: number; name: string; type: OrgType; parent_id: number | null; year: string }
 
-function decorate(nodes: OrgNodeAdminOut[]): Decorated[] {
-  const byId = new Map(nodes.map((n) => [n.id, n]))
-  return nodes.map((n) => {
-    const path: string[] = []
-    let cur = byId.get(n.parent_id ?? -1)
-    while (cur) {
-      path.unshift(cur.name)
-      cur = cur.parent_id != null ? byId.get(cur.parent_id) : undefined
-    }
-    return { ...n, typeLabel: TYPE_LABEL[n.type] || n.type, path: path.join(' · ') }
-  })
+function orderTree(nodes: OrgNodeAdminOut[]): Node[] {
+  const result: Node[] = []
+  const visited = new Set<number>()
+  function visit(node: OrgNodeAdminOut, depth: number) {
+    if (visited.has(node.id)) return
+    visited.add(node.id)
+    result.push({ ...node, typeLabel: LABELS[node.type], depth: Math.min(4, depth) })
+    nodes.filter(child => child.parent_id === node.id).forEach(child => visit(child, depth + 1))
+  }
+  nodes.filter(node => node.parent_id === null).forEach(node => visit(node, 0))
+  nodes.forEach(node => visit(node, 0))
+  return result
 }
 
 Page({
   data: {
-    items: [] as Decorated[],
+    items: [] as Node[],
     loading: true,
+    saving: false,
     sheet: false,
     sheetMode: 'create' as 'create' | 'edit',
-    form: {
-      id: 0,
-      name: '',
-      type: 'department' as OrgNodePayload['type'],
-      parent_id: null as number | null,
-    },
-    parents: [] as Decorated[], // schools + colleges + departments
+    form: { id: 0, name: '', type: 'school', parent_id: null, year: '' } as Form,
+    parentName: '',
+    typeLabel: '',
+    parentChoices: [] as Node[],
   },
-
   onShow() { this.fetch() },
-
   async fetch() {
     this.setData({ loading: true })
-    try {
-      const list = await listOrganizations()
-      const items = decorate(list)
-      const parents = items.filter((n) => n.type !== 'class')
-      this.setData({ items, parents })
-    } finally {
-      this.setData({ loading: false })
-    }
+    try { this.setData({ items: orderTree(await listOrganizations()) }) }
+    catch (error) { wx.showToast({ title: (error as Error).message || '载入失败', icon: 'none' }) }
+    finally { this.setData({ loading: false }) }
   },
-
-  onAddRoot() {
-    this.setData({
-      sheet: true,
-      sheetMode: 'create',
-      form: { id: 0, name: '', type: 'department', parent_id: null },
-    })
-  },
-
+  onAddRoot() { this.openCreate('school', null) },
   onAddChild(e: WechatMiniprogram.BaseEvent) {
-    const parentId = Number(e.currentTarget.dataset.id)
-    const parent = this.data.items.find((n) => n.id === parentId)
+    const parent = this.data.items.find(node => node.id === Number(e.currentTarget.dataset.id))
     if (!parent) return
-    const childType: OrgNodePayload['type'] =
-      parent.type === 'school' ? 'college' :
-      parent.type === 'college' ? 'department' :
-      'class'
+    const type = e.currentTarget.dataset.type === 'class' ? 'class' : CHILD[parent.type]
+    if (type) this.openCreate(type, parent)
+  },
+  openCreate(type: OrgType, parent: Node | null) {
     this.setData({
-      sheet: true,
-      sheetMode: 'create',
-      form: { id: 0, name: '', type: childType, parent_id: parentId },
+      sheet: true, sheetMode: 'create', typeLabel: LABELS[type], parentName: parent?.name || '',
+      form: { id: 0, name: '', type, parent_id: parent?.id ?? null, year: '' }, parentChoices: [],
     })
   },
-
-  onRename(e: WechatMiniprogram.BaseEvent) {
-    const id = Number(e.currentTarget.dataset.id)
-    const node = this.data.items.find((n) => n.id === id)
+  onEdit(e: WechatMiniprogram.BaseEvent) {
+    const node = this.data.items.find(row => row.id === Number(e.currentTarget.dataset.id))
     if (!node) return
+    const parent = this.data.items.find(row => row.id === node.parent_id)
+    const departmentId = parent?.type === 'major' ? parent.parent_id : parent?.id
+    const parentChoices = node.type === 'class'
+      ? this.data.items.filter(row => row.status === 'active' &&
+        (row.id === departmentId || (row.type === 'major' && row.parent_id === departmentId)))
+      : []
     this.setData({
-      sheet: true,
-      sheetMode: 'edit',
-      form: { id, name: node.name, type: node.type, parent_id: node.parent_id },
+      sheet: true, sheetMode: 'edit', typeLabel: node.typeLabel, parentName: parent?.name || '', parentChoices,
+      form: { id: node.id, name: node.name, type: node.type, parent_id: node.parent_id, year: String(node.entry_year ?? '') },
     })
   },
-
+  onParent(e: WechatMiniprogram.PickerChange) {
+    const parent = this.data.parentChoices[Number(e.detail.value)]
+    if (parent) this.setData({ 'form.parent_id': parent.id, parentName: parent.name })
+  },
+  onNameChange(e: WechatMiniprogram.Input) { this.setData({ 'form.name': e.detail.value }) },
+  onYearChange(e: WechatMiniprogram.Input) { this.setData({ 'form.year': e.detail.value }) },
+  closeSheet() { if (!this.data.saving) this.setData({ sheet: false }) },
+  stopTap() {},
+  async onSave() {
+    if (this.data.saving) return
+    const f = this.data.form
+    if (!f.name.trim()) { wx.showToast({ title: '请填写名称', icon: 'none' }); return }
+    const year = Number(f.year)
+    if (f.type === 'class' && (f.year || this.data.sheetMode === 'create') &&
+        (!/^\d{4}$/.test(f.year) || year < 1900 || year > 2100)) {
+      wx.showToast({ title: '请输入有效的四位入学年份', icon: 'none' })
+      return
+    }
+    const data = { name: f.name.trim(), parent_id: f.parent_id, entry_year: f.type === 'class' && f.year ? year : null }
+    this.setData({ saving: true })
+    try {
+      if (this.data.sheetMode === 'create') await createOrganization({ ...data, type: f.type })
+      else await updateOrganization(f.id, data)
+      this.setData({ sheet: false })
+      wx.showToast({ title: '已保存', icon: 'success' })
+      await this.fetch()
+    } catch (error) {
+      wx.showModal({ title: '保存失败', content: (error as Error).message || '请稍后重试', showCancel: false })
+    } finally { this.setData({ saving: false }) }
+  },
   onDelete(e: WechatMiniprogram.BaseEvent) {
-    const id = Number(e.currentTarget.dataset.id)
-    const node = this.data.items.find((n) => n.id === id)
+    const node = this.data.items.find(row => row.id === Number(e.currentTarget.dataset.id))
     if (!node) return
     wx.showModal({
-      title: '刪除 / 停用',
-      content: node.member_count > 0 ? '有成員將轉為停用' : '確認刪除該節點',
+      title: '删除或停用',
+      content: node.member_count > 0 ? '该班级仍有成员，操作将停用班级。' : `确定删除「${node.name}」吗？`,
       success: async ({ confirm }) => {
         if (!confirm) return
         try {
-          await deleteOrganization(id)
-          wx.showToast({ title: '已處理', icon: 'success' })
-          this.fetch()
-        } catch (err) {
-          wx.showToast({ title: (err as Error).message || '失敗', icon: 'none' })
+          await deleteOrganization(node.id)
+          await this.fetch()
+        } catch (error) {
+          wx.showModal({ title: '处理失败', content: (error as Error).message || '请稍后重试', showCancel: false })
         }
       },
     })
-  },
-
-  closeSheet() { this.setData({ sheet: false }) },
-  onNameChange(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
-    this.setData({ 'form.name': e.detail.value })
-  },
-  onTypeChange(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
-    this.setData({ 'form.type': e.detail.value })
-  },
-  onParentChange(e: WechatMiniprogram.CustomEvent<{ value: number[] }>) {
-    const v = e.detail.value[0] ?? null
-    this.setData({ 'form.parent_id': v })
-  },
-
-  async onSave() {
-    const f = this.data.form
-    if (!f.name.trim()) {
-      wx.showToast({ title: '請填寫名稱', icon: 'none' })
-      return
-    }
-    try {
-      if (this.data.sheetMode === 'create') {
-        await createOrganization({
-          name: f.name.trim(),
-          type: f.type,
-          parent_id: f.parent_id,
-        })
-      } else {
-        await updateOrganization(f.id, { name: f.name.trim() })
-      }
-      wx.showToast({ title: '已保存', icon: 'success' })
-      this.setData({ sheet: false })
-      this.fetch()
-    } catch (err) {
-      wx.showToast({ title: (err as Error).message || '失敗', icon: 'none' })
-    }
   },
 })

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "簽到碼",
+  "navigationBarTitleText": "签到码",
   "usingComponents": {
     "t-button": "tdesign-miniprogram/button/button"
   }

@@ -32,7 +32,7 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
   const { url, method = 'GET', data, silent = false, _retry = false } = options
   const token = session.getToken()
 
-  if (!silent) wx.showLoading({ title: '加載中', mask: true })
+  if (!silent) wx.showLoading({ title: '加载中', mask: true })
 
   return new Promise<T>((resolve, reject) => {
     wx.request({
@@ -66,13 +66,13 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
         const detail = typeof errorDetail === 'string'
           ? errorDetail
           : Array.isArray(errorDetail)
-            ? errorDetail.map((item: { msg?: string }) => item.msg || '資料格式有誤').join('；')
-            : `請求失敗（${status}）`
+            ? errorDetail.map((item: { msg?: string }) => item.msg || '资料格式有误').join('；')
+            : `请求失败（${status}）`
         if (!silent) wx.showToast({ title: detail, icon: 'none' })
         reject(new ApiError(detail, status))
       },
       fail: (err) => {
-        const msg = '網絡異常，請檢查後端是否啟動'
+        const msg = '网络异常，请检查后端是否启动'
         if (!silent) wx.showToast({ title: msg, icon: 'none' })
         reject(new ApiError(err.errMsg || msg, 0))
       },

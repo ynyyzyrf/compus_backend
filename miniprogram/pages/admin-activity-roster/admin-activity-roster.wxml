@@ -1,23 +1,23 @@
 <view class="page-pad">
   <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
-  <t-empty wx:elif="{{!roster}}" description="無數據" />
+  <t-empty wx:elif="{{!roster}}" description="无数据" />
 
   <block wx:elif="{{roster}}">
     <view class="card stats">
-      <view class="stat"><text class="big">{{roster.signup_count}}</text><text class="muted">報名</text></view>
-      <view class="stat"><text class="big">{{roster.checkin_count}}</text><text class="muted">簽到</text></view>
-      <view class="stat"><text class="big">{{roster.checkin_rate * 100}}%</text><text class="muted">簽到率</text></view>
+      <view class="stat"><text class="big">{{roster.signup_count}}</text><text class="muted">报名</text></view>
+      <view class="stat"><text class="big">{{roster.checkin_count}}</text><text class="muted">签到</text></view>
+      <view class="stat"><text class="big">{{roster.checkin_rate * 100}}%</text><text class="muted">签到率</text></view>
     </view>
 
     <view wx:if="{{roster.by_college && roster.by_college}}" class="card">
-      <view class="title">按分院統計</view>
+      <view class="title">按分院统计</view>
       <view class="college-row" wx:for="{{roster.by_college}}" wx:key="*this" wx:for-item="cnt" wx:for-index="college">
         <text class="college-name">{{college}}</text>
         <text class="muted">{{cnt}} 人</text>
       </view>
     </view>
 
-    <t-empty wx:if="{{roster.items.length === 0}}" description="尚無報名" />
+    <t-empty wx:if="{{roster.items.length === 0}}" description="尚无报名" />
     <view wx:else class="list">
       <view class="row" wx:for="{{roster.items}}" wx:key="id">
         <view class="row-main">
@@ -30,7 +30,7 @@
             theme="success"
             variant="light"
             size="small"
-          >✓ 已簽到</t-tag>
+          >✓ 已签到</t-tag>
           <t-tag
             wx:elif="{{item.status === 'cancelled'}}"
             theme="default"

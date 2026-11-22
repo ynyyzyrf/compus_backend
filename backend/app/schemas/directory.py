@@ -12,6 +12,7 @@ class OrgNodeOut(BaseModel):
     parent_id: int | None = None
     sort_order: int = 0
     member_count: int = 0
+    entry_year: int | None = None
 
 
 class DirectoryTreeOut(BaseModel):
@@ -29,10 +30,11 @@ class MemberBrief(BaseModel):
     avatar_url: str | None = None
     class_id: int | None = None
     org_path: str = ""
+    can_view_profile: bool = True
 
 
 class MemberDetail(BaseModel):
-    """Full member card (PRD §23.1 + 商會業務名片字段)."""
+    """Full member card (PRD §23.1 + 商会业务名片字段)."""
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -1,5 +1,6 @@
 import { ensureLogin, goLogin } from '../../services/auth'
 import { getMyAffiliation } from '../../services/affiliation'
+import { connectionSummary } from '../../services/connections'
 import { listActivities } from '../../services/activities'
 import { listArticles } from '../../services/articles'
 import { listRelays } from '../../services/relays'
@@ -60,6 +61,8 @@ Page({
   data: {
     lang: locale.get(),
     name: '',
+    canFindClass: false,
+    showDiscoveryInvite: false,
     latestArticles: [] as HomeArticle[],
     latestActivities: [] as HomeActivity[],
     latestRelay: null as HomeRelay | null,
@@ -77,21 +80,23 @@ Page({
     if (!session.isGuest() && user.role !== 'super_admin') {
       try {
         const affiliation = await getMyAffiliation()
-        if (!affiliation.class_id && !affiliation.pending_class_id) {
-          wx.reLaunch({ url: '/pages/org-select/org-select' })
-          return
-        }
+        this.setData({ canFindClass: !affiliation.class_id && !affiliation.pending_class_id })
+        const invite = affiliation.class_id && !wx.getStorageSync(`campus_discovery_invite_${user.id}`)
+          ? await connectionSummary().catch(() => null) : null
+        this.setData({ showDiscoveryInvite: Boolean(invite?.eligible && !invite.discoverable) })
       } catch (error) {
-        wx.showToast({ title: (error as Error).message || '組織資料載入失敗', icon: 'none' })
+        wx.showToast({ title: (error as Error).message || '组织资料载入失败', icon: 'none' })
         return
       }
+    } else {
+      this.setData({ canFindClass: false, showDiscoveryInvite: false })
     }
     this.setData({ lang: locale.get(), name: user?.name || '校友' })
     this.fetchHomeContent()
 
     // 首次進入：跳轉到個人名片引導
     const app = getApp<IAppOption>()
-    if (app.globalData.pendingOnboarding) {
+    if (app.globalData.pendingOnboarding && !this.data.canFindClass) {
       app.globalData.pendingOnboarding = false
       wx.navigateTo({ url: '/pages/profile-setup/profile-setup' })
     }
@@ -99,6 +104,17 @@ Page({
 
   onReady() {
     // 登錄返回後 onShow 會刷新稱呼。
+  },
+
+  goFindClass() { wx.navigateTo({ url: '/pages/org-select/org-select' }) },
+  dismissDiscoveryInvite() {
+    const id = session.getUser()?.id
+    if (id) wx.setStorageSync(`campus_discovery_invite_${id}`, true)
+    this.setData({ showDiscoveryInvite: false })
+  },
+  goDiscoverySettings() {
+    this.dismissDiscoveryInvite()
+    wx.switchTab({ url: '/pages/mine/mine' })
   },
 
   goTab(e: WechatMiniprogram.BaseEvent) {
@@ -116,14 +132,14 @@ Page({
   goActivityDetail(e: WechatMiniprogram.BaseEvent) {
     const id = Number(e.currentTarget.dataset.id ?? e.target.dataset.id)
     if (!Number.isFinite(id) || id <= 0) {
-      wx.showToast({ title: '活動信息異常', icon: 'none' })
+      wx.showToast({ title: '活动信息异常', icon: 'none' })
       return
     }
     wx.navigateTo({
       url: `/pages/activity-detail/activity-detail?id=${id}`,
       fail: (err) => {
         console.error('open activity detail failed', err)
-        wx.showToast({ title: err.errMsg || '無法打開活動詳情', icon: 'none' })
+        wx.showToast({ title: err.errMsg || '无法打开活动详情', icon: 'none' })
       },
     })
   },
@@ -148,6 +164,6 @@ Page({
     })
   },
   comingSoon() {
-    wx.showToast({ title: '模塊開發中', icon: 'none' })
+    wx.showToast({ title: '模块开发中', icon: 'none' })
   },
 })

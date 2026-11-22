@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "我的活動",
+  "navigationBarTitleText": "我的活动",
   "enablePullDownRefresh": true,
   "usingComponents": {
     "t-empty": "tdesign-miniprogram/empty/empty",

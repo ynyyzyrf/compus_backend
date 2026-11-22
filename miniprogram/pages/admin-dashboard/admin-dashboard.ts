@@ -29,7 +29,7 @@ Page({
       this.setData({ stats })
     } catch (e) {
       this.setData({
-        error: (e as Error).message || '統計載入失敗',
+        error: (e as Error).message || '统计载入失败',
         stats: {
           member_total: 0,
           active_member_total: 0,

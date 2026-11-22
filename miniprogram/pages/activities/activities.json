@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "活動中心",
+  "navigationBarTitleText": "活动中心",
   "enablePullDownRefresh": true,
   "usingComponents": {
     "t-tabs": "tdesign-miniprogram/tabs/tabs",

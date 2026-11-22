@@ -9,8 +9,16 @@
         <view>{{t.t('home.hero.line1', lang)}}</view>
         <view>{{t.t('home.hero.line2', lang)}}</view>
       </view>
-      <view class="desc">Hi {{name}}，{{t.t('home.hero.welcome_suffix', lang)}}</view>
+      <view class="desc">{{name}}，{{t.t('home.hero.welcome_suffix', lang)}}</view>
     </view>
+  </view>
+
+  <view wx:if="{{canFindClass}}" class="card alumni-callout" bindtap="goFindClass">
+    <text>找回组织</text><text>›</text>
+  </view>
+  <view wx:if="{{showDiscoveryInvite}}" class="card alumni-callout">
+    <view bindtap="goDiscoverySettings">允许本校校友找到我 ›</view>
+    <text class="muted" catchtap="dismissDiscoveryInvite">稍后</text>
   </view>
 
   <block wx:if="{{latestArticles.length > 0}}">

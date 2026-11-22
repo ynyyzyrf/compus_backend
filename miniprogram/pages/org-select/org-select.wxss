@@ -5,3 +5,7 @@
 .path { font-size: 30rpx; margin: 20rpx 0; line-height: 1.5; }
 .primary { margin-top: 38rpx; background: var(--brand); color: white; border-radius: 16rpx; }
 .sign-out { text-align: center; color: var(--muted); padding: 24rpx; }
+.class-option { padding: 22rpx 12rpx; border-bottom: 1rpx solid #edf0f2; }
+.class-option.active { background: #faeae7; color: var(--brand); }
+.confirmation { margin-top: 24rpx; }
+.link { color: var(--brand); text-align: center; padding: 24rpx 14rpx; }

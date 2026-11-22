@@ -1,6 +1,9 @@
 import { getMember } from '../../services/directory'
 import type { MemberDetail } from '../../types/api'
 import { locale, t } from '../../utils/i18n'
+import { requestAlumniContact } from '../../utils/connection-actions'
+import { connectionSummary } from '../../services/connections'
+import { session } from '../../utils/session'
 
 type MemberCard = MemberDetail & {
   initial: string
@@ -64,6 +67,7 @@ Page({
     lang: locale.get(),
     loading: true,
     member: null as MemberCard | null,
+    canAdd: false,
   },
 
   onLoad(opts: Record<string, string | undefined>) {
@@ -81,6 +85,8 @@ Page({
       const member = await getMember(id)
       this.setData({ lang: locale.get(), member: toCard(member) })
       wx.setNavigationBarTitle({ title: member.name || t('member.card_title') })
+      const summary = await connectionSummary().catch(() => null)
+      this.setData({ canAdd: Boolean(summary?.eligible && member.id !== session.getUser()?.id) })
     } catch (e) {
       wx.showToast({ title: (e as Error).message || t('member.load_failed'), icon: 'none' })
       this.setData({ member: null })
@@ -93,5 +99,9 @@ Page({
     const value = String(e.currentTarget.dataset.value || '')
     if (!value) return
     wx.setClipboardData({ data: value })
+  },
+  addFriend() {
+    const member = this.data.member
+    if (member && this.data.canAdd) requestAlumniContact(member.id, member.name)
   },
 })

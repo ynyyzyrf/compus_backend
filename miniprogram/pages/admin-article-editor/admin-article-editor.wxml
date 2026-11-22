@@ -1,12 +1,12 @@
 <view class="page-pad">
   <view class="card">
-    <view class="label">類型</view>
+    <view class="label">类型</view>
     <t-radio-group value="{{type}}" bind:change="onTypeChange">
       <view class="row">
         <t-radio value="announcement" label="公告" />
       </view>
       <view class="row">
-        <t-radio value="news" label="新聞" />
+        <t-radio value="news" label="新闻" />
       </view>
       <view class="row">
         <t-radio value="notice" label="通知" />
@@ -15,31 +15,31 @@
   </view>
 
   <view class="card">
-    <view class="label">狀態</view>
+    <view class="label">状态</view>
     <t-radio-group value="{{status}}" bind:change="onStatusChange">
       <view class="row">
         <t-radio value="draft" label="草稿" />
-        <t-radio value="published" label="已發布" />
+        <t-radio value="published" label="已发布" />
         <t-radio value="offline" label="已下架" />
       </view>
     </t-radio-group>
   </view>
 
   <view class="card">
-    <view class="label">標題</view>
+    <view class="label">标题</view>
     <t-input
       value="{{title}}"
-      placeholder="請輸入標題"
+      placeholder="请输入标题"
       bind:change="onTitle"
       maxlength="200"
     />
   </view>
 
   <view class="card">
-    <view class="label">摘要（選填）</view>
+    <view class="label">摘要（选填）</view>
     <t-input
       value="{{summary}}"
-      placeholder="一句話說明"
+      placeholder="一句话说明"
       bind:change="onSummary"
       maxlength="500"
     />
@@ -49,7 +49,7 @@
     <view class="label">正文</view>
     <t-textarea
       value="{{content}}"
-      placeholder="正文內容"
+      placeholder="正文内容"
       bind:change="onContent"
       maxlength="5000"
       disable-default-padding="{{true}}"
@@ -58,17 +58,17 @@
   </view>
 
   <view class="card">
-    <view class="label">置頂</view>
+    <view class="label">置顶</view>
     <t-switch
       value="{{is_pinned}}"
       bind:change="onPinnedChange"
-      label="{{['不置頂', '置頂'][is_pinned ? 1 : 0]}}"
+      label="{{['不置顶', '置顶'][is_pinned ? 1 : 0]}}"
     />
   </view>
 
   <view class="card">
-    <view class="label">發布範圍</view>
-    <view class="muted hint">不勾選 = 全部成員可見</view>
+    <view class="label">发布范围</view>
+    <view class="muted hint">不勾选 = 全部成员可见</view>
     <t-checkbox-group value="{{scope_ids}}" bind:change="onScopeChange">
       <view wx:for="{{orgCandidates}}" wx:key="id" class="scope-row">
         <t-checkbox value="{{item.id}}" label="{{item.name}}" />

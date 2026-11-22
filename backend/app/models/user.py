@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     Date,
     DateTime,
     ForeignKey,
@@ -35,6 +36,8 @@ class User(Base):
         ForeignKey("organizations.id", ondelete="SET NULL"), index=True
     )
     affiliation_requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    alumni_discoverable: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    missing_class_note: Mapped[str | None] = mapped_column(String(200))
     wechat_id: Mapped[str | None] = mapped_column(String(64))
     email: Mapped[str | None] = mapped_column(String(128))
     bio: Mapped[str | None] = mapped_column(Text)

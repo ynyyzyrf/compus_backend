@@ -1,96 +1,117 @@
 import { ensureLogin, goLogin } from '../../services/auth'
+import { getAffiliationOptions, getMyAffiliation } from '../../services/affiliation'
 import { getDirectoryTree, searchMembers } from '../../services/directory'
-import type { MemberBrief, OrgNode } from '../../types/api'
-import { locale, t } from '../../utils/i18n'
+import type { MemberBrief } from '../../types/api'
+import { academicClasses, normalizeAcademicKeyword } from '../../utils/academic'
+import type { AcademicClass, AcademicSelection } from '../../utils/academic'
+import { requestAlumniContact } from '../../utils/connection-actions'
+import { session } from '../../utils/session'
 
+const PAGE_SIZE = 20
 type MemberView = MemberBrief & { initial: string }
-
-const SCOPE_LABEL: Record<string, string> = {
-  class: 'directory.scope.class',
-  department: 'directory.scope.department',
-  college: 'directory.scope.college',
-  all: 'directory.scope.all',
-  none: 'directory.scope.none',
+const SCOPE: Record<string, string> = {
+  class: '同班可见', department: '同系可见', college: '同院可见', all: '全部组织', none: '入组后开放通讯录',
 }
 
 Page({
   data: {
-    lang: locale.get(),
     keyword: '',
+    appliedKeyword: '',
     members: [] as MemberView[],
-    total: 0,
+    scopedClasses: [] as AcademicClass[],
+    schoolClasses: [] as AcademicClass[],
+    filters: {} as AcademicSelection,
     scopeText: '',
-    colleges: [] as OrgNode[],
-    activeCollege: 'all',
+    discover: false,
+    eligible: false,
+    userId: 0,
+    total: 0,
+    page: 0,
+    requestId: 0,
     loading: false,
+    error: '',
   },
-
   onShow() {
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar()?.setData({ value: 'directory' })
-    }
-    this.setData({ lang: locale.get() })
+    this.getTabBar?.()?.setData({ value: 'directory' })
     this.init()
   },
-
   async init() {
     const user = await ensureLogin().catch(() => null)
-    if (!user) {
-      goLogin()
+    if (!user || session.isGuest()) { goLogin(); return }
+    try {
+      const [tree, affiliation, options] = await Promise.all([
+        getDirectoryTree(), getMyAffiliation(), getAffiliationOptions(),
+      ])
+      const classes = academicClasses(options)
+      const school = classes.find(row => row.id === affiliation.class_id)?.school.id
+      const eligible = school !== undefined
+      this.setData({
+        userId: user.id, eligible,
+        discover: eligible && this.data.discover,
+        scopedClasses: academicClasses(tree.nodes),
+        schoolClasses: eligible ? classes.filter(row => row.school.id === school) : [],
+        scopeText: SCOPE[tree.scope_level] || '',
+      })
+      await this.loadMembers(1)
+    } catch (error) {
+      this.setData({ error: (error as Error).message || '通讯录载入失败' })
+    }
+  },
+  async loadMembers(page: number) {
+    const id = this.data.requestId + 1
+    const { appliedKeyword, discover, filters } = this.data
+    this.setData({ requestId: id, loading: true, error: '', ...(page === 1 ? { members: [], page: 0, total: 0 } : {}) })
+    if (discover && !appliedKeyword && !Object.keys(filters).length) {
+      this.setData({ loading: false })
       return
     }
-    await Promise.all([this.loadTree(), this.loadMembers()])
-  },
-
-  async loadTree() {
     try {
-      const tree = await getDirectoryTree()
-      const colleges = tree.nodes.filter((n) => n.type === 'college')
-      this.setData({
-        colleges,
-        scopeText: SCOPE_LABEL[tree.scope_level] ? t(SCOPE_LABEL[tree.scope_level]) : '',
-      })
-    } catch (e) {
-      console.error('load tree failed', e)
-    }
-  },
-
-  async loadMembers() {
-    const { keyword, activeCollege } = this.data
-    // 分院篩選復用後端的「組織路徑」搜索；輸入關鍵詞時以關鍵詞為準。
-    const q = keyword.trim() || (activeCollege !== 'all' ? activeCollege : '')
-    this.setData({ loading: true })
-    try {
-      const page = await searchMembers(q, 1, 100)
-      const members = page.items.map((m) => ({
-        ...m,
-        initial: m.name ? m.name.charAt(0) : '·',
-      }))
-      this.setData({ members, total: page.total })
+      const result = await searchMembers(appliedKeyword, page, PAGE_SIZE, filters, discover)
+      if (this.data.requestId !== id) return
+      const members = result.items.map(item => ({ ...item, initial: item.name.charAt(0) || '·' }))
+      this.setData({ members: page === 1 ? members : [...this.data.members, ...members], page, total: result.total })
+    } catch (error) {
+      if (this.data.requestId === id) this.setData({ error: (error as Error).message || '查询失败，请重试' })
     } finally {
-      this.setData({ loading: false })
+      if (this.data.requestId === id) this.setData({ loading: false })
     }
   },
-
-  onSearchInput(e: WechatMiniprogram.Input) {
-    this.setData({ keyword: String(e.detail.value || ''), activeCollege: 'all' })
+  changeMode(e: WechatMiniprogram.BaseEvent) {
+    const discover = e.currentTarget.dataset.mode === 'discover'
+    if (this.data.discover === discover || (discover && !this.data.eligible)) return
+    this.setData({ discover, filters: {} })
+    this.loadMembers(1)
   },
+  onSearchInput(e: WechatMiniprogram.Input) { this.setData({ keyword: e.detail.value }) },
   onSearchClear() {
-    this.setData({ keyword: '' })
-    this.loadMembers()
+    this.setData({ keyword: '', appliedKeyword: '' })
+    this.loadMembers(1)
   },
   onSearchSubmit() {
-    this.loadMembers()
+    this.setData({ appliedKeyword: normalizeAcademicKeyword(this.data.keyword) })
+    this.loadMembers(1)
   },
-  onSelectCollege(e: WechatMiniprogram.BaseEvent) {
-    const value = e.currentTarget.dataset.value as string
-    this.setData({ activeCollege: value, keyword: '' })
-    this.loadMembers()
+  onFilter(e: WechatMiniprogram.CustomEvent<AcademicSelection>) {
+    this.setData({ filters: e.detail, appliedKeyword: normalizeAcademicKeyword(this.data.keyword) })
+    this.loadMembers(1)
   },
-
+  onReachBottom() {
+    if (!this.data.loading && this.data.page > 0 && this.data.members.length < this.data.total) {
+      this.loadMembers(this.data.page + 1)
+    }
+  },
   onMemberTap(e: WechatMiniprogram.BaseEvent) {
-    const id = Number(e.currentTarget.dataset.id)
-    if (!Number.isFinite(id)) return
-    wx.navigateTo({ url: `/pages/member-detail/member-detail?id=${id}` })
+    const member = this.data.members.find(row => row.id === Number(e.currentTarget.dataset.id))
+    if (!member) return
+    if (member.can_view_profile !== false) {
+      wx.navigateTo({ url: `/pages/member-detail/member-detail?id=${member.id}` })
+    } else {
+      this.addMember(e)
+    }
   },
+  addMember(e: WechatMiniprogram.BaseEvent) {
+    const member = this.data.members.find(row => row.id === Number(e.currentTarget.dataset.id))
+    if (member && member.id !== this.data.userId && this.data.eligible) requestAlumniContact(member.id, member.name)
+  },
+  goFindClass() { wx.navigateTo({ url: '/pages/org-select/org-select' }) },
 })

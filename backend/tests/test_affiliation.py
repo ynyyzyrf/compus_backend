@@ -39,7 +39,7 @@ def test_affiliation_options_available_before_membership(db, client):
     assert {node["type"] for node in nodes} == {
         "school", "college", "department", "class"
     }
-    assert all(set(node) == {"id", "name", "type", "parent_id"} for node in nodes)
+    assert all(set(node) == {"id", "name", "type", "parent_id", "entry_year"} for node in nodes)
 
 
 def test_existing_affiliation_is_read_from_primary_membership(ctx, client):

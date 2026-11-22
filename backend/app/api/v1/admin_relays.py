@@ -42,7 +42,7 @@ def create_relay(payload: RelayCreate, admin: SuperAdmin, db: DbSession) -> Rela
 def update_relay(relay_id: int, payload: RelayUpdate, _: SuperAdmin, db: DbSession) -> RelayDetail:
     relay = relay_service.update_relay(db, relay_id, payload)
     if relay is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龍不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龙不存在")
     counts = relay_service._response_counts(db, [relay_id])
     return RelayDetail(**relay_service.relay_to_detail(db, relay, counts.get(relay_id, 0)))
 
@@ -50,12 +50,12 @@ def update_relay(relay_id: int, payload: RelayUpdate, _: SuperAdmin, db: DbSessi
 @router.delete("/{relay_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_relay(relay_id: int, _: SuperAdmin, db: DbSession) -> None:
     if not relay_service.delete_relay(db, relay_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龍不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龙不存在")
 
 
 @router.get("/{relay_id}/responses", response_model=RelayResponsePage)
 def list_relay_responses(relay_id: int, _: SuperAdmin, db: DbSession) -> RelayResponsePage:
     if db.get(relay_service.Relay, relay_id) is None:  # type: ignore[attr-defined]
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龍不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="接龙不存在")
     items, total = relay_service.list_responses(db, relay_id)
     return RelayResponsePage(items=items, total=total)

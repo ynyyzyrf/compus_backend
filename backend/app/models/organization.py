@@ -21,7 +21,7 @@ class Organization(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String(128), index=True)
-    # school / college / department / class
+    # school / college / department / major / class
     type: Mapped[str] = mapped_column(String(32), index=True)
     parent_id: Mapped[int | None] = mapped_column(
         ForeignKey("organizations.id", ondelete="RESTRICT"), index=True
@@ -30,6 +30,7 @@ class Organization(Base):
         String(32), default=Status.ACTIVE, server_default=Status.ACTIVE
     )
     sort_order: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    entry_year: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

@@ -164,3 +164,7 @@
   display: flex;
   justify-content: flex-end;
 }
+.directory-modes { display: flex; gap: 32rpx; margin-bottom: 22rpx; color: var(--muted); }
+.directory-modes view { padding: 12rpx 0; }
+.directory-modes .current { color: var(--brand); border-bottom: 4rpx solid var(--brand); font-weight: 700; }
+.search-submit { color: var(--brand); padding: 12rpx; font-size: 26rpx; }

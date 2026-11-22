@@ -17,7 +17,7 @@ Page({
   async fetch() {
     const user = await ensureLogin().catch(() => session.getUser())
     if (!user || user.role !== 'super_admin') {
-      wx.showToast({ title: '僅超管可進入', icon: 'none' })
+      wx.showToast({ title: '仅超管可进入', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 800)
       return
     }
@@ -46,8 +46,8 @@ Page({
     if (!item) return
     const next = item.status === 'active' ? 'disabled' : 'active'
     const r = await wx.showModal({
-      title: '確認',
-      content: next === 'disabled' ? '停用後成員將無法登錄' : '啟用該成員',
+      title: '确认',
+      content: next === 'disabled' ? '停用后成员将无法登录' : '启用该成员',
     })
     if (!r.confirm) return
     try {
@@ -55,7 +55,7 @@ Page({
       wx.showToast({ title: '已更新', icon: 'success' })
       this.fetch()
     } catch (err) {
-      wx.showToast({ title: (err as Error).message || '失敗', icon: 'none' })
+      wx.showToast({ title: (err as Error).message || '失败', icon: 'none' })
     }
   },
 })

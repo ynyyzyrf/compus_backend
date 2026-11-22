@@ -28,6 +28,6 @@ def get_article(article_id: int, current_user: CurrentUser, db: DbSession) -> Ar
     if article is None:
         # Don't reveal whether a draft exists outside the viewer's scope.
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="文章不存在或不在可見範圍"
+            status_code=status.HTTP_404_NOT_FOUND, detail="文章不存在或不在可见范围"
         )
     return ArticleOut.model_validate(article)

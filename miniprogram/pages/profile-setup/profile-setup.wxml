@@ -11,7 +11,7 @@
     />
     <view class="field">
       <view class="label-sub">{{t.t('profile.name_en', lang)}}</view>
-      <t-input value="{{profile.name_en}}" placeholder="English name" bind:change="onNameEn" maxlength="100" />
+      <t-input value="{{profile.name_en}}" placeholder="请输入英文名" bind:change="onNameEn" maxlength="100" />
     </view>
   </view>
 
@@ -63,7 +63,7 @@
     </view>
     <view class="field">
       <view class="label-sub">{{t.t('profile.profession_en', lang)}}</view>
-      <t-input value="{{profile.profession_en}}" placeholder="e.g. International Logistics" bind:change="onProfessionEn" maxlength="128" />
+      <t-input value="{{profile.profession_en}}" placeholder="请输入英文行业名称" bind:change="onProfessionEn" maxlength="128" />
     </view>
   </view>
 

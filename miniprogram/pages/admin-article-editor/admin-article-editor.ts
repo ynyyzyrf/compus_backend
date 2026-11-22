@@ -27,7 +27,7 @@ Page({
     const id = Number(opts.id)
     if (Number.isFinite(id) && id > 0) {
       this.setData({ isEdit: true, articleId: id })
-      wx.setNavigationBarTitle({ title: '編輯文章' })
+      wx.setNavigationBarTitle({ title: '编辑文章' })
     } else {
       wx.setNavigationBarTitle({ title: '新建文章' })
     }
@@ -37,7 +37,7 @@ Page({
   async init() {
     const user = await ensureLogin().catch(() => session.getUser())
     if (!user || user.role !== 'super_admin') {
-      wx.showToast({ title: '僅超級管理員可訪問', icon: 'none' })
+      wx.showToast({ title: '仅超级管理员可访问', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 800)
       return
     }
@@ -116,11 +116,11 @@ Page({
     const { isEdit, articleId, title, content, summary, type, status, is_pinned, scope_ids } =
       this.data
     if (!title.trim()) {
-      wx.showToast({ title: '請填寫標題', icon: 'none' })
+      wx.showToast({ title: '请填写标题', icon: 'none' })
       return
     }
     if (!content.trim()) {
-      wx.showToast({ title: '請填寫正文', icon: 'none' })
+      wx.showToast({ title: '请填写正文', icon: 'none' })
       return
     }
     const payload = {
@@ -142,7 +142,7 @@ Page({
       wx.showToast({ title: '已保存', icon: 'success' })
       setTimeout(() => wx.navigateBack(), 600)
     } catch (err) {
-      wx.showToast({ title: (err as Error).message || '保存失敗', icon: 'none' })
+      wx.showToast({ title: (err as Error).message || '保存失败', icon: 'none' })
     } finally {
       this.setData({ saving: false })
     }

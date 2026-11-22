@@ -1,8 +1,9 @@
 {
-  "navigationBarTitleText": "通訊錄",
+  "navigationBarTitleText": "通讯录",
   "enablePullDownRefresh": false,
   "usingComponents": {
     "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty"
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "academic-filters": "/components/academic-filters/index"
   }
 }

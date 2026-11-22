@@ -17,6 +17,7 @@ class OrgType(StrEnum):
     SCHOOL = "school"
     COLLEGE = "college"
     DEPARTMENT = "department"
+    MAJOR = "major"
     CLASS = "class"
 
 

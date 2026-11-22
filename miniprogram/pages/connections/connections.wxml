@@ -1,0 +1,34 @@
+<view class="page-pad">
+  <view class="tabs">
+    <view class="{{tab === 'requests' ? 'selected' : ''}}" data-tab="requests" bindtap="changeTab">好友申请</view>
+    <view class="{{tab === 'friends' ? 'selected' : ''}}" data-tab="friends" bindtap="changeTab">我的好友</view>
+  </view>
+  <view wx:if="{{loading}}" class="card muted">加载中…</view>
+  <view wx:elif="{{error}}" class="card">{{error}} <text class="link" bindtap="load">重试</text></view>
+  <block wx:elif="{{tab === 'requests'}}">
+    <view wx:if="{{!requests.length}}" class="card muted">暂无好友申请</view>
+    <view wx:for="{{requests}}" wx:key="peer_id" class="card connection">
+      <view class="headline">
+        <text class="name">{{item.name}}</text>
+        <text class="muted">{{item.incoming ? '收到' : '发出'}} · {{item.statusLabel}}</text>
+      </view>
+      <view wx:if="{{item.org_path}}" class="muted">{{item.org_path}}</view>
+      <view wx:if="{{item.message}}" class="message">{{item.message}}</view>
+      <view wx:if="{{item.incoming && item.status === 'pending'}}" class="actions">
+        <button size="mini" data-id="{{item.peer_id}}" data-action="decline" bindtap="respond" disabled="{{busyId !== 0}}">拒绝</button>
+        <button size="mini" class="primary" data-id="{{item.peer_id}}" data-action="accept" bindtap="respond" disabled="{{busyId !== 0}}">同意</button>
+      </view>
+    </view>
+  </block>
+  <block wx:else>
+    <view wx:if="{{!friends.length}}" class="card muted">暂无好友</view>
+    <view wx:for="{{friends}}" wx:key="peer_id" class="card connection">
+      <view class="name">{{item.name}}</view>
+      <view wx:if="{{item.org_path}}" class="muted">{{item.org_path}}</view>
+      <view wx:if="{{item.peer_wechat_id}}" class="wechat">微信号：{{item.peer_wechat_id}} <text class="link" data-value="{{item.peer_wechat_id}}" bindtap="copyWechat">复制</text></view>
+      <button size="mini" data-id="{{item.peer_id}}" bindtap="toggleShare" disabled="{{busyId !== 0}}">
+        {{item.shares_wechat ? '取消分享我的微信号' : '分享我的微信号'}}
+      </button>
+    </view>
+  </block>
+</view>

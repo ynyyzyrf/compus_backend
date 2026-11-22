@@ -20,24 +20,24 @@ def get_current_user(
 ) -> User:
     if credentials is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="未登錄"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="未登录"
         )
     try:
         payload = decode_access_token(credentials.credentials)
         user_id = int(payload["uid"])
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="登錄已過期，請重新登錄"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="登录已过期，请重新登录"
         )
 
     user = db.get(User, user_id)
     if user is None or user.status != Status.ACTIVE:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="用戶不可用"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="用户不可用"
         )
     if payload.get("ver", 0) != user.auth_version:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="登錄已過期，請重新登錄"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="登录已过期，请重新登录"
         )
     return user
 
@@ -48,7 +48,7 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 def require_super_admin(user: CurrentUser) -> User:
     if user.role != Role.SUPER_ADMIN:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="需要超級管理員權限"
+            status_code=status.HTTP_403_FORBIDDEN, detail="需要超级管理员权限"
         )
     return user
 

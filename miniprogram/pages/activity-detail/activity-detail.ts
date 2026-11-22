@@ -96,7 +96,7 @@ Page({
       )
       this.setData({ scanToken: res.result })
     } catch {
-      wx.showToast({ title: '掃碼取消', icon: 'none' })
+      wx.showToast({ title: '扫码取消', icon: 'none' })
     }
   },
 
@@ -110,10 +110,10 @@ Page({
         remark: this.data.remark || null,
       })
       this.setData({ sheetOpen: false })
-      wx.showToast({ title: '報名成功', icon: 'success' })
+      wx.showToast({ title: '报名成功', icon: 'success' })
       this.load(this.data.activity.id)
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '報名失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '报名失败', icon: 'none' })
     } finally {
       this.setData({ submitting: false })
     }
@@ -123,17 +123,17 @@ Page({
     if (!this.data.activity) return
     const token = this.data.scanToken.trim()
     if (!token) {
-      wx.showToast({ title: '請掃碼或粘貼 token', icon: 'none' })
+      wx.showToast({ title: '请扫码或粘贴 token', icon: 'none' })
       return
     }
     this.setData({ submitting: true })
     try {
       await checkin(this.data.activity.id, token)
       this.setData({ sheetOpen: false })
-      wx.showToast({ title: '簽到成功', icon: 'success' })
+      wx.showToast({ title: '签到成功', icon: 'success' })
       this.load(this.data.activity.id)
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '簽到失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '签到失败', icon: 'none' })
     } finally {
       this.setData({ submitting: false })
     }
@@ -141,14 +141,14 @@ Page({
 
   async onCancelSignup() {
     if (!this.data.activity) return
-    const r = await wx.showModal({ title: '確認取消報名', content: '報名截止後不可取消' })
+    const r = await wx.showModal({ title: '确认取消报名', content: '报名截止后不可取消' })
     if (!r.confirm) return
     try {
       await cancelSignup(this.data.activity.id)
       wx.showToast({ title: '已取消', icon: 'success' })
       this.load(this.data.activity.id)
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '取消失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '取消失败', icon: 'none' })
     }
   },
 

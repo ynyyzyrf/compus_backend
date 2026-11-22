@@ -124,16 +124,52 @@ def list_org_tree(db: Session, include_disabled: bool = True) -> list[Organizati
     return list(db.scalars(stmt))
 
 
+ORG_PARENTS = {
+    "school": {None},
+    "college": {"school"},
+    "department": {"college"},
+    "major": {"department"},
+    "class": {"department", "major"},
+}
+
+
+def validate_org(
+    db: Session, node_type: str, parent_id: int | None, name: str,
+    entry_year: int | None, current_id: int | None = None,
+) -> str:
+    name = name.strip()
+    if not name:
+        raise ValueError("请填写组织名称")
+    parent = None
+    if parent_id is not None:
+        parent = db.get(Organization, parent_id, with_for_update=True)
+        if parent is None or parent.status != Status.ACTIVE:
+            raise ValueError("上级组织不存在或已停用")
+    if (parent.type if parent else None) not in ORG_PARENTS[node_type]:
+        raise ValueError("请选择正确的上级组织")
+    if entry_year is not None and node_type != "class":
+        raise ValueError("只有班级可以设置入学年份")
+    matches = select(Organization.id).where(
+        Organization.type == node_type,
+        Organization.parent_id == parent_id,
+        Organization.entry_year == entry_year,
+        func.lower(Organization.name) == name.lower(),
+    )
+    if current_id is not None:
+        matches = matches.where(Organization.id != current_id)
+    if db.scalar(matches.limit(1)) is not None:
+        raise ValueError("该上级组织下已存在同名、同入学年份的节点")
+    return name
+
+
 def create_org(db: Session, payload) -> Organization:
-    if payload.parent_id is not None:
-        parent = db.get(Organization, payload.parent_id)
-        if parent is None:
-            raise ValueError("父節點不存在")
+    name = validate_org(db, payload.type, payload.parent_id, payload.name, payload.entry_year)
     o = Organization(
-        name=payload.name,
+        name=name,
         type=payload.type,
         parent_id=payload.parent_id,
         sort_order=payload.sort_order,
+        entry_year=payload.entry_year,
     )
     db.add(o)
     db.commit()
@@ -146,16 +182,21 @@ def update_org(db: Session, org_id: int, payload) -> Organization | None:
     if o is None:
         return None
     data = payload.model_dump(exclude_unset=True)
-    if "parent_id" in data:
-        new_parent = data["parent_id"]
-        if new_parent is not None:
-            if new_parent == org_id:
-                raise ValueError("不能將自己設為父節點")
-            # also prevent moving under own descendants (cycle)
-            tree = load_org_tree(db)
-            descendants = tree.descendants(org_id)
-            if new_parent in descendants:
-                raise ValueError("不能將節點移到自己的子節點下")
+    new_parent = data.get("parent_id", o.parent_id)
+    if new_parent != o.parent_id and o.type == "class":
+        previous = db.get(Organization, o.parent_id) if o.parent_id is not None else None
+        destination = db.get(Organization, new_parent) if new_parent is not None else None
+        department_id = previous.parent_id if previous and previous.type == "major" else o.parent_id
+        target_department_id = destination.parent_id if destination and destination.type == "major" else new_parent
+        if department_id != target_department_id:
+            raise ValueError("班级只能在所属系内调整专业")
+    if {"name", "parent_id", "entry_year"} & data.keys():
+        if data.get("name", o.name) is None:
+            raise ValueError("请填写组织名称")
+        data["name"] = validate_org(
+            db, o.type, new_parent, data.get("name", o.name),
+            data.get("entry_year", o.entry_year), o.id,
+        )
     for key, value in data.items():
         setattr(o, key, value)
     db.commit()
@@ -167,6 +208,10 @@ def delete_org(db: Session, org_id: int) -> bool:
     o = db.get(Organization, org_id)
     if o is None:
         return False
+    if db.scalar(select(Organization.id).where(Organization.parent_id == org_id).limit(1)) is not None:
+        raise ValueError("请先处理此节点下的组织")
+    if db.scalar(select(User.id).where(User.pending_class_id == org_id).limit(1)) is not None:
+        raise ValueError("请先处理该班级的入组申请")
     # soft-delete: only if no users attached
     has_member = db.execute(
         select(Membership.id).where(Membership.organization_id == org_id).limit(1)

@@ -138,7 +138,7 @@ def generate_activity_summary(db: Session) -> dict:
         .limit(1)
     ).scalar_one_or_none()
     if activity is None:
-        return {"title": "", "summary": "暫無已發布活動。"}
+        return {"title": "", "summary": "暂无已发布活动。"}
 
     signups = db.execute(
         select(func.count(ActivitySignup.id)).where(
@@ -159,8 +159,8 @@ def generate_activity_summary(db: Session) -> dict:
         "signup_count": signups,
         "checkin_count": checkins,
         "summary": (
-            f"{activity.title} 將在 {activity.location} 舉辦，"
-            f"目前 {signups} 人報名，{checkins} 人已簽到。"
+            f"{activity.title} 将在 {activity.location} 举办，"
+            f"目前 {signups} 人报名，{checkins} 人已签到。"
         ),
     }
 

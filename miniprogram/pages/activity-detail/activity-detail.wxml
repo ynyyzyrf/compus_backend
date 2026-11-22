@@ -1,6 +1,6 @@
 <view class="page-pad">
   <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />
-  <t-empty wx:elif="{{!activity}}" description="活動不存在" />
+  <t-empty wx:elif="{{!activity}}" description="活动不存在" />
 
   <block wx:elif="{{activity}}">
     <view class="hero">
@@ -8,47 +8,47 @@
       <view class="hero-mask"></view>
       <view class="hero-copy">
         <view class="title">{{activity.title}}</view>
-        <view class="muted-light">{{activity.organizer || '校友商會'}}</view>
+        <view class="muted-light">{{activity.organizer || '校友商会'}}</view>
       </view>
     </view>
 
     <view class="card">
-      <view class="line"><text class="lbl">時間</text><text>{{activity.dateText}} - {{activity.endText}}</text></view>
-      <view class="line"><text class="lbl">地點</text><text>{{activity.location}}</text></view>
-      <view class="line"><text class="lbl">報名截止</text><text>{{activity.signupEndText}}</text></view>
+      <view class="line"><text class="lbl">时间</text><text>{{activity.dateText}} - {{activity.endText}}</text></view>
+      <view class="line"><text class="lbl">地点</text><text>{{activity.location}}</text></view>
+      <view class="line"><text class="lbl">报名截止</text><text>{{activity.signupEndText}}</text></view>
       <view class="line">
-        <text class="lbl">名額</text>
-        <text>{{activity.capacity ? activity.signup_count + ' / ' + activity.capacity : activity.signup_count + ' 已報名'}}</text>
+        <text class="lbl">名额</text>
+        <text>{{activity.capacity ? activity.signup_count + ' / ' + activity.capacity : activity.signup_count + ' 已报名'}}</text>
       </view>
       <view wx:if="{{activity.checkin_count > 0}}" class="line">
-        <text class="lbl">簽到</text>
+        <text class="lbl">签到</text>
         <text>{{activity.checkin_count}} 人</text>
       </view>
     </view>
 
     <view class="card">
-      <view class="card-title">活動介紹</view>
-      <view class="desc">{{activity.description || '暫無介紹'}}</view>
+      <view class="card-title">活动介绍</view>
+      <view class="desc">{{activity.description || '暂无介绍'}}</view>
     </view>
 
     <view class="quick-row">
       <view class="quick-action" bindtap="goAlbum">
         <view class="qa-icon">相</view>
-        <view class="qa-title">活動相冊</view>
-        <view class="qa-sub">查看與投稿照片</view>
+        <view class="qa-title">活动相册</view>
+        <view class="qa-sub">查看与投稿照片</view>
       </view>
       <view class="quick-action" bindtap="goPoster">
         <view class="qa-icon blue">海</view>
-        <view class="qa-title">分享海報</view>
-        <view class="qa-sub">生成保存到相冊</view>
+        <view class="qa-title">分享海报</view>
+        <view class="qa-sub">生成保存到相册</view>
       </view>
     </view>
 
     <view wx:if="{{activity.my_checked_in}}" class="status-tag status-ok">
-      ✓ 您已簽到
+      ✓ 您已签到
     </view>
     <view wx:elif="{{activity.my_signed_up}}" class="status-tag status-signed">
-      ✓ 您已報名
+      ✓ 您已报名
     </view>
 
     <view class="actions">
@@ -58,7 +58,7 @@
         size="large"
         block
         bindtap="openSignupSheet"
-      >立即報名</t-button>
+      >立即报名</t-button>
       <t-button
         wx:if="{{activity.my_signed_up && !activity.my_checked_in}}"
         theme="default"
@@ -66,14 +66,14 @@
         size="large"
         block
         bindtap="onCancelSignup"
-      >取消報名</t-button>
+      >取消报名</t-button>
       <t-button
         wx:if="{{activity.my_signed_up}}"
         theme="success"
         size="large"
         block
         bindtap="openCheckinSheet"
-      >掃碼簽到</t-button>
+      >扫码签到</t-button>
     </view>
 
     <!-- bottom sheet -->
@@ -82,28 +82,28 @@
         <view class="grab"></view>
 
         <block wx:if="{{sheetMode === 'signup'}}">
-          <view class="sheet-title">活動報名</view>
+          <view class="sheet-title">活动报名</view>
           <view class="field">
-            <view class="lbl2">手機號</view>
+            <view class="lbl2">手机号</view>
             <input class="native-input" value="{{phone}}" placeholder="13800000000" bindinput="onPhone" maxlength="32" />
           </view>
           <view class="field">
-            <view class="lbl2">備註</view>
-            <input class="native-input" value="{{remark}}" placeholder="選填" bindinput="onRemark" maxlength="500" />
+            <view class="lbl2">备注</view>
+            <input class="native-input" value="{{remark}}" placeholder="选填" bindinput="onRemark" maxlength="500" />
           </view>
-          <t-button theme="primary" size="large" loading="{{submitting}}" block bindtap="onConfirmSignup">確認報名</t-button>
+          <t-button theme="primary" size="large" loading="{{submitting}}" block bindtap="onConfirmSignup">确认报名</t-button>
         </block>
 
         <block wx:elif="{{sheetMode === 'checkin'}}">
-          <view class="sheet-title">掃碼簽到</view>
-          <view class="muted small">請讓管理員出示活動簽到碼，或粘貼 token</view>
+          <view class="sheet-title">扫码签到</view>
+          <view class="muted small">请让管理员出示活动签到码，或粘贴 token</view>
           <view class="field">
-            <view class="lbl2">簽到 token</view>
-            <input class="native-input" value="{{scanToken}}" placeholder="掃碼後自動填入" bindinput="onScanToken" />
+            <view class="lbl2">签到 token</view>
+            <input class="native-input" value="{{scanToken}}" placeholder="扫码后自动填入" bindinput="onScanToken" />
           </view>
-          <t-button theme="default" variant="outline" size="large" block bindtap="onScanCode">打開掃一掃</t-button>
+          <t-button theme="default" variant="outline" size="large" block bindtap="onScanCode">打开扫一扫</t-button>
           <view style="height: 24rpx"></view>
-          <t-button theme="success" size="large" loading="{{submitting}}" block bindtap="onConfirmCheckin">確認簽到</t-button>
+          <t-button theme="success" size="large" loading="{{submitting}}" block bindtap="onConfirmCheckin">确认签到</t-button>
         </block>
       </view>
     </view>

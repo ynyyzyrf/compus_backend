@@ -275,3 +275,4 @@
   line-height: 1;
   flex: 0 0 auto;
 }
+.alumni-callout { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; margin: 20rpx 0; color: var(--brand); }

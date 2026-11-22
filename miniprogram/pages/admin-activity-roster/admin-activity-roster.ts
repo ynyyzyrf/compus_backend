@@ -32,6 +32,6 @@ Page({
     const phone = e.currentTarget.dataset.phone as string
     if (!phone) return
     wx.setClipboardData({ data: phone })
-    wx.showToast({ title: '已複製', icon: 'success' })
+    wx.showToast({ title: '已复制', icon: 'success' })
   },
 })

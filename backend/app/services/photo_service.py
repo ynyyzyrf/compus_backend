@@ -26,7 +26,7 @@ class PhotoNotFound(PhotoError):
 def _visible_activity(db: Session, activity_id: int) -> Activity:
     activity = db.get(Activity, activity_id)
     if activity is None or activity.status == ActivityStatus.DRAFT:
-        raise ActivityNotFound("活動不存在")
+        raise ActivityNotFound("活动不存在")
     return activity
 
 

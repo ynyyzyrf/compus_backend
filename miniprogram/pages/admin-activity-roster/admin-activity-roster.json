@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "活動名單",
+  "navigationBarTitleText": "活动名单",
   "usingComponents": {
     "t-tag": "tdesign-miniprogram/tag/tag",
     "t-empty": "tdesign-miniprogram/empty/empty",

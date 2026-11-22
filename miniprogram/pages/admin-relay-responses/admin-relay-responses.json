@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "接龍結果",
+  "navigationBarTitleText": "接龙结果",
   "usingComponents": {
     "t-empty": "tdesign-miniprogram/empty/empty",
     "t-loading": "tdesign-miniprogram/loading/loading"

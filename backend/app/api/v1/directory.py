@@ -22,11 +22,20 @@ def get_tree(current_user: CurrentUser, db: DbSession) -> DirectoryTreeOut:
 def get_members(
     current_user: CurrentUser,
     db: DbSession,
-    q: str | None = Query(default=None, description="按姓名或組織路徑搜索"),
+    q: str | None = Query(default=None, max_length=80, description="按姓名或组织路径搜索"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=20, ge=1, le=100),
+    discover: bool = False,
+    entry_year: int | None = Query(default=None, ge=1900, le=2100),
+    college_id: int | None = Query(default=None, ge=1),
+    department_id: int | None = Query(default=None, ge=1),
+    major_id: int | None = Query(default=None, ge=1),
+    class_id: int | None = Query(default=None, ge=1),
 ) -> Page[MemberBrief]:
-    return directory_service.list_members(db, current_user, q, page, page_size)
+    return directory_service.list_members(
+        db, current_user, q, page, page_size, discover=discover, entry_year=entry_year,
+        college_id=college_id, department_id=department_id, major_id=major_id, class_id=class_id,
+    )
 
 
 @router.get("/members/{member_id}", response_model=MemberDetail)
@@ -37,6 +46,6 @@ def get_member(
     if member is None:
         # Do not reveal whether the target exists outside the viewer's scope.
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="無權查看或成員不存在"
+            status_code=status.HTTP_404_NOT_FOUND, detail="无权查看或成员不存在"
         )
     return member

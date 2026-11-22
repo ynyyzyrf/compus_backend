@@ -33,7 +33,7 @@ export function ensureLogin(force = false): Promise<UserProfile> {
   if (!force && session.isGuest()) {
     return Promise.resolve({
       id: 0,
-      name: '訪客',
+      name: '访客',
       avatar_url: null,
       role: 'user',
       status: 'active',

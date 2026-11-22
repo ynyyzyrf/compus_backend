@@ -5,6 +5,7 @@ enough to load in one query, so traversal is done over a dict instead of
 recursive SQL.
 """
 
+import re
 from dataclasses import dataclass
 
 from sqlalchemy import select
@@ -12,6 +13,16 @@ from sqlalchemy.orm import Session
 
 from app.models.enums import OrgType, Status
 from app.models.organization import Organization
+
+CLASS_PATHS = (
+    (OrgType.CLASS, OrgType.DEPARTMENT, OrgType.COLLEGE, OrgType.SCHOOL),
+    (OrgType.CLASS, OrgType.MAJOR, OrgType.DEPARTMENT, OrgType.COLLEGE, OrgType.SCHOOL),
+)
+
+
+def normalize_org_keyword(value: str) -> str:
+    compact = re.sub(r"(\d)\s+(?=[班级級])", r"\1", value.casefold())
+    return re.sub(r"(\d)級", r"\1级", compact)
 
 
 @dataclass
@@ -46,15 +57,28 @@ class OrgTree:
         return {
             nid
             for nid in node_ids
-            if nid in self.nodes and self.nodes[nid].type == OrgType.CLASS
+            if self.school_for_class(nid) is not None
         }
+
+    def school_for_class(self, class_id: int) -> int | None:
+        chain = self.ancestors(class_id)
+        if tuple(self.nodes[node].type for node in chain) not in CLASS_PATHS:
+            return None
+        school_id = chain[-1]
+        return school_id if self.nodes[school_id].parent_id is None else None
+
+    def label(self, node_id: int) -> str:
+        node = self.nodes[node_id]
+        if node.entry_year and f"{node.entry_year}级" not in node.name and f"{node.entry_year}級" not in node.name:
+            return f"{node.entry_year}级 {node.name}"
+        return node.name
 
     def path_name(self, node_id: int, sep: str = " · ") -> str:
         chain = self.ancestors(node_id)
         # ancestors() goes node -> root; reverse for root -> node, drop school.
         ordered = list(reversed(chain))
         names = [
-            self.nodes[nid].name
+            self.label(nid)
             for nid in ordered
             if self.nodes[nid].type != OrgType.SCHOOL
         ]
@@ -62,10 +86,12 @@ class OrgTree:
 
     def find_by_path_keyword(self, keyword: str) -> set[int]:
         """Return node ids whose own name or any ancestor name contains keyword."""
+        term = normalize_org_keyword(keyword)
+        number_term = re.compile(rf"(?<!\d){re.escape(term)}") if re.fullmatch(r"\d+(?:班|级)", term) else None
         hits: set[int] = set()
         for nid, node in self.nodes.items():
-            chain_names = [self.nodes[a].name for a in self.ancestors(nid)]
-            if any(keyword in name for name in chain_names):
+            chain_names = [normalize_org_keyword(self.label(a)) for a in self.ancestors(nid)]
+            if any(number_term.search(name) if number_term else term in name for name in chain_names):
                 hits.add(nid)
         return hits
 

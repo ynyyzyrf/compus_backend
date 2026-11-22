@@ -120,7 +120,7 @@ def get_activity(
     )
     if activity is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="活動不存在"
+            status_code=status.HTTP_404_NOT_FOUND, detail="活动不存在"
         )
     stats = activity_service._stats_for(db, [activity_id])[0]
     payload = _serialize(
@@ -160,7 +160,7 @@ def cancel_signup(
     except activity_service.CancelTooLate as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
     if not ok:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到報名記錄")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到报名记录")
 
 
 @router.post("/{activity_id}/checkin", response_model=CheckinResult)

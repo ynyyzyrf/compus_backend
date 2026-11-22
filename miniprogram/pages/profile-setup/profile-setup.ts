@@ -124,14 +124,14 @@ Page({
 
   async onSave() {
     if (!this.data.profile?.name.trim() && !this.data.profile?.name_en?.trim()) {
-      wx.showToast({ title: '請填寫姓名', icon: 'none' })
+      wx.showToast({ title: '请填写姓名', icon: 'none' })
       return
     }
     const payload = this._buildPayload()
     const profile = await this._persist(payload)
     if (!profile) return
     if (profile.name !== payload.name) {
-      wx.showToast({ title: '姓名未保存，請稍後重試', icon: 'none' })
+      wx.showToast({ title: '姓名未保存，请稍后重试', icon: 'none' })
       return
     }
     session.setUser(profile)
@@ -152,7 +152,7 @@ Page({
     try {
       return await updateMyProfile(payload || this._buildPayload())
     } catch (e) {
-      wx.showToast({ title: (e as Error).message || '保存失敗', icon: 'none' })
+      wx.showToast({ title: (e as Error).message || '保存失败', icon: 'none' })
       return null
     } finally {
       this.setData({ saving: false })

@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "接龍投票",
+  "navigationBarTitleText": "接龙投票",
   "usingComponents": {
     "t-empty": "tdesign-miniprogram/empty/empty",
     "t-loading": "tdesign-miniprogram/loading/loading",

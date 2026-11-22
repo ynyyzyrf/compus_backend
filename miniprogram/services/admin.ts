@@ -83,9 +83,10 @@ export function listOrganizations(): Promise<OrgNodeAdminOut[]> {
 
 export interface OrgNodePayload {
   name: string
-  type: 'school' | 'college' | 'department' | 'class'
+  type: OrgNodeAdminOut['type']
   parent_id: number | null
   sort_order?: number
+  entry_year?: number | null
 }
 
 export function createOrganization(
@@ -100,7 +101,7 @@ export function createOrganization(
 
 export function updateOrganization(
   id: number,
-  payload: Partial<{ name: string; parent_id: number | null; sort_order: number; status: 'active' | 'disabled' }>,
+  payload: Partial<{ name: string; parent_id: number | null; sort_order: number; status: 'active' | 'disabled'; entry_year: number | null }>,
 ): Promise<OrgNodeAdminOut> {
   return request<OrgNodeAdminOut>({
     url: `/admin/organizations/${id}`,
@@ -111,6 +112,20 @@ export function updateOrganization(
 
 export function deleteOrganization(id: number): Promise<void> {
   return request<void>({ url: `/admin/organizations/${id}`, method: 'DELETE', silent: true })
+}
+
+export interface MissingClassItem {
+  user_id: number
+  name: string
+  note: string
+}
+
+export function listMissingClasses(): Promise<MissingClassItem[]> {
+  return request({ url: '/admin/missing-classes', silent: true })
+}
+
+export function resolveMissingClass(id: number): Promise<void> {
+  return request({ url: `/admin/missing-classes/${id}/resolve`, method: 'POST', silent: true })
 }
 
 // ===== directory permissions =====

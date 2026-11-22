@@ -162,11 +162,11 @@ def signup(
 ) -> ActivitySignup:
     activity = db.get(Activity, activity_id)
     if activity is None or activity.status == ActivityStatus.DRAFT:
-        raise SignupError("活動不存在或尚未發布")
+        raise SignupError("活动不存在或尚未发布")
 
     now = datetime.now(timezone.utc)
     if not (activity.signup_start_at <= now <= activity.signup_end_at):
-        raise NotInSignupWindow("不在報名時間段內")
+        raise NotInSignupWindow("不在报名时间段内")
 
     # capacity check
     if activity.capacity is not None:
@@ -177,7 +177,7 @@ def signup(
             )
         ).scalar_one()
         if count >= activity.capacity:
-            raise CapacityReached("報名人數已滿")
+            raise CapacityReached("报名人数已满")
 
     existing = db.execute(
         select(ActivitySignup).where(
@@ -186,7 +186,7 @@ def signup(
         )
     ).scalar_one_or_none()
     if existing and existing.status == SignupStatus.SIGNED:
-        raise AlreadySignedUp("已報名，無需重複")
+        raise AlreadySignedUp("已报名，无需重复")
     if existing and existing.status == SignupStatus.CANCELLED:
         # re-sign after cancellation
         existing.status = SignupStatus.SIGNED
@@ -219,7 +219,7 @@ def cancel_signup(db: Session, activity_id: int, user: User) -> bool:
     if activity is None:
         return False
     if now > activity.signup_end_at:
-        raise CancelTooLate("已過報名截止時間，無法取消")
+        raise CancelTooLate("已过报名截止时间，无法取消")
     signup_row = db.execute(
         select(ActivitySignup).where(
             ActivitySignup.activity_id == activity_id,
@@ -260,17 +260,17 @@ def checkin(db: Session, activity_id: int, user: User, token: str) -> ActivityCh
     from app.services.qr_token import decode_checkin_token
 
     if not decode_checkin_token(token, activity_id):
-        raise InvalidToken("簽到碼無效或已過期")
+        raise InvalidToken("签到码无效或已过期")
 
     activity = db.get(Activity, activity_id)
     if activity is None or activity.status == ActivityStatus.DRAFT:
-        raise CheckinError("活動不存在")
+        raise CheckinError("活动不存在")
 
     # window: [start_at - 1h, end_at]
     now = datetime.now(timezone.utc)
     earliest = activity.start_at.replace(tzinfo=timezone.utc) - __import__("datetime").timedelta(hours=1)
     if now < earliest or now > activity.end_at:
-        raise NotInCheckinWindow("不在簽到時間段內")
+        raise NotInCheckinWindow("不在签到时间段内")
 
     signup_row = db.execute(
         select(ActivitySignup).where(
@@ -280,7 +280,7 @@ def checkin(db: Session, activity_id: int, user: User, token: str) -> ActivityCh
         )
     ).scalar_one_or_none()
     if signup_row is None:
-        raise NotSignedUp("未報名，不能簽到")
+        raise NotSignedUp("未报名，不能签到")
 
     exists = db.execute(
         select(ActivityCheckin.id).where(
@@ -289,7 +289,7 @@ def checkin(db: Session, activity_id: int, user: User, token: str) -> ActivityCh
         )
     ).first()
     if exists is not None:
-        raise AlreadyCheckedIn("已簽到，無需重複")
+        raise AlreadyCheckedIn("已签到，无需重复")
 
     row = ActivityCheckin(
         activity_id=activity_id,

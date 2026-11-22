@@ -21,7 +21,7 @@ Page({
     const m = page.items.find((x) => x.id === id)
     if (m) {
       this.setData({ m })
-      wx.setNavigationBarTitle({ title: `編輯 ${m.name}` })
+      wx.setNavigationBarTitle({ title: `编辑 ${m.name}` })
     }
   },
 
@@ -71,7 +71,7 @@ Page({
       wx.showToast({ title: '已保存', icon: 'success' })
       setTimeout(() => wx.navigateBack(), 600)
     } catch (err) {
-      wx.showToast({ title: (err as Error).message || '失敗', icon: 'none' })
+      wx.showToast({ title: (err as Error).message || '失败', icon: 'none' })
     } finally {
       this.setData({ saving: false })
     }

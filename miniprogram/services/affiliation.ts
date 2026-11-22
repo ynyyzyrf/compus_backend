@@ -17,3 +17,7 @@ export function submitAffiliation(classId: number, name: string): Promise<Affili
     silent: true,
   })
 }
+
+export function reportMissingClass(note: string): Promise<void> {
+  return request({ url: '/me/affiliation/missing-class', method: 'POST', data: { note }, silent: true })
+}
