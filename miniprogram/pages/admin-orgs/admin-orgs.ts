@@ -43,7 +43,12 @@ Page({
     catch (error) { wx.showToast({ title: (error as Error).message || '载入失败', icon: 'none' }) }
     finally { this.setData({ loading: false }) }
   },
-  onAddRoot() { this.openCreate('school', null) },
+  manageClassAdmins(e: WechatMiniprogram.BaseEvent) {
+    const id = Number(e.currentTarget.dataset.id)
+    if (this.data.items.some(item => item.id === id && item.type === 'class')) {
+      wx.navigateTo({ url: `/pages/admin-class-admins/admin-class-admins?id=${id}` })
+    }
+  },
   onAddChild(e: WechatMiniprogram.BaseEvent) {
     const parent = this.data.items.find(node => node.id === Number(e.currentTarget.dataset.id))
     if (!parent) return

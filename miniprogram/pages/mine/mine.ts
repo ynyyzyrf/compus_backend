@@ -4,13 +4,15 @@ import {
   ensureLogin,
   goLogin,
   listDevUsers,
+  logout,
 } from '../../services/auth'
 import { getMyProfile } from '../../services/profile'
 import { getMyAffiliation } from '../../services/affiliation'
-import { connectionSummary, updateDiscoverability } from '../../services/connections'
+import { connectionSummary } from '../../services/connections'
 import { hasActiveRelay } from '../../services/relays'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
+import { routeUnassignedUser } from '../../services/startup'
 import type { DevUser, UserProfile } from '../../types/api'
 
 const DEFAULT_PROFILE_NAME = '未命名校友'
@@ -22,12 +24,12 @@ Page({
     isGuest: false,
     needsProfileName: false,
     isAdmin: false,
+    isClassAdmin: false,
     isDev: IS_DEV,
     devUsers: [] as DevUser[],
     heroSub: '',
     affiliationText: '',
     connectionsEligible: false,
-    discoverable: false,
     unreadRequests: 0,
     unreadMessages: 0,
     showRelayDot: false,
@@ -67,10 +69,10 @@ Page({
       isGuest,
       needsProfileName: !isGuest && displayUser.name === DEFAULT_PROFILE_NAME,
       isAdmin: displayUser.role === 'super_admin',
+      isClassAdmin: displayUser.role === 'class_admin',
       heroSub: isGuest ? t('mine.member_center_sub') : '',
       affiliationText: affiliation?.pending_class_id ? affiliation.pending_org_path : '',
       connectionsEligible: connections?.eligible ?? false,
-      discoverable: connections?.discoverable ?? false,
       unreadRequests: connections?.unread ?? 0,
       unreadMessages: connections?.unread_messages ?? 0,
       showRelayDot,
@@ -92,11 +94,13 @@ Page({
     wx.showLoading({ title: t('common.loading') })
     try {
       const user = await devImpersonate(id)
+      if (await routeUnassignedUser()) return
       this.setData({
         user,
         isGuest: false,
         needsProfileName: false,
         isAdmin: user.role === 'super_admin',
+        isClassAdmin: user.role === 'class_admin',
         heroSub: '',
         showRelayDot: false,
       })
@@ -109,6 +113,9 @@ Page({
 
   goAdminDashboard() {
     wx.navigateTo({ url: '/pages/admin-dashboard/admin-dashboard' })
+  },
+  goAffiliationReview() {
+    wx.navigateTo({ url: '/pages/admin-affiliations/admin-affiliations' })
   },
   onAvatarError(e: WechatMiniprogram.BaseEvent) {
     const { id, src } = e.currentTarget.dataset
@@ -132,24 +139,9 @@ Page({
     const tab = this.data.unreadMessages && !this.data.unreadRequests ? '?tab=friends' : ''
     wx.navigateTo({ url: `/pages/connections/connections${tab}` })
   },
-  setDiscoverability() {
-    const enabled = !this.data.discoverable
-    wx.showModal({
-      title: enabled ? '允许本校校友找到我' : '关闭跨院系查找',
-      content: enabled
-        ? '本校已审核的校友可以搜索到你的姓名、头像和班级，并发送好友申请。'
-        : '关闭后，通讯录范围外的校友无法继续通过搜索找到你。',
-      confirmText: enabled ? '开启' : '关闭',
-      success: async ({ confirm }) => {
-        if (!confirm) return
-        try {
-          const result = await updateDiscoverability(enabled)
-          this.setData({ discoverable: result.discoverable })
-        } catch (error) {
-          wx.showModal({ title: '设置失败', content: (error as Error).message || '请稍后重试', showCancel: false })
-        }
-      },
-    })
+  goSettings() {
+    if (this.data.isGuest) { this.goLoginIfGuest(); return }
+    wx.navigateTo({ url: '/pages/settings/settings' })
   },
   goDirectory() {
     wx.switchTab({ url: '/pages/directory/directory' })
@@ -163,6 +155,10 @@ Page({
   goProfileCard() {
     if (this.data.isGuest) { this.goLoginIfGuest(); return }
     this.goProfileEdit()
+  },
+  signOut() {
+    logout()
+    goLogin()
   },
   goLoginIfGuest() {
     if (this.data.isGuest) {

@@ -1,7 +1,7 @@
 import { getMyProfile, updateMyProfile } from '../../services/profile'
 import { locale } from '../../utils/i18n'
 import { session } from '../../utils/session'
-import type { MyProfile, MyProfileUpdate, ProfileAudience, ProfileVisibilityKey } from '../../types/api'
+import type { MyProfile, MyProfileUpdate } from '../../types/api'
 
 const DEFAULT_PROFILE_NAME = '未命名校友'
 
@@ -79,11 +79,6 @@ Page({
   onResources(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'resources_offered') },
   onBio(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'bio') },
 
-  onVisibility(e: WechatMiniprogram.CustomEvent<{ key: ProfileVisibilityKey; value: ProfileAudience }>) {
-    const { key, value } = e.detail
-    this.setData({ [`profile.${key}`]: value })
-  },
-
   _buildPayload(): MyProfileUpdate {
     const p = this.data.profile
     if (!p) return {}
@@ -92,9 +87,6 @@ Page({
     return {
       name,
       name_en: cleanStr(p.name_en),
-      basic_visibility: p.basic_visibility,
-      contact_visibility: p.contact_visibility,
-      details_visibility: p.details_visibility,
       phone: cleanStr(p.phone),
       wechat_id: cleanStr(p.wechat_id),
       email: cleanStr(p.email),

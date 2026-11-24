@@ -17,6 +17,7 @@
       <view class="row1">
         <text class="name">{{item.name}}</text>
         <t-tag wx:if="{{item.role === 'super_admin'}}" theme="primary" variant="light" size="small">超管</t-tag>
+        <t-tag wx:elif="{{item.role === 'class_admin'}}" theme="primary" variant="light" size="small">班管</t-tag>
         <t-tag wx:if="{{item.status === 'disabled'}}" theme="warning" variant="light" size="small">已停用</t-tag>
         <text wx:else class="muted small">{{item.primary_org_path || '尚未分班'}}</text>
       </view>

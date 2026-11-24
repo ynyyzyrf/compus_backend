@@ -1,14 +1,37 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="login-page">
-  <image class="campus-photo" src="/assets/login-campus.jpg" mode="aspectFill" />
+  <view class="campus-hero">
+    <image class="campus-photo" src="/assets/login-campus.jpg" mode="aspectFill" />
+    <view class="photo-fade" />
+  </view>
 
   <view class="login-body">
     <view class="brand-signature">
-      <view class="brand-seal">圆</view>
+      <image class="brand-seal" src="/assets/brand-gate.png" mode="aspectFit" />
       <text>{{t.t('login.org_name', lang)}}</text>
     </view>
     <view class="welcome-title">{{t.t('login.title', lang)}}</view>
     <view class="welcome-description">{{t.t('login.subtitle', lang)}}</view>
+    <view class="welcome-rule" />
+
+    <view class="login-features">
+      <view class="login-feature">
+        <view class="feature-icon"><t-icon name="usergroup" size="44rpx" /></view>
+        <text>校友通讯录</text>
+      </view>
+      <view class="login-feature">
+        <view class="feature-icon"><t-icon name="tree-square-dot-vertical" size="44rpx" /></view>
+        <text>校友组织</text>
+      </view>
+      <view class="login-feature">
+        <view class="feature-icon"><t-icon name="calendar" size="44rpx" /></view>
+        <text>同学活动</text>
+      </view>
+      <view class="login-feature">
+        <view class="feature-icon"><t-icon name="image" size="44rpx" /></view>
+        <text>校园记忆</text>
+      </view>
+    </view>
 
     <view class="login-actions">
       <button
@@ -18,7 +41,7 @@
         disabled="{{loading}}"
         bindtap="onLogin"
       >
-        <t-icon wx:if="{{!loading}}" name="logo-wechat-stroke-filled" size="40rpx" />
+        <t-icon wx:if="{{!loading}}" name="logo-wechat-stroke-filled" size="48rpx" />
         <text>{{t.t(loading ? 'login.loading' : 'login.button', lang)}}</text>
       </button>
     </view>

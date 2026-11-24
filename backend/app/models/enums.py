@@ -6,6 +6,7 @@ from enum import StrEnum
 class Role(StrEnum):
     USER = "user"
     SUPER_ADMIN = "super_admin"
+    CLASS_ADMIN = "class_admin"
 
 
 class Status(StrEnum):

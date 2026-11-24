@@ -68,9 +68,6 @@
     <view class="field"><view class="label-sub">{{t.t('profile.bio', lang)}}</view><t-textarea value="{{profile.bio}}" placeholder="{{t.t('profile.bio', lang)}}" bind:change="onBio" maxlength="500" disable-default-padding="{{true}}" autosize="{{true}}" /></view>
   </view>
 
-  <profile-visibility wx:if="{{profile}}" basic="{{profile.basic_visibility}}" contact="{{profile.contact_visibility}}"
-    details="{{profile.details_visibility}}" bind:change="onVisibility" />
-
   <view class="actions">
     <t-button theme="primary" size="large" loading="{{saving}}" bindtap="onSave" block>{{t.t('common.save', lang)}}</t-button>
   </view>

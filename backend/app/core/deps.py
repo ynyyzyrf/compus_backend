@@ -54,3 +54,12 @@ def require_super_admin(user: CurrentUser) -> User:
 
 
 SuperAdmin = Annotated[User, Depends(require_super_admin)]
+
+
+def require_affiliation_reviewer(user: CurrentUser) -> User:
+    if user.role not in {Role.SUPER_ADMIN, Role.CLASS_ADMIN}:
+        raise HTTPException(status_code=403, detail="需要班级管理员或超级管理员权限")
+    return user
+
+
+AffiliationReviewer = Annotated[User, Depends(require_affiliation_reviewer)]

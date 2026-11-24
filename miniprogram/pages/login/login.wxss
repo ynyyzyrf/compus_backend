@@ -1,119 +1,34 @@
-page {
-  background: #fcf7ef;
+page { background: #fcf7ef; }
+.login-page { position: relative; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; background: #fcf7ef; }
+.login-page::before, .login-page::after { position: absolute; z-index: 0; bottom: -120rpx; left: -12%; width: 108%; height: 240rpx; border-radius: 50%; background: #f4e7d7; content: ''; pointer-events: none; transform: rotate(8deg); }
+.login-page::after { bottom: -152rpx; left: 18%; width: 110%; height: 280rpx; background: #efdeca; transform: rotate(-12deg); }
+.campus-hero { position: relative; flex: none; height: 39vh; min-height: 360rpx; max-height: 600rpx; }
+.campus-photo { display: block; width: 100%; height: 100%; background: #e0dccb; }
+.photo-fade { position: absolute; right: 0; bottom: -1rpx; left: 0; height: 110rpx; background: linear-gradient(180deg, rgba(252,247,239,0), #fcf7ef); pointer-events: none; }
+.login-body { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; margin-top: -10rpx; padding: 0 44rpx 92rpx; padding-bottom: calc(92rpx + env(safe-area-inset-bottom)); }
+.brand-signature { display: flex; align-items: center; gap: 14rpx; color: #8f2d23; font-size: 30rpx; font-weight: 700; }
+.brand-seal { display: block; flex: none; width: 58rpx; height: 58rpx; border-radius: 13rpx; }
+.welcome-title { margin-top: 16rpx; color: #382414; font-family: 'Songti SC', 'STSong', 'SimSun', serif; font-size: 72rpx; font-weight: 700; line-height: 1.3; letter-spacing: 2rpx; }
+.welcome-description { margin-top: 12rpx; color: #6d5548; font-size: 27rpx; line-height: 1.6; }
+.welcome-rule { width: 62rpx; height: 7rpx; margin-top: 20rpx; border-radius: 4rpx; background: var(--brand); }
+.login-features { display: flex; align-items: stretch; margin: 52rpx -8rpx 0; }
+.login-feature { position: relative; display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: center; gap: 12rpx; color: #382414; font-size: 24rpx; font-weight: 500; white-space: nowrap; }
+.login-feature + .login-feature::before { position: absolute; top: 12rpx; bottom: 2rpx; left: 0; width: 1rpx; background: #eadbcb; content: ''; }
+.feature-icon { display: flex; align-items: center; justify-content: center; width: 68rpx; height: 64rpx; border-radius: 16rpx; background: #f7ecdf; color: #9b3025; }
+.login-actions { margin-top: auto; padding-top: 88rpx; }
+.login-primary { display: flex; align-items: center; justify-content: center; gap: 16rpx; width: 100% !important; max-width: none; height: 102rpx; min-height: 44px; margin: 0; padding: 22rpx 28rpx; border: 0; border-radius: 20rpx; background: #ab2e25; color: #fff; font-size: 34rpx; font-weight: 600; line-height: 1.3; }
+.login-primary::after { border: 0; }
+.login-primary-pressed { background: #8f241d; }
+@media (max-height: 650px) {
+  .campus-hero { height: 34vh; min-height: 280rpx; }
+  .login-body { padding-bottom: calc(36rpx + env(safe-area-inset-bottom)); }
+  .welcome-title { font-size: 64rpx; }
+  .login-features { margin-top: 32rpx; }
+  .login-actions { padding-top: 48rpx; }
 }
-
-.login-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #fcf7ef;
-}
-
-.campus-photo {
-  display: block;
-  flex: none;
-  width: 100%;
-  height: 47vh;
-  min-height: 340rpx;
-  max-height: 760rpx;
-  background: #e0dccb;
-}
-
-.login-body {
-  position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  margin-top: -44rpx;
-  padding: 42rpx 52rpx 28rpx;
-  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
-  border-radius: 44rpx 44rpx 0 0;
-  background: #fcf7ef;
-}
-
-.brand-signature {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
-  color: #832f27;
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.brand-seal {
-  display: flex;
-  flex: 0 0 48rpx;
-  align-items: center;
-  justify-content: center;
-  height: 48rpx;
-  border-radius: 10rpx;
-  background: #9a3429;
-  color: #fbe5b6;
-  font-size: 28rpx;
-  font-weight: 800;
-}
-
-.welcome-title {
-  color: #261c18;
-  font-size: 68rpx;
-  font-weight: 800;
-  line-height: 1.14;
-}
-
-.welcome-description {
-  margin-top: 16rpx;
-  color: #6d5548;
-  font-size: 28rpx;
-  line-height: 1.6;
-}
-
-.login-actions {
-  margin-top: auto;
-  padding-top: 44rpx;
-}
-
-.login-primary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  border: 0;
-  font-size: 30rpx;
-  line-height: 1.3;
-}
-
-.login-primary::after {
-  border: 0;
-}
-
-.login-primary {
-  gap: 16rpx;
-  width: 100% !important;
-  max-width: none;
-  min-height: 106rpx;
-  padding: 22rpx 28rpx;
-  border-radius: 18rpx;
-  background: #ab2e25;
-  color: #fff;
-  font-weight: 700;
-}
-
-.login-primary-pressed {
-  background: #8f241d;
-}
-
-@media (max-height: 570px) {
-  .campus-photo {
-    height: 38vh;
-    min-height: 240rpx;
-  }
-
-  .login-body {
-    padding-top: 32rpx;
-  }
-
-  .login-actions {
-    padding-top: 32rpx;
-  }
+@media (max-width: 340px) {
+  .login-body { padding-right: 32rpx; padding-left: 32rpx; }
+  .brand-signature { font-size: 28rpx; }
+  .login-feature { font-size: 23rpx; }
+  .welcome-description { font-size: 26rpx; }
 }

@@ -8,10 +8,12 @@ Page({
   async load() {
     const user = await ensureLogin().catch(() => null)
     if (!user) { goLogin(); return }
-    if (user.role !== 'super_admin') { wx.navigateBack(); return }
+    if (user.role !== 'super_admin' && user.role !== 'class_admin') { wx.navigateBack(); return }
     this.setData({ loading: true, error: '' })
     try {
-      const [items, missing] = await Promise.all([listAffiliationRequests(), listMissingClasses()])
+      const [items, missing] = await Promise.all([
+        listAffiliationRequests(), user.role === 'super_admin' ? listMissingClasses() : Promise.resolve([]),
+      ])
       this.setData({ items, missing })
     }
     catch (error) { this.setData({ error: (error as Error).message || '载入失败' }) }

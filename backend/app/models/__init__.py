@@ -10,6 +10,7 @@ from app.models.activity import (
 from app.models.content import Article, ArticleScope
 from app.models.connection import AlumniConnection, AlumniMessage
 from app.models.organization import (
+    ClassAdministrator,
     DirectoryPermission,
     Membership,
     Organization,
@@ -22,6 +23,7 @@ __all__ = [
     "User",
     "Organization",
     "Membership",
+    "ClassAdministrator",
     "DirectoryPermission",
     "AlumniConnection",
     "AlumniMessage",

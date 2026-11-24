@@ -10,6 +10,7 @@ Component({
     basic: { type: String, value: 'classmates' },
     contact: { type: String, value: 'private' },
     details: { type: String, value: 'private' },
+    disabled: { type: Boolean, value: false },
   },
   data: {
     options: ['仅自己', '好友', '同班同学和好友'],

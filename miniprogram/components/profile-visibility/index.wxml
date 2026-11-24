@@ -1,7 +1,7 @@
 <view class="visibility-card">
   <view class="visibility-title">名片可见范围</view>
   <view class="visibility-desc">能打开名片的人，才可看到你授权的对应资料。</view>
-  <picker wx:for="{{groups}}" wx:key="key" range="{{options}}" value="{{indices[selection[item.prop]]}}" data-key="{{item.key}}" bindchange="change">
+  <picker wx:for="{{groups}}" wx:key="key" range="{{options}}" value="{{indices[selection[item.prop]]}}" disabled="{{disabled}}" data-key="{{item.key}}" bindchange="change">
     <view class="visibility-row"><text>{{item.label}}</text><text class="audience">{{options[indices[selection[item.prop]]]}} ›</text></view>
   </picker>
 </view>

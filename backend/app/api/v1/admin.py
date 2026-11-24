@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query, status
+from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 
-from app.core.deps import DbSession, SuperAdmin
+from app.core.deps import AffiliationReviewer, DbSession, SuperAdmin
+from app.models.enums import Role
 from app.models.organization import Membership, Organization
 from app.models.user import User
 from app.schemas.admin import (
@@ -15,7 +17,7 @@ from app.schemas.admin import (
     OrgNodeCreate,
     OrgNodeUpdate,
 )
-from app.services import admin_service, affiliation_service
+from app.services import admin_service, affiliation_service, class_admin_service
 from app.services.directory_permission import get_primary_class_id
 from app.services.org_tree import load_org_tree
 
@@ -34,14 +36,17 @@ def dashboard(_: SuperAdmin, db: DbSession) -> DashboardStats:
 
 
 @router.get("/affiliation-requests")
-def list_affiliation_requests(_: SuperAdmin, db: DbSession) -> list[dict]:
+def list_affiliation_requests(reviewer: AffiliationReviewer, db: DbSession) -> list[dict]:
     tree = load_org_tree(db)
-    users = db.scalars(select(User).where(User.pending_class_id.is_not(None)).order_by(User.affiliation_requested_at, User.id)).all()
+    query = select(User).where(User.pending_class_id.is_not(None))
+    if reviewer.role != Role.SUPER_ADMIN:
+        query = query.where(User.pending_class_id.in_(class_admin_service.managed_class_ids(db, reviewer.id)))
+    users = db.scalars(query.order_by(User.affiliation_requested_at, User.id)).all()
     return [
         {
             "user_id": user.id,
             "name": user.name,
-            "verified_phone": user.verified_phone,
+            "verified_phone": user.verified_phone if reviewer.role == Role.SUPER_ADMIN else None,
             "class_id": user.pending_class_id,
             "org_path": affiliation_service.full_path(tree, user.pending_class_id) if user.pending_class_id in tree.nodes else "班级已失效",
             "requested_at": user.affiliation_requested_at,
@@ -51,13 +56,15 @@ def list_affiliation_requests(_: SuperAdmin, db: DbSession) -> list[dict]:
 
 
 @router.post("/affiliation-requests/{user_id}/approve")
-def approve_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> dict:
+def approve_affiliation_request(user_id: int, reviewer: AffiliationReviewer, db: DbSession) -> dict:
+    class_admin_service.require_can_review(db, reviewer, user_id)
     affiliation_service.review_affiliation(db, user_id, approve=True)
     return {"ok": True}
 
 
 @router.post("/affiliation-requests/{user_id}/reject")
-def reject_affiliation_request(user_id: int, _: SuperAdmin, db: DbSession) -> dict:
+def reject_affiliation_request(user_id: int, reviewer: AffiliationReviewer, db: DbSession) -> dict:
+    class_admin_service.require_can_review(db, reviewer, user_id)
     affiliation_service.review_affiliation(db, user_id, approve=False)
     return {"ok": True}
 
@@ -142,7 +149,10 @@ def list_members(
 def update_member(
     user_id: int, payload: MemberUpdate, _: SuperAdmin, db: DbSession
 ) -> MemberAdminOut:
-    user = admin_service.update_member(db, user_id, payload)
+    try:
+        user = admin_service.update_member(db, user_id, payload)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="成员不存在")
     class_id = get_primary_class_id(db, user_id)
@@ -173,6 +183,33 @@ def set_member_status(
 
 
 # ===== organizations =====
+
+
+class ClassAdministratorInput(BaseModel):
+    user_id: int = Field(gt=0)
+
+
+@router.get("/organizations/{class_id}/class-admins")
+def list_class_administrators(class_id: int, _: SuperAdmin, db: DbSession) -> dict:
+    return class_admin_service.administrator_list(db, class_id)
+
+
+@router.get("/organizations/{class_id}/class-admin-candidates")
+def class_administrator_candidates(class_id: int, _: SuperAdmin, db: DbSession,
+                                   q: str = Query(default="", max_length=80),
+                                   page: int = Query(default=1, ge=1),
+                                   page_size: int = Query(default=20, ge=1, le=100)) -> dict:
+    return class_admin_service.candidates(db, class_id, q, page, page_size)
+
+
+@router.post("/organizations/{class_id}/class-admins")
+def add_class_administrator(class_id: int, payload: ClassAdministratorInput, _: SuperAdmin, db: DbSession) -> dict:
+    return class_admin_service.add_administrator(db, class_id, payload.user_id)
+
+
+@router.delete("/organizations/{class_id}/class-admins/{user_id}")
+def remove_class_administrator(class_id: int, user_id: int, _: SuperAdmin, db: DbSession) -> dict:
+    return class_admin_service.remove_administrator(db, class_id, user_id)
 
 
 @router.get("/organizations", response_model=list[OrgNodeAdminOut])

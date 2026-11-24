@@ -1,224 +1,54 @@
 .home-page {
-  padding-top: 24rpx;
-}
-
-.home-banner {
-  display: block;
-  width: 100%;
-  height: 330rpx;
-  margin-bottom: 20rpx;
-  border-radius: 26rpx;
-}
-
-.home-shortcuts {
-  display: flex;
-  background: var(--card);
-  border: 1rpx solid var(--line);
-  border-radius: 12rpx;
-}
-
-.home-shortcut {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  min-height: 104rpx;
-  align-items: center;
-  gap: 14rpx;
-  padding: 20rpx 24rpx;
-  color: var(--ink);
-  font-size: 29rpx;
-  font-weight: 650;
-}
-
-.home-shortcut + .home-shortcut {
-  border-left: 1rpx solid var(--line);
-}
-
-.home-shortcut-icon {
-  color: var(--brand);
-}
-
-.home-shortcut .home-chevron {
-  margin-left: auto;
-}
-
-.home-chevron {
-  flex: none;
-  color: var(--muted);
-}
-
-.home-pinned {
-  margin-top: 20rpx;
-  background: var(--card);
-  border-left: 4rpx solid var(--gold);
-  border-radius: 8rpx;
-}
-
-.home-pin-label {
-  flex: none;
-  color: var(--brand);
-  font-size: 24rpx;
-  font-weight: 600;
-}
-
-.home-pin-title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--ink);
-  font-size: 28rpx;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.home-section {
-  margin-top: 32rpx;
-  padding-top: 12rpx;
-  border-top: 1rpx solid var(--line);
-}
-
-.home-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16rpx;
-  min-height: 88rpx;
-}
-
-.home-section-title {
-  color: var(--ink);
-  font-size: 34rpx;
-  font-weight: 650;
-}
-
-.home-more {
-  display: flex;
-  align-items: center;
-  gap: 4rpx;
-  min-height: 88rpx;
-  color: var(--muted);
-  font-size: 24rpx;
-}
-
-.home-row {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  min-height: 92rpx;
-  padding: 18rpx 0;
-}
-
-.home-list .home-row + .home-row {
-  border-top: 1rpx solid var(--line);
-}
-
-.home-pinned.home-row {
-  padding: 20rpx 24rpx;
-}
-
-.home-row-pressed {
+  padding: 16px 16px 92px;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
   background: var(--bg);
 }
-
-.home-thumb {
-  display: block;
-  flex: none;
-  width: 130rpx;
-  height: 92rpx;
-  border-radius: 8rpx;
-}
-
-.home-activity-preview {
-  width: 164rpx;
-  height: 116rpx;
-  border-radius: 12rpx;
-}
-
-.home-article-with-cover .home-thumb {
-  width: 220rpx;
-  height: 156rpx;
-  border-radius: 12rpx;
-}
-
-.home-article-with-cover .home-row-body {
-  display: flex;
-  align-self: stretch;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 4rpx 0;
-}
-
-.home-row-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.home-row-title {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--ink);
-  font-size: 29rpx;
-  font-weight: 600;
-  line-height: 1.4;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.home-meta {
-  overflow: hidden;
-  margin-top: 5rpx;
-  color: var(--muted);
-  font-size: 25rpx;
-  line-height: 1.4;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.home-row-end {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 4rpx;
-  white-space: nowrap;
-}
-
-.home-status {
-  color: var(--muted);
-  font-size: 23rpx;
-}
-
-.home-status-active {
-  color: var(--brand);
-  font-weight: 600;
-}
-
-.home-invite,
-.home-inline-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12rpx;
-  min-height: 88rpx;
-  margin-top: 20rpx;
-  padding: 14rpx 24rpx;
-  background: var(--card);
-  border-radius: 12rpx;
-  color: var(--brand);
-  font-size: 26rpx;
-}
-
-.home-invite text {
-  padding: 12rpx 0;
-}
-
-.home-invite-later,
-.home-empty {
-  color: var(--muted);
-}
-
-.home-empty {
-  padding: 52rpx 24rpx;
-  text-align: center;
-  font-size: 26rpx;
+.home-banner { display: block; width: 100%; height: 330rpx; border-radius: 12px; }
+.home-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.home-shortcut { min-width: 0; min-height: 88px; padding: 15px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.home-shortcut-heading { display: flex; align-items: center; gap: 7px; color: var(--ink); font-size: 15px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+.home-shortcut-icon { flex: none; color: var(--brand); }
+.home-shortcut-heading .home-chevron { margin-left: auto; }
+.home-shortcut-description { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.home-chevron { flex: none; color: var(--muted); }
+.home-pinned { display: flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 20px; padding: 11px 12px; border-radius: 10px; background: #f0e6d8; }
+.home-notice-icon { flex: none; color: var(--brand); }
+.home-pin-label { flex: none; color: var(--brand); font-size: 11px; font-weight: 500; }
+.home-pin-title { flex: 1; min-width: 0; overflow: hidden; color: var(--ink); font-size: 13px; font-weight: 400; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.home-section { margin-top: 24px; }
+.home-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; }
+.home-section-title { color: var(--ink); font-size: 17px; font-weight: 600; line-height: 1.5; }
+.home-more { display: flex; align-items: center; gap: 2px; min-height: 44px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.home-activities { padding: 2px 14px 2px; border-radius: 12px; background: var(--card); }
+.home-row { display: flex; align-items: center; gap: 12px; min-height: 76px; padding: 13px 0; }
+.home-list .home-row + .home-row { border-top: 1px solid var(--line); }
+.home-row-pressed { background: #f2eade; }
+.home-thumb { display: block; flex: none; width: 76px; height: 58px; border-radius: 8px; }
+.home-activity-preview { width: 80px; height: 76px; }
+.home-row-body { flex: 1; min-width: 0; }
+.home-row-title { display: -webkit-box; overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.home-activity-info { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 5px 8px; margin-top: 7px; }
+.home-meta-line { display: flex; align-items: center; gap: 4px; min-width: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.home-meta-line t-icon { flex: none; }
+.home-meta-line text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-location { margin-top: 5px; font-size: 12px; }
+.home-status { flex: none; max-width: 100%; padding: 2px 6px; border-radius: 4px; background: #f1ebe3; color: #887463; font-size: 11px; font-weight: 400; line-height: 1.5; white-space: nowrap; }
+.home-status-active { background: #f3e4db; color: var(--brand); }
+.home-announcements .home-list { padding: 0 14px; border-radius: 12px; background: var(--card); }
+.home-article-heading { display: flex; align-items: flex-start; gap: 7px; min-width: 0; }
+.home-document-icon { flex: none; margin-top: 2px; color: #aa8b73; }
+.home-article-heading .home-row-title { flex: 1; min-width: 0; font-weight: 400; }
+.home-meta { overflow: hidden; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
+.home-article-date { margin-left: 22px; font-size: 11px; }
+.home-article-with-cover .home-thumb { width: 88px; height: 66px; }
+.home-article-with-cover .home-row-body { display: flex; align-self: stretch; flex-direction: column; justify-content: space-between; padding: 2px 0; }
+.home-inline-action { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin-top: 24px; padding: 10px 12px; border-radius: 10px; background: var(--card); color: var(--brand); font-size: 13px; line-height: 1.5; }
+.home-empty { color: var(--muted); }
+.home-empty { padding: 28px 12px; text-align: center; font-size: 13px; line-height: 1.6; }
+@media (max-width: 340px) {
+  .home-shortcut { padding-right: 10px; padding-left: 10px; }
+  .home-shortcut-heading { gap: 5px; font-size: 14px; }
+  .home-activities { padding-right: 12px; padding-left: 12px; }
+  .home-activity-preview { width: 70px; height: 76px; }
+  .home-activity-row { gap: 10px; }
 }

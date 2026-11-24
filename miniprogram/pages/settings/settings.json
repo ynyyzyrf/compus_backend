@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "设置",
+  "usingComponents": {
+    "profile-visibility": "/components/profile-visibility/index",
+    "t-icon": "tdesign-miniprogram/icon/icon"
+  }
+}

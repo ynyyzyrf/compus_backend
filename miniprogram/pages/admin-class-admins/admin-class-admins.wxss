@@ -1,0 +1,16 @@
+.administrators-page { min-height: 100vh; padding: 20px 16px 32px; padding-bottom: calc(32px + env(safe-area-inset-bottom)); background: var(--bg); }
+.class-name { font-size: 20px; font-weight: 600; color: var(--ink); line-height: 1.5; }
+.section-heading { display: flex; align-items: center; gap: 10px; margin: 24px 0 12px; font-size: 15px; font-weight: 600; color: var(--ink); }
+.count { font-size: 12px; color: var(--muted); font-weight: 400; }
+.people-list { padding: 0 12px; border-radius: 12px; background: var(--card); }
+.person-row { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.person-row:last-child { border-bottom: 0; }
+.person-copy, .person-name { flex: 1; min-width: 0; }
+.person-name { font-size: 14px; line-height: 1.5; color: var(--ink); word-break: break-word; }
+.person-org { margin-top: 5px; font-size: 12px; color: var(--muted); line-height: 1.5; word-break: break-word; }
+.text-action { display: flex; align-items: center; justify-content: center; flex: none; min-height: 44px; margin: 0; padding: 8px; border: 0; background: transparent; color: var(--brand); font-size: 13px; line-height: 1.5; }
+.text-action::after { border: 0; }
+.search-bar { display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+.search-input { flex: 1; min-width: 0; height: 48px; color: var(--ink); font-size: 14px; }
+.state { padding: 20px 8px; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+.more-button { margin-top: 16px; color: var(--brand); font-size: 13px; }

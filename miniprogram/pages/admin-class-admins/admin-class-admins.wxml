@@ -1,0 +1,29 @@
+<view class="administrators-page">
+  <view wx:if="{{loading}}" class="state">正在加载…</view>
+  <block wx:else>
+    <view class="class-name">{{className}}</view>
+    <view class="section-heading">班级管理员 <text class="count">{{administrators.length}} 人</text></view>
+    <view class="people-list">
+      <view wx:for="{{administrators}}" wx:key="id" class="person-row">
+        <view class="person-name">{{item.name}}<text wx:if="{{item.status === 'disabled'}}" class="count">（已停用）</text></view>
+        <button class="text-action" data-id="{{item.id}}" bindtap="remove" disabled="{{busyId !== 0}}">移除</button>
+      </view>
+      <view wx:if="{{!administrators.length && !error}}" class="state">暂未设置管理员</view>
+    </view>
+    <view class="section-heading">添加管理员</view>
+    <view class="search-bar">
+      <input class="search-input" value="{{keyword}}" placeholder="搜索用户姓名" maxlength="80" bindinput="onKeyword" confirm-type="search" bindconfirm="onSearch" />
+      <button class="text-action" bindtap="onSearch" disabled="{{searching}}">搜索</button>
+    </view>
+    <view wx:if="{{error}}" class="state">{{error}}</view>
+    <view class="people-list">
+      <view wx:for="{{candidates}}" wx:key="id" class="person-row">
+        <view class="person-copy"><view class="person-name">{{item.name}}</view><view class="person-org">{{item.org_path || '尚未加入组织'}}</view></view>
+        <button class="text-action" data-id="{{item.id}}" bindtap="assign" disabled="{{busyId !== 0}}">添加</button>
+      </view>
+      <view wx:if="{{searching}}" class="state">正在搜索…</view>
+      <view wx:elif="{{!candidates.length && !error}}" class="state">没有可添加的用户</view>
+    </view>
+    <button wx:if="{{candidates.length < total}}" class="more-button" bindtap="showMore" disabled="{{searching}}">查看更多用户</button>
+  </block>
+</view>

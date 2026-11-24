@@ -4,6 +4,7 @@
     <view class="label-sub">角色</view>
     <t-radio-group value="{{m.role}}" bind:change="onRole">
       <view class="row"><t-radio value="user" label="用户" /></view>
+      <view wx:if="{{m.role === 'class_admin'}}" class="row"><t-radio value="class_admin" label="班级管理员（由组织架构分配）" disabled="{{true}}" /></view>
       <view class="row"><t-radio value="super_admin" label="超级管理员" /></view>
     </t-radio-group>
 

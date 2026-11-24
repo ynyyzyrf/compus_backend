@@ -42,7 +42,7 @@ export function reviewAffiliation(userId: number, action: 'approve' | 'reject'):
 
 export function listMembers(params: {
   q?: string
-  role?: 'user' | 'super_admin'
+  role?: 'user' | 'class_admin' | 'super_admin'
   status?: 'active' | 'disabled'
   college_id?: number
   department_id?: number
@@ -79,6 +79,37 @@ export function setMemberStatus(
 // ===== organizations =====
 export function listOrganizations(): Promise<OrgNodeAdminOut[]> {
   return request<OrgNodeAdminOut[]>({ url: '/admin/organizations' })
+}
+
+export interface ClassAdministrator {
+  id: number
+  name: string
+  status: 'active' | 'disabled'
+}
+
+export interface ClassAdministratorList {
+  class_id: number
+  class_name: string
+  items: ClassAdministrator[]
+}
+
+export interface ClassAdministratorCandidate { id: number; name: string; org_path: string }
+export interface ClassAdministratorCandidates { items: ClassAdministratorCandidate[]; total: number; page: number; page_size: number }
+
+export function listClassAdministrators(classId: number): Promise<ClassAdministratorList> {
+  return request({ url: `/admin/organizations/${classId}/class-admins` })
+}
+
+export function listClassAdministratorCandidates(classId: number, q: string, page = 1): Promise<ClassAdministratorCandidates> {
+  return request({ url: `/admin/organizations/${classId}/class-admin-candidates${qs({ q, page, page_size: 20 })}` })
+}
+
+export function addClassAdministrator(classId: number, userId: number): Promise<ClassAdministratorList> {
+  return request({ url: `/admin/organizations/${classId}/class-admins`, method: 'POST', data: { user_id: userId } })
+}
+
+export function removeClassAdministrator(classId: number, userId: number): Promise<ClassAdministratorList> {
+  return request({ url: `/admin/organizations/${classId}/class-admins/${userId}`, method: 'DELETE' })
 }
 
 export interface OrgNodePayload {

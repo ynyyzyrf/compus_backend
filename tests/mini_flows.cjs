@@ -68,6 +68,7 @@ test('login reports a failed home navigation', async () => {
   const page = loadPage('miniprogram/pages/login/login.ts', {
     '../../config/env': { IS_DEV: false },
     '../../services/auth': { loginWithWechat: async () => ({ id: 1 }) },
+    '../../services/affiliation': { getMyAffiliation: async () => ({ class_id: 4 }) },
     '../../utils/i18n': { locale: { get: () => 'zh-CN' }, t: (key) => key },
     '../../utils/session': { session: {
       hasOnboarded: () => true,
@@ -139,6 +140,7 @@ for (const kind of ['profile-edit', 'profile-setup']) {
     await page.onSave()
     assert.equal(saved[0].name, '新姓名')
     assert.equal(Object.keys(saved[0]).some(key => key.startsWith('chamber_')), false)
+    assert.equal(Object.keys(saved[0]).some(key => key.endsWith('_visibility')), false, 'profile edits must not overwrite settings permissions')
     assert.equal(saved[1].name, '新姓名')
     assert.deepEqual(navigations, ['back'])
 

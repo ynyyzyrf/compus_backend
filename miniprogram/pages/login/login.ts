@@ -34,17 +34,15 @@ Page({
   async routeAfterLogin() {
     const user = session.getUser()
     if (!user) return
-    if (user.role !== 'super_admin') {
-      try {
-        const affiliation = await getMyAffiliation()
-        if (!affiliation.class_id && !affiliation.pending_class_id) {
-          wx.redirectTo({ url: '/pages/org-select/org-select' })
-          return
-        }
-      } catch (error) {
-        showLoginError(loginErrorMessage(error))
+    try {
+      const affiliation = await getMyAffiliation()
+      if (!affiliation.class_id && !affiliation.pending_class_id) {
+        wx.redirectTo({ url: '/pages/org-select/org-select' })
         return
       }
+    } catch (error) {
+      showLoginError(loginErrorMessage(error))
+      return
     }
     wx.switchTab({ url: '/pages/home/home', fail: (error) => showLoginError(loginErrorMessage(error)) })
   },

@@ -3,7 +3,7 @@
 from collections import Counter
 from datetime import datetime, timezone
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from app.models.activity import Activity, ActivityCheckin, ActivitySignup
@@ -14,6 +14,7 @@ from app.models.enums import (
     Status,
 )
 from app.models.organization import (
+    ClassAdministrator,
     DirectoryPermission,
     Membership,
     Organization,
@@ -93,10 +94,16 @@ def list_members(
 
 
 def update_member(db: Session, user_id: int, payload) -> User | None:
-    u = db.get(User, user_id)
+    u = db.get(User, user_id, with_for_update=True)
     if u is None:
         return None
     data = payload.model_dump(exclude_unset=True)
+    if data.get("role") == Role.CLASS_ADMIN and not db.scalar(
+        select(ClassAdministrator.user_id).where(ClassAdministrator.user_id == user_id).limit(1)
+    ):
+        raise ValueError("请在组织架构中分配班级管理员")
+    if data.get("role") in {Role.USER, Role.SUPER_ADMIN}:
+        db.execute(delete(ClassAdministrator).where(ClassAdministrator.user_id == user_id))
     for key, value in data.items():
         setattr(u, key, value)
     db.commit()

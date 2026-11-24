@@ -168,17 +168,44 @@ test('finding a class handles legacy paths and submits the exact matching class'
     },
     '../../utils/session': { session: { isGuest: () => false, getUser: () => null } },
     '../../utils/academic': academics,
-  }, { pageScrollTo() {}, showToast() {} })
+  }, { pageScrollTo() {}, showToast() {}, setNavigationBarTitle() {} })
   await page.load()
   assert.equal(page.data.classes.length, 3)
   page.search({ detail: { value: '2018 软件工程 2 班' } })
   assert.equal(page.data.shown.length, 1)
   assert.equal(page.data.shown[0].id, 5)
   page.choose({ currentTarget: { dataset: { id: 5 } } })
+  assert.equal(page.data.step, 'select')
+  await page.submit()
+  assert.equal(sent.length, 0, 'choosing a class must not submit an application')
+  page.nextStep()
+  assert.equal(page.data.step, 'confirm')
   page.onNameInput({ detail: { value: ' 张明 ' } })
   await page.submit()
   assert.deepEqual(sent, [[5, '张明']])
   assert.match(page.data.pendingPath, /软件工程/)
+  assert.equal(page.data.step, 'pending')
+})
+
+test('class confirmation preserves the draft on reselect and clears a selection excluded by filters', () => {
+  const page = loadPage('org-select', {
+    '../../utils/academic': academics,
+  }, { setNavigationBarTitle() {}, pageScrollTo() {} })
+  page.setData({ classes: academics.academicClasses(nodes), loading: false })
+  page.filter()
+  page.nextStep()
+  assert.equal(page.data.step, 'select')
+  page.choose({ currentTarget: { dataset: { id: 5 } } })
+  page.nextStep()
+  page.onNameInput({ detail: { value: '张明' } })
+  page.reselect()
+  assert.equal(page.data.step, 'select')
+  assert.equal(page.data.chosen.id, 5)
+  assert.equal(page.data.name, '张明')
+  page.search({ detail: { value: '12班' } })
+  assert.equal(page.data.chosen, null)
+  page.nextStep()
+  assert.equal(page.data.step, 'select')
 })
 
 test('keyword and academic filters are sent together; a discovery card does not open a full profile', async () => {

@@ -1,32 +1,86 @@
-<view class="page-pad">
-  <view wx:if="{{loading}}" class="card">载入中...</view>
-  <view wx:elif="{{error}}" class="card"><text>{{error}}</text><button bindtap="load">重试</button></view>
-  <view wx:elif="{{pendingPath}}" class="card">
-    <view class="title">等待管理员审核</view>
-    <view class="path">{{pendingPath}}</view>
-    <view class="muted">审核通过后即可查看所属组织的通讯录。</view>
-    <button class="primary" bindtap="enterHome">进入首页</button>
+<view class="org-page">
+  <view wx:if="{{loading}}" class="page-state">正在加载班级…</view>
+  <view wx:elif="{{error}}" class="page-state">
+    <view>{{error}}</view>
+    <button class="retry-button" bindtap="load">重新加载</button>
   </view>
-  <view wx:else>
-    <view class="card">
-      <view class="title">找回组织</view>
-      <input class="choice" maxlength="80" value="{{keyword}}" placeholder="搜索学校、年份、专业或班级" bindinput="search" />
-      <academic-filters classes="{{classes}}" show-school="{{true}}" bind:select="onFilter" />
-      <view class="muted">{{searchCount}} 个班级</view>
-      <view wx:for="{{shown}}" wx:key="id" class="class-option {{chosen.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="choose">
-        <text>{{item.label}}</text>
-        <view class="muted">{{item.path}}</view>
+  <block wx:else>
+    <view hidden="{{step !== 'select'}}">
+      <view class="org-heading">
+        <view class="org-title">寻找你的同学</view>
+        <view class="org-description">选择所在班级，找回昔日同窗。</view>
       </view>
-      <button wx:if="{{searchCount > shown.length}}" size="mini" bindtap="showMore">查看更多班级</button>
-      <view class="link" bindtap="report">找不到我的班级</view>
+      <view class="class-search">
+        <t-icon name="search" size="34rpx" color="#94877e" />
+        <input class="search-input" value="{{keyword}}" maxlength="80" placeholder="搜索年份、专业或班级"
+          placeholder-class="input-placeholder" confirm-type="search" bindinput="search" />
+        <view wx:if="{{keyword}}" class="search-clear" aria-role="button" aria-label="清空搜索" bindtap="clearSearch">
+          <t-icon name="close" size="28rpx" />
+        </view>
+      </view>
+      <academic-filters classes="{{classes}}" tiles="{{true}}" bind:select="onFilter" />
+      <view class="result-count">共 {{searchCount}} 个班级</view>
+      <view wx:if="{{shown.length}}" class="class-list">
+        <view wx:for="{{shown}}" wx:key="id" class="class-row">
+          <view class="class-option {{chosen.id === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="choose"
+            hover-class="class-pressed" aria-role="button" aria-label="{{item.path}}，{{chosen.id === item.id ? '已选择' : '未选择'}}">
+            <view class="class-copy">
+              <view class="class-name">{{item.label}}</view>
+              <view class="class-path">{{item.school.name}} · {{item.college.name}} · {{item.department.name}}{{item.major ? ' · ' + item.major.name : ''}}</view>
+            </view>
+            <view class="selection-dot {{chosen.id === item.id ? 'checked' : ''}}">
+              <t-icon wx:if="{{chosen.id === item.id}}" name="check" size="22rpx" />
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty-classes">{{classes.length ? '没有找到匹配的班级，试试其他关键词或筛选条件。' : '暂时没有可选班级，可将班级信息反馈给管理员。'}}</view>
+      <button wx:if="{{searchCount > shown.length}}" class="text-button" bindtap="showMore">查看更多班级</button>
+      <button class="text-button missing-class" bindtap="report">找不到我的班级？</button>
     </view>
-    <view wx:if="{{chosen}}" class="card confirmation" id="confirm-class">
-      <view class="label">确认班级</view>
-      <view class="path">{{chosen.path}}</view>
-      <view class="label">姓名</view>
-      <input class="choice name-input" maxlength="64" value="{{name}}" placeholder="请输入真实姓名" bindinput="onNameInput" />
-      <button class="primary" loading="{{submitting}}" bindtap="submit">提交归属申请</button>
+
+    <view wx:if="{{step === 'confirm' && chosen}}">
+      <view class="org-heading">
+        <view class="org-title">确认你的班级</view>
+        <view class="org-description">核对班级及个人资料后提交申请。</view>
+      </view>
+      <view class="confirmation-card">
+        <view class="chosen-heading">
+          <view class="class-emblem"><t-icon name="education" size="42rpx" /></view>
+          <view class="chosen-summary">
+            <view class="chosen-name">{{chosen.label}}</view>
+            <view class="chosen-school">{{chosen.school.name}}</view>
+          </view>
+        </view>
+        <view class="chosen-details">
+          <view class="detail-label">所属组织</view>
+          <view class="detail-value">{{chosen.college.name}}</view>
+          <view class="detail-value">{{chosen.department.name}}</view>
+          <view wx:if="{{chosen.major}}" class="detail-value">{{chosen.major.name}}</view>
+          <view wx:if="{{chosen.year}}" class="detail-value">{{chosen.year}}级</view>
+        </view>
+        <button class="text-button reselect-button" bindtap="reselect" disabled="{{submitting}}">重新选择</button>
+      </view>
+      <view class="name-field">
+        <view class="name-label">姓名</view>
+        <input class="name-input" maxlength="64" value="{{name}}" placeholder="请输入真实姓名" placeholder-class="input-placeholder"
+          disabled="{{submitting}}" cursor-spacing="120" bindinput="onNameInput" confirm-type="done" />
+        <view class="name-description">请填写真实姓名，以便核实同学身份。</view>
+      </view>
     </view>
-  </view>
-  <view class="sign-out" bindtap="signOut">退出登录</view>
+
+    <view wx:if="{{step === 'pending'}}" class="pending-state">
+      <view class="pending-symbol"><t-icon name="time" size="64rpx" /></view>
+      <view class="org-title">等待管理员审核</view>
+      <view class="pending-path">{{pendingPath}}</view>
+      <view class="org-description">审核通过后即可查看所属组织的通讯录。</view>
+    </view>
+
+    <view class="org-footer">
+      <button wx:if="{{step === 'select'}}" class="org-primary" disabled="{{!chosen}}" bindtap="nextStep">下一步</button>
+      <button wx:elif="{{step === 'confirm'}}" class="org-primary" loading="{{submitting}}" disabled="{{submitting || !canSubmit}}" bindtap="submit">提交加入申请</button>
+      <button wx:else class="org-primary" bindtap="enterHome">进入首页</button>
+      <view wx:if="{{step === 'confirm'}}" class="footer-note">提交后请等待管理员审核</view>
+    </view>
+  </block>
 </view>

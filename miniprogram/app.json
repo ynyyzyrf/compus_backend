@@ -12,6 +12,7 @@
     "pages/relay-list/relay-list",
     "pages/relay-detail/relay-detail",
     "pages/mine/mine",
+    "pages/settings/settings",
     "pages/connections/connections",
     "pages/friend-messages/friend-messages",
     "pages/my-activities/my-activities",
@@ -28,6 +29,7 @@
     "pages/admin-affiliations/admin-affiliations",
     "pages/admin-member-edit/admin-member-edit",
     "pages/admin-orgs/admin-orgs",
+    "pages/admin-class-admins/admin-class-admins",
     "pages/admin-permissions/admin-permissions",
     "pages/admin-relays/admin-relays",
     "pages/admin-relay-editor/admin-relay-editor",
@@ -41,15 +43,15 @@
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "圆螺岭同学录",
-    "navigationBarBackgroundColor": "#f8fbff",
-    "backgroundColor": "#f4f7fb",
+    "navigationBarBackgroundColor": "#f6f2eb",
+    "backgroundColor": "#f6f2eb",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
     "custom": true,
-    "color": "#80878f",
-    "selectedColor": "#1f73ff",
-    "backgroundColor": "#ffffff",
+    "color": "#948679",
+    "selectedColor": "#92392c",
+    "backgroundColor": "#fffcf8",
     "list": [
       { "pagePath": "pages/home/home", "text": "首页" },
       { "pagePath": "pages/directory/directory", "text": "通讯录" },

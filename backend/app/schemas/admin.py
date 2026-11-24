@@ -66,7 +66,7 @@ class MemberUpdate(BaseModel):
 
     name: str | None = Field(default=None, min_length=1, max_length=64)
     status: str | None = Field(default=None, pattern="^(active|disabled)$")
-    role: str | None = Field(default=None, pattern="^(user|super_admin)$")
+    role: str | None = Field(default=None, pattern="^(user|class_admin|super_admin)$")
 
     phone: str | None = Field(default=None, max_length=32)
     wechat_id: str | None = Field(default=None, max_length=64)

@@ -95,9 +95,6 @@
     </view>
   </view>
 
-  <profile-visibility wx:if="{{profile}}" basic="{{profile.basic_visibility}}" contact="{{profile.contact_visibility}}"
-    details="{{profile.details_visibility}}" bind:change="onVisibility" />
-
   <view class="actions">
     <t-button theme="primary" size="large" loading="{{saving}}" bindtap="onSave" block>{{t.t('common.save', lang)}}</t-button>
     <t-button theme="default" size="large" variant="outline" bindtap="onSkip" block>{{t.t('common.skip', lang)}}</t-button>

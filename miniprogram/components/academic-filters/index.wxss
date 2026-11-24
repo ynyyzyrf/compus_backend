@@ -21,3 +21,9 @@
 .compact .filter.selected { color: var(--brand, #b92722); font-weight: 600; }
 .compact .filter-label { max-width: 245rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .compact .filter-arrow { flex: none; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12rpx; margin: 24rpx 0; }
+.tiles .filter-picker { min-width: 0; }
+.tiles .filter { display: flex; align-items: center; justify-content: center; gap: 6rpx; min-height: 44px; padding: 16rpx 12rpx; background: #ece7e1; color: #54453c; font-size: 25rpx; }
+.tiles .filter-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tiles .filter-arrow { flex: none; }
+.tiles .filter.selected { background: #f5e2dd; color: var(--brand, #b92722); }

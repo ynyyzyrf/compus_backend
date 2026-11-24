@@ -1,28 +1,28 @@
 /* ===== TDesign 品牌主題覆蓋（圆螺岭同学录紅金） ===== */
 page {
   /* TDesign 主題變量 */
-  --td-brand-color: #b92722;
-  --td-brand-color-light: #fff4e1;
-  --td-brand-color-focus: #8f1f1a;
+  --td-brand-color: #92392c;
+  --td-brand-color-light: #f2e7dd;
+  --td-brand-color-focus: #7b3025;
   --td-warning-color: #d7aa44;
   --td-error-color: #f04b4b;
 
-  /* 業務色板（紅金商會主題） */
-  --brand: #b92722;
-  --brand-2: #8f1f1a;
-  --brand-soft: #fff4e1;
+  /* 圆螺岭同学录：温暖校园色板 */
+  --brand: #92392c;
+  --brand-2: #7b3025;
+  --brand-soft: #f2e7dd;
   --gold: #d7aa44;
   --gold-soft: #f7e8bd;
   --cyan: #55b9c6;
   --mint: #45b986;
   --amber: #d7aa44;
-  --ink: #111827;
-  --muted: #7d6f68;
-  --subtle: #aa9b91;
-  --line: #efe4dc;
-  --bg: #f7f3ef;
-  --card: #ffffff;
-  --shadow: 0 14rpx 42rpx rgba(126, 40, 34, 0.08);
+  --ink: #332820;
+  --muted: #948679;
+  --subtle: #ad9f91;
+  --line: #e9e0d5;
+  --bg: #f6f2eb;
+  --card: #fffcf8;
+  --shadow: none;
 
   background: var(--bg);
   color: var(--ink);
@@ -44,9 +44,7 @@ button {
   min-height: 100vh;
   padding: 28rpx 24rpx 144rpx;
   padding-bottom: calc(144rpx + env(safe-area-inset-bottom));
-  background:
-    radial-gradient(circle at 0 0, rgba(185, 39, 34, 0.1), transparent 360rpx),
-    linear-gradient(180deg, #fff9f1 0%, #f7f3ef 42%, #f8f5f1 100%);
+  background: var(--bg);
 }
 
 .card {

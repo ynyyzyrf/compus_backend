@@ -231,4 +231,20 @@
   color: #333;
 }
 .requests-count { margin-left: auto; color: #fff; background: var(--brand); border-radius: 16rpx; padding: 4rpx 14rpx; font-size: 22rpx; }
-.discover-status { margin-left: auto; font-size: 24rpx; }
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 48rpx) !important;
+  max-width: none;
+  height: 96rpx;
+  min-height: 44px;
+  margin: 24rpx 24rpx 0;
+  padding: 20rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  color: var(--brand);
+  font-size: 28rpx;
+  line-height: 1.4;
+}
+.logout-button::after { border: 0; }

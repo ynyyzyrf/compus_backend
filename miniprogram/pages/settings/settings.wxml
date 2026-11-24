@@ -1,0 +1,18 @@
+<view class="settings-page">
+  <view wx:if="{{loading}}" class="settings-state">正在加载设置…</view>
+  <view wx:elif="{{error}}" class="settings-state">
+    <view>{{error}}</view>
+    <button class="retry-button" bindtap="load">重新加载</button>
+  </view>
+  <block wx:elif="{{profile}}">
+    <profile-visibility basic="{{profile.basic_visibility}}" contact="{{profile.contact_visibility}}"
+      details="{{profile.details_visibility}}" disabled="{{saving}}" bind:change="onVisibility" />
+    <view class="discovery-card" aria-role="button" aria-label="允许本校校友找到我，{{discoverable ? '已开启' : '未开启'}}"
+      aria-disabled="{{saving}}" bindtap="setDiscoverability">
+      <text class="discovery-label">允许本校校友找到我</text>
+      <text class="discovery-status">{{discoverable ? '已开启' : '未开启'}}</text>
+      <t-icon name="chevron-right" size="28rpx" class="discovery-arrow" />
+    </view>
+    <view wx:if="{{saving}}" class="saving-status">正在保存…</view>
+  </block>
+</view>

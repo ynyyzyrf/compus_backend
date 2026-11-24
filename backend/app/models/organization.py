@@ -58,6 +58,14 @@ class Membership(Base):
     )
 
 
+class ClassAdministrator(Base):
+    __tablename__ = "class_administrators"
+
+    organization_id: Mapped[int] = mapped_column(ForeignKey("organizations.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class DirectoryPermission(Base):
     """Readability switch for an org node.
 

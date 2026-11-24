@@ -16,7 +16,7 @@
         <view class="hero-info">
           <view class="name-line">
             <text class="login-name">{{user ? user.name : (t.t('mine.login_now', lang))}}</text>
-            <text wx:if="{{isAdmin}}" class="badge">{{t.t('mine.admin_badge', lang)}}</text>
+            <text wx:if="{{isAdmin || isClassAdmin}}" class="badge">{{isClassAdmin ? '班级管理员' : t.t('mine.admin_badge', lang)}}</text>
           </view>
           <view wx:if="{{heroSub}}" class="hero-sub">{{heroSub}}</view>
         </view>
@@ -48,13 +48,16 @@
       <text wx:if="{{unreadRequests || unreadMessages}}" class="requests-count">{{unreadRequests + unreadMessages}}</text>
       <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
     </view>
-    <view wx:if="{{connectionsEligible}}" class="menu-item" bindtap="setDiscoverability">
-      <text>允许本校校友找到我</text>
-      <text class="discover-status muted">{{discoverable ? '已开启' : '未开启'}}</text>
-      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
-    </view>
     <view wx:if="{{isAdmin}}" class="menu-item" bindtap="goAdminDashboard">
       <text>{{t.t('mine.admin_entry', lang)}}</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view wx:if="{{isClassAdmin}}" class="menu-item" bindtap="goAffiliationReview">
+      <text>班级申请审核</text>
+      <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
+    </view>
+    <view wx:if="{{user && !isGuest}}" class="menu-item" bindtap="goSettings">
+      <text>设置</text>
       <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
     </view>
     <view class="menu-item" bindtap="comingSoon">
@@ -79,9 +82,10 @@
         bindtap="onSwitchUser"
       >
         <text>{{item.name}}</text>
-        <text class="muted role">{{item.role === 'super_admin' ? (t.t('mine.dev_role_admin', lang)) : (t.t('mine.dev_role_user', lang))}}</text>
+        <text class="muted role">{{item.role === 'super_admin' ? t.t('mine.dev_role_admin', lang) : item.role === 'class_admin' ? '班管' : t.t('mine.dev_role_user', lang)}}</text>
       </view>
     </view>
     <view class="dev-row" bindtap="resetOnboarding">{{t.t('mine.dev_reset_onboard', lang)}}</view>
   </view>
+  <button wx:if="{{user && !isGuest}}" class="logout-button" bindtap="signOut">退出登录</button>
 </view>

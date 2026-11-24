@@ -1,6 +1,6 @@
 // 與後端 schemas 對齊的業務類型（Walking Skeleton 只含登錄/通訊錄）。
 
-export type Role = 'user' | 'super_admin'
+export type Role = 'user' | 'class_admin' | 'super_admin'
 
 export interface UserProfile {
   id: number
@@ -406,7 +406,7 @@ export interface MemberAdminOut {
   id: number
   name: string
   avatar_url: string | null
-  role: 'user' | 'super_admin'
+  role: Role
   status: 'active' | 'disabled'
   openid: string | null
   unionid: string | null

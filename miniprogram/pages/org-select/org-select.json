@@ -1,6 +1,9 @@
 {
-  "navigationBarTitleText": "找回组织",
+  "navigationBarTitleText": "选择班级",
+  "navigationBarBackgroundColor": "#f7f3ef",
+  "backgroundColor": "#f7f3ef",
   "usingComponents": {
-    "academic-filters": "/components/academic-filters/index"
+    "academic-filters": "/components/academic-filters/index",
+    "t-icon": "tdesign-miniprogram/icon/icon"
   }
 }

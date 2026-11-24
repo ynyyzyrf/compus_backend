@@ -3,25 +3,32 @@
 
   <view class="home-shortcuts">
     <view class="home-shortcut" hover-class="home-row-pressed" aria-role="button" bindtap="goFindAlumni">
-      <t-icon name="search" size="36rpx" class="home-shortcut-icon" />
-      <text>找校友</text>
-      <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
+      <view class="home-shortcut-heading">
+        <t-icon name="search" size="40rpx" class="home-shortcut-icon" />
+        <text>找校友</text>
+        <t-icon name="chevron-right" size="24rpx" class="home-chevron" />
+      </view>
+      <view class="home-shortcut-description">重逢同窗，联系校友</view>
     </view>
     <view class="home-shortcut" hover-class="home-row-pressed" aria-role="button" bindtap="goFindClass">
-      <t-icon name="usergroup" size="36rpx" class="home-shortcut-icon" />
-      <text>{{affiliation && affiliation.class_id ? '我的组织' : '找回组织'}}</text>
-      <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
+      <view class="home-shortcut-heading">
+        <t-icon name="usergroup" size="40rpx" class="home-shortcut-icon" />
+        <text>{{affiliation && affiliation.class_id ? '我的组织' : '找回组织'}}</text>
+        <t-icon name="chevron-right" size="24rpx" class="home-chevron" />
+      </view>
+      <view class="home-shortcut-description">{{affiliation && affiliation.class_id ? '查看已加入的班级' : '确认班级，找到同学'}}</view>
     </view>
   </view>
 
-  <view wx:if="{{pinnedArticle}}" class="home-pinned home-row" hover-class="home-row-pressed"
+  <view wx:if="{{pinnedArticle}}" class="home-pinned" hover-class="home-row-pressed"
     aria-role="button" data-id="{{pinnedArticle.id}}" bindtap="goArticleDetail">
+    <t-icon name="sound-high" size="32rpx" class="home-notice-icon" />
     <text class="home-pin-label">置顶</text>
     <text class="home-pin-title">{{pinnedArticle.title}}</text>
     <t-icon name="chevron-right" size="28rpx" class="home-chevron" />
   </view>
 
-  <view wx:if="{{latestActivities.length}}" class="home-section">
+  <view wx:if="{{latestActivities.length}}" class="home-section home-activities">
     <view class="home-section-head">
       <text class="home-section-title">近期活动</text>
       <view class="home-more" aria-role="button" bindtap="goActivities">
@@ -29,24 +36,27 @@
       </view>
     </view>
     <view class="home-list">
-      <view wx:for="{{latestActivities}}" wx:key="id" class="home-row"
+      <view wx:for="{{latestActivities}}" wx:key="id" class="home-row home-activity-row"
         hover-class="home-row-pressed" aria-role="button" data-id="{{item.id}}" bindtap="goActivityDetail">
         <image class="home-thumb home-activity-preview" src="{{item.previewUrl}}" mode="aspectFill"
           data-id="{{item.id}}" data-src="{{item.previewUrl}}" binderror="onActivityPreviewError" />
         <view class="home-row-body">
           <view class="home-row-title">{{item.title}}</view>
-          <view wx:if="{{item.timeText}}" class="home-meta">{{item.timeText}}</view>
-          <view wx:if="{{item.location}}" class="home-meta">{{item.location}}</view>
-        </view>
-        <view class="home-row-end">
-          <text class="home-status {{item.canSignUp ? 'home-status-active' : ''}}">{{item.statusText}}</text>
-          <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
+          <view class="home-activity-info">
+            <view wx:if="{{item.timeText}}" class="home-meta-line">
+              <t-icon name="time" size="24rpx" /><text>{{item.timeText}}</text>
+            </view>
+            <text class="home-status {{item.canSignUp ? 'home-status-active' : ''}}">{{item.statusText}}</text>
+          </view>
+          <view wx:if="{{item.location}}" class="home-meta-line home-location">
+            <t-icon name="location" size="24rpx" /><text>{{item.location}}</text>
+          </view>
         </view>
       </view>
     </view>
   </view>
 
-  <view wx:if="{{latestArticles.length}}" class="home-section">
+  <view wx:if="{{latestArticles.length}}" class="home-section home-announcements">
     <view class="home-section-head">
       <text class="home-section-title">校友公告</text>
       <view class="home-more" aria-role="button" bindtap="goArticles">
@@ -59,17 +69,15 @@
         <image wx:if="{{item.cover_url}}" class="home-thumb" src="{{item.cover_url}}" mode="aspectFill"
           data-id="{{item.id}}" binderror="onArticleCoverError" />
         <view class="home-row-body">
-          <view class="home-row-title">{{item.title}}</view>
-          <view wx:if="{{item.dateText}}" class="home-meta">{{item.dateText}}</view>
+          <view class="home-article-heading">
+            <t-icon name="file" size="30rpx" class="home-document-icon" />
+            <view class="home-row-title">{{item.title}}</view>
+          </view>
+          <view wx:if="{{item.dateText}}" class="home-meta home-article-date">{{item.dateText}}</view>
         </view>
         <t-icon name="chevron-right" size="28rpx" class="home-chevron" />
       </view>
     </view>
-  </view>
-
-  <view wx:if="{{showDiscoveryInvite}}" class="home-invite">
-    <text aria-role="button" bindtap="goDiscoverySettings">设置谁能找到我</text>
-    <text class="home-invite-later" aria-role="button" bindtap="dismissDiscoveryInvite">稍后</text>
   </view>
 
   <view wx:if="{{isGuest}}" class="home-inline-action" aria-role="button" bindtap="goSignIn">

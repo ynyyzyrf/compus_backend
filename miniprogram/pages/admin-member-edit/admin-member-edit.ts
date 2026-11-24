@@ -58,7 +58,7 @@ Page({
     this.setData({ saving: true })
     try {
       const payload = {
-        role: m.role as 'user' | 'super_admin' | undefined,
+        role: m.role,
         status: m.status as 'active' | 'disabled' | undefined,
         phone: m.phone,
         position: m.position,

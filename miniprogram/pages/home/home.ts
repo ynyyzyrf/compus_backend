@@ -1,6 +1,5 @@
 import { ensureLogin, goLogin } from '../../services/auth'
 import { getMyAffiliation } from '../../services/affiliation'
-import { connectionSummary } from '../../services/connections'
 import { listActivities } from '../../services/activities'
 import { listArticles } from '../../services/articles'
 import type { ActivityListItem, Affiliation, ArticleListItem } from '../../types/api'
@@ -59,7 +58,6 @@ Page({
   data: {
     isGuest: false,
     affiliation: null as Affiliation | null,
-    showDiscoveryInvite: false,
     pinnedArticle: null as HomeArticle | null,
     latestArticles: [] as HomeArticle[],
     latestActivities: [] as HomeActivity[],
@@ -77,21 +75,20 @@ Page({
     }
 
     const isGuest = session.isGuest()
-    this.setData({ isGuest, affiliation: null, showDiscoveryInvite: false })
+    this.setData({ isGuest, affiliation: null })
     if (isGuest) {
       this.setData({ pinnedArticle: null, latestArticles: [], latestActivities: [], contentLoading: false, contentFailed: false })
       return
     }
 
-    void this.fetchHomeContent()
     let canFindClass = false
     try {
       const affiliation = await getMyAffiliation()
       this.setData({ affiliation })
-      canFindClass = user.role !== 'super_admin' && !affiliation.class_id && !affiliation.pending_class_id
-      if (user.role !== 'super_admin' && affiliation.class_id && !wx.getStorageSync(`campus_discovery_invite_${user.id}`)) {
-        const invite = await connectionSummary().catch(() => null)
-        this.setData({ showDiscoveryInvite: Boolean(invite?.eligible && !invite.discoverable) })
+      canFindClass = !affiliation.class_id && !affiliation.pending_class_id
+      if (canFindClass) {
+        wx.reLaunch({ url: '/pages/org-select/org-select' })
+        return
       }
     } catch (error) {
       if (user.role !== 'super_admin') {
@@ -100,6 +97,7 @@ Page({
       }
     }
 
+    void this.fetchHomeContent()
     const app = getApp<IAppOption>()
     if (app.globalData.pendingOnboarding && !canFindClass) {
       app.globalData.pendingOnboarding = false
@@ -127,17 +125,6 @@ Page({
       return
     }
     wx.navigateTo({ url: '/pages/org-select/org-select' })
-  },
-
-  dismissDiscoveryInvite() {
-    const id = session.getUser()?.id
-    if (id) wx.setStorageSync(`campus_discovery_invite_${id}`, true)
-    this.setData({ showDiscoveryInvite: false })
-  },
-
-  goDiscoverySettings() {
-    this.dismissDiscoveryInvite()
-    wx.switchTab({ url: '/pages/mine/mine' })
   },
 
   goActivities() { wx.switchTab({ url: '/pages/activities/activities' }) },

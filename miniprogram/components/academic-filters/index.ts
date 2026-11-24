@@ -33,6 +33,7 @@ Component({
     classes: { type: Array, value: [] },
     showSchool: { type: Boolean, value: false },
     compact: { type: Boolean, value: false },
+    tiles: { type: Boolean, value: false },
   },
   data: { filters: [] as Filter[], selection: {} as AcademicSelection },
   observers: {
