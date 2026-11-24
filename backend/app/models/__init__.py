@@ -8,7 +8,7 @@ from app.models.activity import (
     Photo,
 )
 from app.models.content import Article, ArticleScope
-from app.models.connection import AlumniConnection
+from app.models.connection import AlumniConnection, AlumniMessage
 from app.models.organization import (
     DirectoryPermission,
     Membership,
@@ -24,6 +24,7 @@ __all__ = [
     "Membership",
     "DirectoryPermission",
     "AlumniConnection",
+    "AlumniMessage",
     "Activity",
     "ActivitySignup",
     "ActivityCheckin",

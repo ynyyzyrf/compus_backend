@@ -18,6 +18,10 @@ Page({
     loading: true,
     error: '',
     busyId: 0,
+    unreadMessages: 0,
+  },
+  onLoad(opts: Record<string, string | undefined>) {
+    if (opts.tab === 'friends') this.setData({ tab: 'friends' })
   },
   onShow() { this.load() },
   async load() {
@@ -31,6 +35,7 @@ Page({
           ...item, statusLabel: requestLabel(item),
         })),
         friends: items.filter(item => item.status === 'accepted'),
+        unreadMessages: items.reduce((total, item) => total + (item.unread_messages || 0), 0),
       })
       if (this.data.tab === 'requests') await this.readVisible()
     } catch (error) {
@@ -88,5 +93,13 @@ Page({
   copyWechat(e: WechatMiniprogram.BaseEvent) {
     const value = String(e.currentTarget.dataset.value || '')
     if (value) wx.setClipboardData({ data: value })
+  },
+  openFriendCard(e: WechatMiniprogram.BaseEvent) {
+    const id = Number(e.currentTarget.dataset.id)
+    if (id > 0) wx.navigateTo({ url: `/pages/member-detail/member-detail?id=${id}` })
+  },
+  openMessages(e: WechatMiniprogram.BaseEvent) {
+    const id = Number(e.currentTarget.dataset.id)
+    if (id > 0) wx.navigateTo({ url: `/pages/friend-messages/friend-messages?id=${id}` })
   },
 })

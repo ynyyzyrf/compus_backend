@@ -4,6 +4,7 @@ interface IAppOption {
   globalData: {
     userInfo?: WechatMiniprogram.UserInfo,
     pendingOnboarding?: boolean,
+    openDirectoryDiscovery?: boolean,
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback,
 }

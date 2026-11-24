@@ -1,5 +1,5 @@
-<view class="filters">
-  <picker wx:for="{{filters}}" wx:key="key" range="{{item.choices}}" range-key="name" data-key="{{item.key}}" bindchange="select">
-    <view class="filter {{selection[item.key] ? 'selected' : ''}}">{{item.current}} <text>⌄</text></view>
+<view wx:if="{{filters.length}}" class="filters {{compact ? 'compact' : ''}}">
+  <picker wx:for="{{filters}}" wx:key="key" class="filter-picker" range="{{item.choices}}" range-key="name" data-key="{{item.key}}" bindchange="select">
+    <view class="filter {{selection[item.key] ? 'selected' : ''}}"><text class="filter-label">{{item.current}}</text> <text class="filter-arrow">⌄</text></view>
   </picker>
 </view>

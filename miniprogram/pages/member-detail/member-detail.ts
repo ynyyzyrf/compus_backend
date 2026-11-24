@@ -6,7 +6,6 @@ import { connectionSummary } from '../../services/connections'
 import { session } from '../../utils/session'
 
 type MemberCard = MemberDetail & {
-  initial: string
   contactRows: Array<{ label: string; value: string }>
   companyRows: Array<{ label: string; value: string }>
   storyRows: Array<{ label: string; value: string }>
@@ -32,7 +31,6 @@ function rows(items: Array<{ label: string; value: unknown }>): Array<{ label: s
 function toCard(member: MemberDetail): MemberCard {
   return {
     ...member,
-    initial: member.name ? member.name.charAt(0) : '·',
     contactRows: rows([
       { label: t('member.mobile'), value: member.phone },
       { label: t('member.wechat'), value: member.wechat_id },
@@ -68,6 +66,7 @@ Page({
     loading: true,
     member: null as MemberCard | null,
     canAdd: false,
+    memberId: 0,
   },
 
   onLoad(opts: Record<string, string | undefined>) {
@@ -76,17 +75,20 @@ Page({
       this.setData({ loading: false })
       return
     }
-    this.load(id)
+    this.setData({ memberId: id })
   },
+
+  onShow() { if (this.data.memberId) this.load(this.data.memberId) },
 
   async load(id: number) {
     this.setData({ loading: true })
     try {
       const member = await getMember(id)
+      const isOwnCard = member.id === session.getUser()?.id
       this.setData({ lang: locale.get(), member: toCard(member) })
       wx.setNavigationBarTitle({ title: member.name || t('member.card_title') })
-      const summary = await connectionSummary().catch(() => null)
-      this.setData({ canAdd: Boolean(summary?.eligible && member.id !== session.getUser()?.id) })
+      const summary = !isOwnCard && !member.is_friend ? await connectionSummary().catch(() => null) : null
+      this.setData({ canAdd: Boolean(summary?.eligible) })
     } catch (e) {
       wx.showToast({ title: (e as Error).message || t('member.load_failed'), icon: 'none' })
       this.setData({ member: null })
@@ -99,6 +101,12 @@ Page({
     const value = String(e.currentTarget.dataset.value || '')
     if (!value) return
     wx.setClipboardData({ data: value })
+  },
+  onAvatarError(e: WechatMiniprogram.BaseEvent) {
+    const { id, src } = e.currentTarget.dataset
+    if (src && this.data.member?.id === Number(id) && this.data.member.avatar_url === src) {
+      this.setData({ 'member.avatar_url': null })
+    }
   },
   addFriend() {
     const member = this.data.member

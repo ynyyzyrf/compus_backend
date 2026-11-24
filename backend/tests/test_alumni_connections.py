@@ -27,6 +27,35 @@ def auth(user):
     return {"Authorization": f"Bearer {create_access_token(user.id, user.role)}"}
 
 
+def test_friend_messages_check_relationship_retry_pagination_and_unread(ctx, client):
+    sender, receiver, outsider = (ctx.user(name) for name in ("張晨", "黃俊傑", "MAG"))
+    outgoing = f"{API}/connections/{receiver.id}"
+    incoming = f"{API}/connections/{sender.id}"
+    payload = {"client_id": "send-first", "message": "你好，周末见"}
+    assert client.post(f"{outgoing}/request", headers=auth(sender), json={}).status_code == 201
+    assert client.post(f"{outgoing}/messages", headers=auth(sender), json=payload).status_code == 404
+    assert client.post(f"{incoming}/respond", headers=auth(receiver), json={"action": "accept"}).status_code == 200
+    first = client.post(f"{outgoing}/messages", headers=auth(sender), json=payload)
+    assert first.status_code == 201
+    assert client.post(f"{outgoing}/messages", headers=auth(sender), json=payload).json()["id"] == first.json()["id"]
+    second = client.post(f"{outgoing}/messages", headers=auth(sender), json={"client_id": "send-second", "message": "在校门口碰面"})
+    assert second.status_code == 201
+    assert client.get(f"{incoming}/messages", headers=auth(outsider)).status_code == 404
+
+    summary = f"{API}/connections/summary"
+    assert client.get(summary, headers=auth(receiver)).json()["unread_messages"] == 2
+    recent = client.get(f"{incoming}/messages", headers=auth(receiver), params={"page_size": 1}).json()
+    assert recent["has_more"] is True
+    assert recent["items"][0]["id"] == second.json()["id"]
+    earlier = client.get(f"{incoming}/messages", headers=auth(receiver), params={"before_id": second.json()["id"]}).json()
+    assert [item["id"] for item in earlier["items"]] == [first.json()["id"]]
+    assert client.post(f"{incoming}/messages/read", headers=auth(receiver), json={"through_id": first.json()["id"]}).status_code == 204
+    assert client.get(summary, headers=auth(receiver)).json()["unread_messages"] == 1
+    assert client.get(f"{API}/connections", headers=auth(receiver)).json()[0]["unread_messages"] == 1
+    assert client.post(f"{incoming}/messages", headers=auth(receiver), json={"client_id": "send-reply", "message": "好的"}).status_code == 201
+    assert client.get(summary, headers=auth(sender)).json()["unread_messages"] == 1
+
+
 def test_admin_adds_major_and_year_without_replacing_membership(db, ctx, client):
     admin = auth(ctx.user("MAG"))
     member = ctx.user("張晨")
@@ -116,10 +145,16 @@ def test_cross_department_search_and_friendship_respect_explicit_sharing(db, ctx
     assert client.post(f"{API}/connections/{target.id}/respond", headers=sender_auth, json={"action": "accept"}).status_code == 404
     assert client.post(f"{API}/connections/{sender.id}/respond", headers=target_auth, json={"action": "accept"}).status_code == 200
     assert client.get(f"{API}/connections", headers=sender_auth).json()[0]["peer_wechat_id"] is None
+    card = f"{API}/directory/members/{target.id}"
+    assert client.get(card, headers=sender_auth).json()["phone"] is None
+    assert client.put(f"{API}/me/profile", headers=target_auth, json={"contact_visibility": "friends"}).status_code == 200
+    assert client.get(card, headers=sender_auth).json()["phone"] == "private-phone"
     assert client.put(f"{API}/connections/{sender.id}/wechat", headers=target_auth, json={"share": True}).status_code == 200
     assert client.get(f"{API}/connections", headers=sender_auth).json()[0]["peer_wechat_id"] == "private-wechat"
     assert client.put(f"{API}/connections/{sender.id}/wechat", headers=target_auth, json={"share": False}).status_code == 200
     assert client.get(f"{API}/connections", headers=sender_auth).json()[0]["peer_wechat_id"] is None
+    assert client.put(f"{API}/me/profile", headers=target_auth, json={"contact_visibility": "private"}).status_code == 200
+    assert client.get(card, headers=sender_auth).json()["phone"] is None
     assert client.put(f"{API}/connections/preferences", headers=target_auth, json={"discoverable": False}).status_code == 200
     assert search().json()["items"] == []
 

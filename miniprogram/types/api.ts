@@ -127,16 +127,24 @@ export type ArticleUpdatePayload = Partial<ArticleCreatePayload>
 
 // ===== Profile (extended business card) =====
 
+export type ProfileAudience = 'private' | 'friends' | 'classmates'
+export type ProfileVisibilityKey = 'basic_visibility' | 'contact_visibility' | 'details_visibility'
+
 export interface MyProfile {
   id: number
   name: string
   name_en: string | null
+  name_en_display: string | null
   avatar_url: string | null
 
   phone: string | null
   verified_phone: string | null
   wechat_id: string | null
   email: string | null
+  city: string | null
+  basic_visibility: ProfileAudience
+  contact_visibility: ProfileAudience
+  details_visibility: ProfileAudience
 
   profession: string | null
   profession_en: string | null
@@ -161,13 +169,14 @@ export interface MyProfile {
 }
 
 export type MyProfileUpdate = Partial<
-  Omit<MyProfile, 'id' | 'avatar_url' | 'role' | 'status'>
+  Omit<MyProfile, 'id' | 'avatar_url' | 'role' | 'status' | 'name_en_display'>
 >
 
 // MemberDetail now extends the same shape (minus role/status) plus class context.
-export interface MemberDetail extends MyProfile {
+export interface MemberDetail extends Omit<MyProfile, 'city' | ProfileVisibilityKey> {
   class_id: number | null
   org_path: string
+  is_friend: boolean
 }
 
 // ===== Activities (slice 3) =====

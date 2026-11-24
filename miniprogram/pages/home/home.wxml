@@ -1,87 +1,83 @@
-<wxs src="../../utils/i18n.wxs" module="t" />
-<view class="page-pad">
-  <view class="hero">
-    <image class="hero-img" src="/assets/business-hero.jpg" mode="aspectFill" />
-    <view class="hero-mask"></view>
-    <view class="hero-copy">
-      <view class="eyebrow">{{t.t('home.eyebrow', lang)}}</view>
-      <view class="hello">
-        <view>{{t.t('home.hero.line1', lang)}}</view>
-        <view>{{t.t('home.hero.line2', lang)}}</view>
-      </view>
-      <view class="desc">{{name}}，{{t.t('home.hero.welcome_suffix', lang)}}</view>
+<view class="page-pad home-page">
+  <image class="home-banner" src="/assets/home-campus.jpg" mode="aspectFill" />
+
+  <view class="home-shortcuts">
+    <view class="home-shortcut" hover-class="home-row-pressed" aria-role="button" bindtap="goFindAlumni">
+      <t-icon name="search" size="36rpx" class="home-shortcut-icon" />
+      <text>找校友</text>
+      <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
+    </view>
+    <view class="home-shortcut" hover-class="home-row-pressed" aria-role="button" bindtap="goFindClass">
+      <t-icon name="usergroup" size="36rpx" class="home-shortcut-icon" />
+      <text>{{affiliation && affiliation.class_id ? '我的组织' : '找回组织'}}</text>
+      <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
     </view>
   </view>
 
-  <view wx:if="{{canFindClass}}" class="card alumni-callout" bindtap="goFindClass">
-    <text>找回组织</text><text>›</text>
+  <view wx:if="{{pinnedArticle}}" class="home-pinned home-row" hover-class="home-row-pressed"
+    aria-role="button" data-id="{{pinnedArticle.id}}" bindtap="goArticleDetail">
+    <text class="home-pin-label">置顶</text>
+    <text class="home-pin-title">{{pinnedArticle.title}}</text>
+    <t-icon name="chevron-right" size="28rpx" class="home-chevron" />
   </view>
-  <view wx:if="{{showDiscoveryInvite}}" class="card alumni-callout">
-    <view bindtap="goDiscoverySettings">允许本校校友找到我 ›</view>
-    <text class="muted" catchtap="dismissDiscoveryInvite">稍后</text>
+
+  <view wx:if="{{latestActivities.length}}" class="home-section">
+    <view class="home-section-head">
+      <text class="home-section-title">近期活动</text>
+      <view class="home-more" aria-role="button" bindtap="goActivities">
+        <text>全部活动</text><t-icon name="chevron-right" size="24rpx" />
+      </view>
+    </view>
+    <view class="home-list">
+      <view wx:for="{{latestActivities}}" wx:key="id" class="home-row"
+        hover-class="home-row-pressed" aria-role="button" data-id="{{item.id}}" bindtap="goActivityDetail">
+        <image class="home-thumb home-activity-preview" src="{{item.previewUrl}}" mode="aspectFill"
+          data-id="{{item.id}}" data-src="{{item.previewUrl}}" binderror="onActivityPreviewError" />
+        <view class="home-row-body">
+          <view class="home-row-title">{{item.title}}</view>
+          <view wx:if="{{item.timeText}}" class="home-meta">{{item.timeText}}</view>
+          <view wx:if="{{item.location}}" class="home-meta">{{item.location}}</view>
+        </view>
+        <view class="home-row-end">
+          <text class="home-status {{item.canSignUp ? 'home-status-active' : ''}}">{{item.statusText}}</text>
+          <t-icon name="chevron-right" size="26rpx" class="home-chevron" />
+        </view>
+      </view>
+    </view>
   </view>
 
-  <block wx:if="{{latestArticles.length > 0}}">
-    <view class="section-title">
-      <text class="t">{{t.t('home.recent_articles', lang)}}</text>
-      <text class="more" bindtap="goArticles">{{t.t('common.more', lang)}}</text>
-    </view>
-    <view class="news-list card">
-      <view
-        class="news-row"
-        wx:for="{{latestArticles}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        bindtap="goArticleDetail"
-      >
-        <view class="dot {{index % 2 === 1 ? 'blue-dot' : ''}}"></view>
-        <view class="news-copy">
-          <view class="news-title">{{item.title}}</view>
-          <view class="news-date">{{item.dateText}}</view>
-        </view>
+  <view wx:if="{{latestArticles.length}}" class="home-section">
+    <view class="home-section-head">
+      <text class="home-section-title">校友公告</text>
+      <view class="home-more" aria-role="button" bindtap="goArticles">
+        <text>全部公告</text><t-icon name="chevron-right" size="24rpx" />
       </view>
     </view>
-  </block>
+    <view class="home-list">
+      <view wx:for="{{latestArticles}}" wx:key="id" class="home-row {{item.cover_url ? 'home-article-with-cover' : ''}}"
+        hover-class="home-row-pressed" aria-role="button" data-id="{{item.id}}" bindtap="goArticleDetail">
+        <image wx:if="{{item.cover_url}}" class="home-thumb" src="{{item.cover_url}}" mode="aspectFill"
+          data-id="{{item.id}}" binderror="onArticleCoverError" />
+        <view class="home-row-body">
+          <view class="home-row-title">{{item.title}}</view>
+          <view wx:if="{{item.dateText}}" class="home-meta">{{item.dateText}}</view>
+        </view>
+        <t-icon name="chevron-right" size="28rpx" class="home-chevron" />
+      </view>
+    </view>
+  </view>
 
-  <block wx:if="{{latestRelay}}">
-    <view class="section-title">
-      <text class="t">{{t.t('home.recent_relays', lang)}}</text>
-      <text class="more" bindtap="goRelays">{{t.t('common.more', lang)}}</text>
-    </view>
-    <view class="relay-home-card" data-id="{{latestRelay.id}}" bindtap="goRelayDetail">
-      <view class="relay-main">
-        <view class="relay-title">{{latestRelay.title}}</view>
-        <view wx:if="{{latestRelay.description}}" class="relay-desc">{{latestRelay.description}}</view>
-        <view class="relay-meta">
-          <text>{{latestRelay.responseText}}</text>
-          <text wx:if="{{latestRelay.deadlineText}}">{{latestRelay.deadlineText}}</text>
-        </view>
-      </view>
-      <view class="relay-arrow">›</view>
-    </view>
-  </block>
+  <view wx:if="{{showDiscoveryInvite}}" class="home-invite">
+    <text aria-role="button" bindtap="goDiscoverySettings">设置谁能找到我</text>
+    <text class="home-invite-later" aria-role="button" bindtap="dismissDiscoveryInvite">稍后</text>
+  </view>
 
-  <block wx:if="{{latestActivities.length > 0}}">
-    <view class="section-title">
-      <text class="t">{{t.t('home.recent_activities', lang)}}</text>
-      <text class="more" data-tab="activities" bindtap="goTab">{{t.t('common.more', lang)}}</text>
-    </view>
-    <view class="home-activity-list">
-      <view
-        class="activity-card"
-        wx:for="{{latestActivities}}"
-        wx:key="id"
-        data-id="{{item.id}}"
-        bindtap="goActivityDetail"
-      >
-        <image class="activity-thumb" src="{{item.cover_url || '/assets/campus-hero.jpg'}}" mode="aspectFill" />
-        <view class="activity-meta">
-          <view class="activity-title">{{item.title}}</view>
-          <view class="activity-row"><text class="mini-label">{{t.t('home.label.time', lang)}}</text>{{item.timeText}}</view>
-          <view class="activity-row"><text class="mini-label">址</text>{{item.location}}</view>
-        </view>
-        <view class="activity-cta">{{t.t('activities.signup_now', lang)}}</view>
-      </view>
-    </view>
-  </block>
+  <view wx:if="{{isGuest}}" class="home-inline-action" aria-role="button" bindtap="goSignIn">
+    <text>登录后查看校友内容</text><t-icon name="chevron-right" size="28rpx" />
+  </view>
+  <view wx:elif="{{contentFailed}}" class="home-inline-action" aria-role="button" bindtap="fetchHomeContent">
+    <text>部分内容加载失败，点击重试</text><t-icon name="chevron-right" size="28rpx" />
+  </view>
+  <view wx:elif="{{!pinnedArticle && !latestActivities.length && !latestArticles.length}}"
+    class="home-empty">{{contentLoading ? '正在加载…' : '暂时没有新的公告或活动'}}</view>
 </view>

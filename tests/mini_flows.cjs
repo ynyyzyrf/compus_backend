@@ -134,10 +134,11 @@ for (const kind of ['profile-edit', 'profile-setup']) {
       navigateBack: () => navigations.push('back'),
       switchTab: () => navigations.push('tab'),
     })
-    page.data.profile = { name: '舊姓名', name_en: null, chamber_score: null }
+    page.data.profile = { name: '舊姓名', name_en: null, chamber_chapter: '历史分会', chamber_score: 100 }
     page.onName({ detail: { value: '新姓名' } })
     await page.onSave()
     assert.equal(saved[0].name, '新姓名')
+    assert.equal(Object.keys(saved[0]).some(key => key.startsWith('chamber_')), false)
     assert.equal(saved[1].name, '新姓名')
     assert.deepEqual(navigations, ['back'])
 

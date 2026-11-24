@@ -1,5 +1,4 @@
 <view class="page-pad">
-  <view class="card intro">核对校友的所属组织，通过后才会开通相应通讯录权限。</view>
   <view wx:if="{{loading}}" class="card">载入中...</view>
   <view wx:elif="{{error}}" class="card"><text>{{error}}</text><button bindtap="load">重试</button></view>
   <view wx:elif="{{!items.length}}" class="card">暂无待审核申请</view>

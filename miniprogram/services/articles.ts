@@ -22,9 +22,10 @@ export function listArticles(params: {
   pinned_only?: boolean
   page?: number
   page_size?: number
-} = {}): Promise<ArticleListItem[]> {
+} = {}, options: { silent?: boolean } = {}): Promise<ArticleListItem[]> {
   return request<ArticleListItem[]>({
     url: `/articles${qs(params as Record<string, string | number | boolean | undefined>)}`,
+    silent: options.silent,
   })
 }
 

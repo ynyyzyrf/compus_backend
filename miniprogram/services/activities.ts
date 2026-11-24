@@ -29,9 +29,10 @@ export function listActivities(params: {
   status?: ActivityStatus
   page?: number
   page_size?: number
-} = {}): Promise<ActivityListItem[]> {
+} = {}, options: { silent?: boolean } = {}): Promise<ActivityListItem[]> {
   return request<ActivityListItem[]>({
     url: `/activities${qs(params as Record<string, string | number | boolean | undefined>)}`,
+    silent: options.silent,
   })
 }
 

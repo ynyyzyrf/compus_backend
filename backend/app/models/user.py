@@ -40,6 +40,10 @@ class User(Base):
     missing_class_note: Mapped[str | None] = mapped_column(String(200))
     wechat_id: Mapped[str | None] = mapped_column(String(64))
     email: Mapped[str | None] = mapped_column(String(128))
+    city: Mapped[str | None] = mapped_column(String(80))
+    basic_visibility: Mapped[str] = mapped_column(String(12), server_default="classmates")
+    contact_visibility: Mapped[str] = mapped_column(String(12), server_default="private")
+    details_visibility: Mapped[str] = mapped_column(String(12), server_default="private")
     bio: Mapped[str | None] = mapped_column(Text)
 
     # ---- bilingual display name + profession ----

@@ -54,13 +54,6 @@ Page({
     return this.confirmLogin()
   },
 
-  skipLogin() {
-    session.enterGuest()
-    const app = getApp<IAppOption>()
-    app.globalData.pendingOnboarding = false
-    wx.switchTab({ url: '/pages/home/home' })
-  },
-
   async confirmLogin() {
     if (this.data.loading) return
     this.setData({ loading: true })

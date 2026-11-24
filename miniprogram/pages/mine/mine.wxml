@@ -11,7 +11,8 @@
     </view>
     <view class="profile-hero {{affiliationText ? 'has-notice' : ''}}">
       <view class="guest-login-hit {{isGuest ? 'active' : ''}}" bindtap="goLoginIfGuest">
-        <view class="avatar big">{{initial}}</view>
+        <image class="avatar big" src="{{user && user.avatar_url ? user.avatar_url : '/assets/default-avatar.png'}}" mode="aspectFill"
+          data-id="{{user.id}}" data-src="{{user.avatar_url}}" binderror="onAvatarError" />
         <view class="hero-info">
           <view class="name-line">
             <text class="login-name">{{user ? user.name : (t.t('mine.login_now', lang))}}</text>
@@ -20,7 +21,7 @@
           <view wx:if="{{heroSub}}" class="hero-sub">{{heroSub}}</view>
         </view>
       </view>
-      <view class="profile-pill" bindtap="goProfileEdit">{{t.t('mine.menu.profile', lang)}}</view>
+      <view class="profile-pill" bindtap="goProfileCard">{{t.t('mine.menu.profile', lang)}}</view>
     </view>
   </view>
 
@@ -31,17 +32,20 @@
         <view class="service-icon">活</view>
         <text>{{t.t('mine.menu.my_activities', lang)}}</text>
       </view>
-      <view class="service-item" bindtap="goRelays">
-        <view class="service-icon">表</view>
+      <view class="service-item" aria-role="button" aria-label="{{showRelayDot ? '我的接龙，有进行中的接龙' : '我的接龙'}}" bindtap="goRelays">
+        <view class="service-icon">
+          <text>表</text>
+          <view wx:if="{{showRelayDot}}" class="service-dot" />
+        </view>
         <text>{{t.t('mine.menu.my_relays', lang)}}</text>
       </view>
     </view>
   </view>
 
   <view class="menu-card">
-    <view wx:if="{{connectionsEligible || unreadRequests}}" class="menu-item" bindtap="goConnections">
+    <view wx:if="{{connectionsEligible || unreadRequests || unreadMessages}}" class="menu-item" bindtap="goConnections">
       <text>好友与申请</text>
-      <text wx:if="{{unreadRequests}}" class="requests-count">{{unreadRequests}}</text>
+      <text wx:if="{{unreadRequests || unreadMessages}}" class="requests-count">{{unreadRequests + unreadMessages}}</text>
       <t-icon class="arrow muted" name="chevron-right" size="30rpx" />
     </view>
     <view wx:if="{{connectionsEligible}}" class="menu-item" bindtap="setDiscoverability">

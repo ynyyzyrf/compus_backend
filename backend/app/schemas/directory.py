@@ -51,6 +51,8 @@ class MemberDetail(BaseModel):
 
     # bilingual display
     name_en: str | None = None
+    name_en_display: str | None = None
+    is_friend: bool = False
 
     # profession / position / company
     profession: str | None = None

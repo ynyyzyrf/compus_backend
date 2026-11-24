@@ -11,7 +11,7 @@
     />
     <view class="field">
       <view class="label-sub">{{t.t('profile.name_en', lang)}}</view>
-      <t-input value="{{profile.name_en}}" placeholder="请输入英文名" bind:change="onNameEn" maxlength="100" />
+      <t-input value="{{profile.name_en}}" placeholder="{{profile.name_en_display || '请输入英文名'}}" bind:change="onNameEn" maxlength="100" />
     </view>
   </view>
 
@@ -88,32 +88,15 @@
   </view>
 
   <view class="card">
-    <view class="label">{{t.t('profile.chamber', lang)}}</view>
-    <view class="field">
-      <view class="label-sub">{{t.t('profile.chapter', lang)}}</view>
-      <t-input value="{{profile.chamber_chapter}}" placeholder="{{t.t('profile.chapter', lang)}}" bind:change="onChamber" maxlength="128" />
-    </view>
-    <view class="field">
-      <view class="label-sub">{{t.t('profile.member_no', lang)}}</view>
-      <t-input value="{{profile.chamber_member_no}}" placeholder="{{t.t('profile.member_no_placeholder', lang)}}" bind:change="onChamberNo" maxlength="64" />
-    </view>
-    <view class="field">
-      <view class="label-sub">{{t.t('profile.join_date', lang)}}</view>
-      <t-input value="{{profile.chamber_join_date}}" placeholder="YYYY-MM-DD" bind:change="onChamberJoin" maxlength="10" />
-    </view>
-    <view class="field">
-      <view class="label-sub">{{t.t('profile.score', lang)}}</view>
-      <t-input value="{{profile.chamber_score}}" type="number" placeholder="100" bind:change="onChamberScore" />
-    </view>
-  </view>
-
-  <view class="card">
     <view class="label">{{t.t('profile.bio_section', lang)}}</view>
     <view class="field">
       <view class="label-sub">{{t.t('profile.bio', lang)}}</view>
       <t-textarea value="{{profile.bio}}" placeholder="{{t.t('profile.bio', lang)}}" bind:change="onBio" maxlength="500" disable-default-padding="{{true}}" autosize="{{true}}" />
     </view>
   </view>
+
+  <profile-visibility wx:if="{{profile}}" basic="{{profile.basic_visibility}}" contact="{{profile.contact_visibility}}"
+    details="{{profile.details_visibility}}" bind:change="onVisibility" />
 
   <view class="actions">
     <t-button theme="primary" size="large" loading="{{saving}}" bindtap="onSave" block>{{t.t('common.save', lang)}}</t-button>

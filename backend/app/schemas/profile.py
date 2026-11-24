@@ -1,6 +1,11 @@
 from datetime import date
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+
+from app.services.name_display import display_name_en
+
+ProfileVisibility = Literal["private", "friends", "classmates"]
 
 
 class MyProfile(BaseModel):
@@ -13,11 +18,20 @@ class MyProfile(BaseModel):
     name_en: str | None = None
     avatar_url: str | None = None
 
+    @computed_field
+    @property
+    def name_en_display(self) -> str | None:
+        return display_name_en(self.name, self.name_en)
+
     # contact
     phone: str | None = None
     verified_phone: str | None = None
     wechat_id: str | None = None
     email: str | None = None
+    city: str | None = None
+    basic_visibility: ProfileVisibility = "classmates"
+    contact_visibility: ProfileVisibility = "private"
+    details_visibility: ProfileVisibility = "private"
 
     # profession / position / company
     profession: str | None = None
@@ -53,6 +67,10 @@ class MyProfileUpdate(BaseModel):
     phone: str | None = Field(default=None, max_length=32)
     wechat_id: str | None = Field(default=None, max_length=64)
     email: str | None = Field(default=None, max_length=128)
+    city: str | None = Field(default=None, max_length=80)
+    basic_visibility: ProfileVisibility = "classmates"
+    contact_visibility: ProfileVisibility = "private"
+    details_visibility: ProfileVisibility = "private"
 
     profession: str | None = Field(default=None, max_length=128)
     profession_en: str | None = Field(default=None, max_length=128)
@@ -78,6 +96,11 @@ class MyProfileUpdate(BaseModel):
         if value is None or not value.strip():
             raise ValueError("请填写姓名")
         return value.strip()
+
+    @field_validator("city")
+    @classmethod
+    def normalize_city(cls, value: str | None) -> str | None:
+        return (value or "").strip().removesuffix("市").strip() or None
 
 
 class OrganizationOption(BaseModel):

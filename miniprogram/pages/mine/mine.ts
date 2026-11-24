@@ -8,6 +8,7 @@ import {
 import { getMyProfile } from '../../services/profile'
 import { getMyAffiliation } from '../../services/affiliation'
 import { connectionSummary, updateDiscoverability } from '../../services/connections'
+import { hasActiveRelay } from '../../services/relays'
 import { locale, t } from '../../utils/i18n'
 import { session } from '../../utils/session'
 import type { DevUser, UserProfile } from '../../types/api'
@@ -18,7 +19,6 @@ Page({
   data: {
     lang: locale.get(),
     user: null as UserProfile | null,
-    initial: '·',
     isGuest: false,
     needsProfileName: false,
     isAdmin: false,
@@ -29,6 +29,8 @@ Page({
     connectionsEligible: false,
     discoverable: false,
     unreadRequests: 0,
+    unreadMessages: 0,
+    showRelayDot: false,
   },
 
   onShow() {
@@ -46,19 +48,22 @@ Page({
       return
     }
     const isGuest = session.isGuest()
+    const token = session.getToken()
     const latestUser = !isGuest ? await getMyProfile().catch(() => user) : user
+    if (session.getToken() !== token) return
     const displayUser = {
       ...latestUser,
       name: latestUser.name === DEFAULT_PROFILE_NAME && latestUser.name_en ? latestUser.name_en : latestUser.name,
     }
     if (!isGuest) session.setUser(displayUser)
-    const [affiliation, connections] = await Promise.all([
+    const [affiliation, connections, showRelayDot] = await Promise.all([
       !isGuest && displayUser.role !== 'super_admin' ? getMyAffiliation().catch(() => null) : null,
       !isGuest ? connectionSummary().catch(() => null) : null,
+      !isGuest ? hasActiveRelay().catch(() => false) : false,
     ])
+    if (session.getToken() !== token) return
     this.setData({
       user: displayUser,
-      initial: displayUser.name.charAt(0) || '·',
       isGuest,
       needsProfileName: !isGuest && displayUser.name === DEFAULT_PROFILE_NAME,
       isAdmin: displayUser.role === 'super_admin',
@@ -67,6 +72,8 @@ Page({
       connectionsEligible: connections?.eligible ?? false,
       discoverable: connections?.discoverable ?? false,
       unreadRequests: connections?.unread ?? 0,
+      unreadMessages: connections?.unread_messages ?? 0,
+      showRelayDot,
     })
     if (IS_DEV) this.loadDevUsers()
   },
@@ -87,12 +94,13 @@ Page({
       const user = await devImpersonate(id)
       this.setData({
         user,
-        initial: user.name.charAt(0) || '·',
         isGuest: false,
         needsProfileName: false,
         isAdmin: user.role === 'super_admin',
         heroSub: '',
+        showRelayDot: false,
       })
+      void this.refresh()
       wx.showToast({ title: `${user.name}`, icon: 'success' })
     } finally {
       wx.hideLoading()
@@ -101,6 +109,12 @@ Page({
 
   goAdminDashboard() {
     wx.navigateTo({ url: '/pages/admin-dashboard/admin-dashboard' })
+  },
+  onAvatarError(e: WechatMiniprogram.BaseEvent) {
+    const { id, src } = e.currentTarget.dataset
+    if (src && this.data.user?.id === Number(id) && this.data.user.avatar_url === src) {
+      this.setData({ 'user.avatar_url': null })
+    }
   },
   goAdminArticles() {
     wx.navigateTo({ url: '/pages/admin-articles/admin-articles' })
@@ -114,7 +128,10 @@ Page({
   goRelays() {
     wx.navigateTo({ url: '/pages/relay-list/relay-list' })
   },
-  goConnections() { wx.navigateTo({ url: '/pages/connections/connections' }) },
+  goConnections() {
+    const tab = this.data.unreadMessages && !this.data.unreadRequests ? '?tab=friends' : ''
+    wx.navigateTo({ url: `/pages/connections/connections${tab}` })
+  },
   setDiscoverability() {
     const enabled = !this.data.discoverable
     wx.showModal({
@@ -142,6 +159,10 @@ Page({
   },
   goProfileEdit() {
     wx.navigateTo({ url: '/pages/profile-edit/profile-edit' })
+  },
+  goProfileCard() {
+    if (this.data.isGuest) { this.goLoginIfGuest(); return }
+    this.goProfileEdit()
   },
   goLoginIfGuest() {
     if (this.data.isGuest) {

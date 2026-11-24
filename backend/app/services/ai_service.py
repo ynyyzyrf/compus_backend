@@ -35,7 +35,7 @@ def _call_llm(message: str, tool_context: dict) -> str:
             {
                 "role": "system",
                 "content": (
-                    "你是校友商会小程序的超管数据助手。只能基于已提供的"
+                    "你是圆螺岭同学录小程序的超管数据助手。只能基于已提供的"
                     "tool_context 回答，不要声称已直接查询数据库。"
                 ),
             },

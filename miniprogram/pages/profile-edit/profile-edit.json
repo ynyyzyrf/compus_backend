@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "个人名片",
   "usingComponents": {
+    "profile-visibility": "/components/profile-visibility/index",
     "t-button": "tdesign-miniprogram/button/button",
     "t-input": "tdesign-miniprogram/input/input",
     "t-textarea": "tdesign-miniprogram/textarea/textarea"

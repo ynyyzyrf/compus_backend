@@ -1,6 +1,8 @@
 {
   "navigationBarTitleText": "会员登录",
+  "navigationBarBackgroundColor": "#fcf7ef",
+  "backgroundColor": "#fcf7ef",
   "usingComponents": {
-    "t-button": "tdesign-miniprogram/button/button"
+    "t-icon": "tdesign-miniprogram/icon/icon"
   }
 }

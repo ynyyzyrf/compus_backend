@@ -4,6 +4,6 @@
   "usingComponents": {
     "t-loading": "tdesign-miniprogram/loading/loading",
     "t-empty": "tdesign-miniprogram/empty/empty",
-    "academic-filters": "/components/academic-filters/index"
+    "t-icon": "tdesign-miniprogram/icon/icon"
   }
 }

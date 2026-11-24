@@ -1,34 +1,47 @@
-<view class="page-pad">
-  <view wx:if="{{eligible}}" class="directory-modes">
-    <view class="{{!discover ? 'current' : ''}}" data-mode="directory" bindtap="changeMode">通讯录</view>
-    <view class="{{discover ? 'current' : ''}}" data-mode="discover" bindtap="changeMode">找校友</view>
-  </view>
-  <view class="search-wrap">
-    <text class="search-mark">搜</text>
-    <input class="search-input" value="{{keyword}}" maxlength="80" placeholder="搜索姓名、年份、专业或班级"
-      confirm-type="search" bindinput="onSearchInput" bindconfirm="onSearchSubmit" />
-    <text wx:if="{{keyword}}" class="search-clear" bindtap="onSearchClear">×</text>
-    <text class="search-submit" bindtap="onSearchSubmit">搜索</text>
-  </view>
-  <academic-filters wx:if="{{discover}}" classes="{{schoolClasses}}" bind:select="onFilter" />
-  <academic-filters wx:else classes="{{scopedClasses}}" bind:select="onFilter" />
-  <view class="scope-line">
-    <text class="scope-tag">{{discover ? '显示本校同意被找到的校友及通讯录成员' : scopeText}}</text>
+<view class="page-pad directory-page">
+  <view class="directory-banner">
+    <view class="banner-heading">
+      <view class="banner-copy">
+        <view class="banner-label">ALUMNI NETWORK</view>
+        <view class="banner-title">找到你的校友</view>
+      </view>
+      <t-icon class="banner-icon" name="usergroup" size="52rpx" />
+    </view>
+    <view class="search-wrap">
+      <t-icon class="search-icon" name="search" size="32rpx" />
+      <input class="search-input" value="{{keyword}}" maxlength="80" placeholder="搜索姓名、年级、专业或班级" placeholder-class="search-placeholder"
+        confirm-type="search" bindinput="onSearchInput" bindconfirm="onSearchSubmit" />
+      <view wx:if="{{keyword}}" class="search-clear" aria-role="button" aria-label="清除搜索词" bindtap="onSearchClear">
+        <t-icon name="close" size="26rpx" />
+      </view>
+      <view wx:if="{{keyword}}" class="search-button" aria-role="button" bindtap="onSearchSubmit">搜索</view>
+    </view>
+    <view class="directory-categories">
+      <view wx:for="{{relations}}" wx:key="id" class="directory-category {{relation === item.id ? 'current' : ''}}"
+        aria-role="button" aria-label="{{item.label}}" aria-disabled="{{!eligible}}" data-id="{{item.id}}" bindtap="changeRelation">
+        <text>{{item.label}}</text>
+        <view wx:if="{{relation === item.id}}" class="category-indicator" />
+      </view>
+    </view>
   </view>
   <view wx:if="{{!eligible && scopeText === '入组后开放通讯录'}}" class="search-submit" bindtap="goFindClass">找回组织 ›</view>
-  <view class="list-head"><text class="t">{{discover ? '校友搜索结果' : '校友名录'}}</text><text class="muted">{{total}} 人</text></view>
-  <view wx:if="{{error}}" class="muted">{{error}} <text class="search-submit" bindtap="init">重试</text></view>
-  <t-empty wx:elif="{{!loading && members.length === 0}}" description="{{discover ? '输入关键词或选择筛选条件查找校友' : '暂无匹配校友'}}" />
+  <view class="list-head"><text class="list-title">{{discover ? '校友搜索结果' : '校友通讯录'}}</text><text class="list-count">{{total}} 人</text></view>
+  <view wx:if="{{error}}" class="muted">
+    <view>{{error}}</view>
+    <text class="search-submit" bindtap="init">重试</text>
+  </view>
+  <t-empty wx:elif="{{!loading && members.length === 0}}" description="暂无匹配校友" />
   <view class="members">
-    <view class="member" wx:for="{{members}}" wx:key="id" data-id="{{item.id}}" bindtap="onMemberTap">
-      <image wx:if="{{item.avatar_url}}" class="avatar" src="{{item.avatar_url}}" mode="aspectFill" />
-      <view wx:else class="avatar">{{item.initial}}</view>
+    <view class="member" wx:for="{{members}}" wx:key="id" hover-class="member-pressed" data-id="{{item.id}}" bindtap="onMemberTap">
+      <image wx:if="{{item.avatar_url}}" class="avatar" src="{{item.avatar_url}}" mode="aspectFill"
+        data-id="{{item.id}}" data-src="{{item.avatar_url}}" binderror="onAvatarError" />
+      <image wx:else class="avatar" src="/assets/default-avatar.png" mode="aspectFill" />
       <view class="meta">
-        <view class="name-line"><text class="name">{{item.name}}</text></view>
-        <view class="org muted">{{item.org_path}}</view>
+        <view class="name">{{item.name}}</view>
+        <view wx:if="{{item.org_path}}" class="org">{{item.org_path}}</view>
       </view>
-      <text wx:if="{{item.can_view_profile === false && item.id !== userId}}" class="search-submit" data-id="{{item.id}}" catchtap="addMember">添加好友</text>
-      <text wx:elif="{{item.can_view_profile !== false}}" class="contact">›</text>
+      <view wx:if="{{item.can_view_profile === false && item.id !== userId}}" class="member-action" aria-role="button" data-id="{{item.id}}" catchtap="addMember">添加好友</view>
+      <t-icon wx:elif="{{item.can_view_profile !== false}}" class="member-arrow" name="chevron-right" size="32rpx" />
     </view>
   </view>
   <t-loading wx:if="{{loading}}" theme="circular" size="40rpx" />

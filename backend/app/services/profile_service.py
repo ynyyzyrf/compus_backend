@@ -14,6 +14,8 @@ def update_my_profile(db: Session, user: User, payload: MyProfileUpdate) -> User
     data = payload.model_dump(exclude_unset=True)
     for key, value in data.items():
         setattr(user, key, value)
+    if data.get("basic_visibility") == "private":
+        user.alumni_discoverable = False
     db.commit()
     db.refresh(user)
     return user

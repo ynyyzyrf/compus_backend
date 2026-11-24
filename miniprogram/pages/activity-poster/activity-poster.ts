@@ -94,7 +94,7 @@ Page({
     ctx.fillRect(18, 134, 339, 74)
     ctx.setFillStyle('#ffffff')
     ctx.setFontSize(18)
-    ctx.fillText(activity.organizer || '校友商会', 38, 172)
+    ctx.fillText(activity.organizer || '圆螺岭同学录', 38, 172)
 
     ctx.setFillStyle('#101828')
     ctx.setFontSize(24)
@@ -124,7 +124,7 @@ Page({
     ctx.setFillStyle('#7d6f68')
     ctx.setFontSize(12)
     ctx.fillText(t('poster.scan_hint'), 38, 566)
-    ctx.fillText('校友商会 · 同窗聚力 · 商通全球', 38, 594)
+    ctx.fillText('圆螺岭同学录 · 同窗聚力 · 商通全球', 38, 594)
 
     ctx.draw(false, () => {
       wx.canvasToTempFilePath({

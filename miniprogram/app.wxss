@@ -1,4 +1,4 @@
-/* ===== TDesign 品牌主題覆蓋（校友商會紅金） ===== */
+/* ===== TDesign 品牌主題覆蓋（圆螺岭同学录紅金） ===== */
 page {
   /* TDesign 主題變量 */
   --td-brand-color: #b92722;
@@ -38,8 +38,12 @@ button {
 }
 
 .page-pad {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: 100vh;
   padding: 28rpx 24rpx 144rpx;
+  padding-bottom: calc(144rpx + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 0 0, rgba(185, 39, 34, 0.1), transparent 360rpx),
     linear-gradient(180deg, #fff9f1 0%, #f7f3ef 42%, #f8f5f1 100%);

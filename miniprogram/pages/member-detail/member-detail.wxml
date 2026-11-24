@@ -6,19 +6,18 @@
 
   <block wx:elif="{{member}}">
     <view class="profile-card card">
-      <image wx:if="{{member.avatar_url}}" class="avatar-img" src="{{member.avatar_url}}" mode="aspectFill" />
-      <view wx:else class="avatar">{{member.initial}}</view>
+      <image class="avatar-img" src="{{member.avatar_url || '/assets/default-avatar.png'}}" mode="aspectFill"
+        data-id="{{member.id}}" data-src="{{member.avatar_url}}" binderror="onAvatarError" />
       <view class="profile-main">
         <view class="name-line">
           <text class="name">{{member.name}}</text>
-          <text wx:if="{{member.name_en}}" class="name-en">{{member.name_en}}</text>
+          <text wx:if="{{member.name_en_display || member.name_en}}" class="name-en">{{member.name_en_display || member.name_en}}</text>
         </view>
         <view class="org">{{member.org_path}}</view>
       </view>
     </view>
-
     <button wx:if="{{canAdd}}" class="add-alumni" bindtap="addFriend">添加好友</button>
-    <view class="quick-contact card">
+    <view wx:if="{{member.wechat_id || member.phone || member.email}}" class="quick-contact card">
       <view
         class="contact-box {{member.wechat_id ? '' : 'disabled'}}"
         data-value="{{member.wechat_id}}"

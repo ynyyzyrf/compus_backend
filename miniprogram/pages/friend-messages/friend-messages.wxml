@@ -1,0 +1,20 @@
+<view class="thread">
+  <view class="thread-toolbar">
+    <text>好友留言</text>
+    <button size="mini" bindtap="loadLatest" disabled="{{loading || sending}}">刷新</button>
+  </view>
+  <scroll-view class="thread-history" scroll-y scroll-into-view="{{scrollTarget}}">
+    <view wx:if="{{error}}" class="thread-note">{{error}}</view>
+    <view wx:elif="{{loading && !ready}}" class="thread-note">加载中…</view>
+    <view wx:elif="{{!messages.length}}" class="thread-note">还没有留言</view>
+    <button wx:if="{{hasMore}}" class="older-messages" size="mini" bindtap="loadEarlier" disabled="{{loading || sending}}">查看更早留言</button>
+    <view wx:for="{{messages}}" wx:key="id" id="message-{{item.id}}" class="message-row {{item.own ? 'own' : ''}}">
+      <text class="message-time">{{item.timeText}}</text>
+      <text class="message-text" selectable>{{item.message}}</text>
+    </view>
+  </scroll-view>
+  <view wx:if="{{ready}}" class="thread-compose">
+    <textarea value="{{draft}}" placeholder="写留言" maxlength="500" auto-height bindinput="onDraft" />
+    <button size="mini" bindtap="send" disabled="{{!draft || loading || sending}}" loading="{{sending}}">发送</button>
+  </view>
+</view>

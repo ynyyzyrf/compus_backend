@@ -8,7 +8,7 @@
       <view class="hero-mask"></view>
       <view class="hero-copy">
         <view class="title">{{activity.title}}</view>
-        <view class="muted-light">{{activity.organizer || '校友商会'}}</view>
+        <view class="muted-light">{{activity.organizer || '圆螺岭同学录'}}</view>
       </view>
     </view>
 

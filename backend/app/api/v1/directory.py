@@ -31,11 +31,17 @@ def get_members(
     department_id: int | None = Query(default=None, ge=1),
     major_id: int | None = Query(default=None, ge=1),
     class_id: int | None = Query(default=None, ge=1),
+    category: directory_service.DirectoryCategory = "all",
+    relation: directory_service.DirectoryRelation | None = None,
 ) -> Page[MemberBrief]:
-    return directory_service.list_members(
-        db, current_user, q, page, page_size, discover=discover, entry_year=entry_year,
-        college_id=college_id, department_id=department_id, major_id=major_id, class_id=class_id,
-    )
+    try:
+        return directory_service.list_members(
+            db, current_user, q, page, page_size, discover=discover, entry_year=entry_year,
+            college_id=college_id, department_id=department_id, major_id=major_id, class_id=class_id,
+            category=category, relation=relation,
+        )
+    except directory_service.DirectoryProfileIncomplete as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
 @router.get("/members/{member_id}", response_model=MemberDetail)

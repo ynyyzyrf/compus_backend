@@ -1,6 +1,7 @@
 import { ensureLogin, goLogin } from '../../services/auth'
 import { getAffiliationOptions, getMyAffiliation } from '../../services/affiliation'
 import { getDirectoryTree, searchMembers } from '../../services/directory'
+import type { DirectoryRelation } from '../../services/directory'
 import type { MemberBrief } from '../../types/api'
 import { academicClasses, normalizeAcademicKeyword } from '../../utils/academic'
 import type { AcademicClass, AcademicSelection } from '../../utils/academic'
@@ -8,7 +9,10 @@ import { requestAlumniContact } from '../../utils/connection-actions'
 import { session } from '../../utils/session'
 
 const PAGE_SIZE = 20
-type MemberView = MemberBrief & { initial: string }
+const RELATIONS: { id: DirectoryRelation; label: string }[] = [
+  { id: 'class', label: '同班' }, { id: 'year', label: '同级' },
+  { id: 'department', label: '同系' }, { id: 'college', label: '同院' },
+]
 const SCOPE: Record<string, string> = {
   class: '同班可见', department: '同系可见', college: '同院可见', all: '全部组织', none: '入组后开放通讯录',
 }
@@ -17,7 +21,9 @@ Page({
   data: {
     keyword: '',
     appliedKeyword: '',
-    members: [] as MemberView[],
+    relation: 'class' as DirectoryRelation | '',
+    relations: RELATIONS,
+    members: [] as MemberBrief[],
     scopedClasses: [] as AcademicClass[],
     schoolClasses: [] as AcademicClass[],
     filters: {} as AcademicSelection,
@@ -36,6 +42,9 @@ Page({
     this.init()
   },
   async init() {
+    const { globalData } = getApp<IAppOption>()
+    const openDiscovery = globalData.openDirectoryDiscovery
+    delete globalData.openDirectoryDiscovery
     const user = await ensureLogin().catch(() => null)
     if (!user || session.isGuest()) { goLogin(); return }
     try {
@@ -45,9 +54,12 @@ Page({
       const classes = academicClasses(options)
       const school = classes.find(row => row.id === affiliation.class_id)?.school.id
       const eligible = school !== undefined
+      const discover = eligible && (this.data.discover || !!openDiscovery)
       this.setData({
         userId: user.id, eligible,
-        discover: eligible && this.data.discover,
+        relation: eligible ? (user.id !== this.data.userId ? 'class' : this.data.relation || 'class') : '',
+        discover,
+        ...(discover !== this.data.discover ? { filters: {} } : {}),
         scopedClasses: academicClasses(tree.nodes),
         schoolClasses: eligible ? classes.filter(row => row.school.id === school) : [],
         scopeText: SCOPE[tree.scope_level] || '',
@@ -59,19 +71,23 @@ Page({
   },
   async loadMembers(page: number) {
     const id = this.data.requestId + 1
-    const { appliedKeyword, discover, filters } = this.data
+    const { appliedKeyword, discover, filters, relation } = this.data
     this.setData({ requestId: id, loading: true, error: '', ...(page === 1 ? { members: [], page: 0, total: 0 } : {}) })
-    if (discover && !appliedKeyword && !Object.keys(filters).length) {
+    if (discover && !appliedKeyword && !relation && !Object.keys(filters).length) {
       this.setData({ loading: false })
       return
     }
     try {
-      const result = await searchMembers(appliedKeyword, page, PAGE_SIZE, filters, discover)
+      const result = await searchMembers(appliedKeyword, page, PAGE_SIZE, filters, discover, 'all', relation || undefined)
       if (this.data.requestId !== id) return
-      const members = result.items.map(item => ({ ...item, initial: item.name.charAt(0) || '·' }))
+      const members = result.items
       this.setData({ members: page === 1 ? members : [...this.data.members, ...members], page, total: result.total })
     } catch (error) {
-      if (this.data.requestId === id) this.setData({ error: (error as Error).message || '查询失败，请重试' })
+      if (this.data.requestId === id) {
+        this.setData({
+          error: (error as Error).message || '查询失败，请重试',
+        })
+      }
     } finally {
       if (this.data.requestId === id) this.setData({ loading: false })
     }
@@ -83,6 +99,17 @@ Page({
     this.loadMembers(1)
   },
   onSearchInput(e: WechatMiniprogram.Input) { this.setData({ keyword: e.detail.value }) },
+  changeRelation(e: WechatMiniprogram.BaseEvent) {
+    const id = RELATIONS.find(item => item.id === e.currentTarget.dataset.id)?.id
+    if (!id) return
+    if (!this.data.eligible) {
+      wx.showToast({ title: '请先确认所属班级后使用筛选', icon: 'none' })
+      return
+    }
+    if (this.data.relation === id) return
+    this.setData({ relation: id, appliedKeyword: normalizeAcademicKeyword(this.data.keyword) })
+    this.loadMembers(1)
+  },
   onSearchClear() {
     this.setData({ keyword: '', appliedKeyword: '' })
     this.loadMembers(1)
@@ -99,6 +126,11 @@ Page({
     if (!this.data.loading && this.data.page > 0 && this.data.members.length < this.data.total) {
       this.loadMembers(this.data.page + 1)
     }
+  },
+  onAvatarError(e: WechatMiniprogram.BaseEvent) {
+    const { id, src } = e.currentTarget.dataset
+    const index = this.data.members.findIndex(member => member.id === Number(id) && member.avatar_url === src)
+    if (index >= 0) this.setData({ [`members[${index}].avatar_url`]: null })
   },
   onMemberTap(e: WechatMiniprogram.BaseEvent) {
     const member = this.data.members.find(row => row.id === Number(e.currentTarget.dataset.id))

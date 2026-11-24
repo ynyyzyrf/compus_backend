@@ -13,12 +13,9 @@ def test_class_scope_member_list(ctx):
     assert _names(page) == {"周可欣"}
 
 
-def test_college_scope_includes_cross_department_classmates(ctx):
+def test_college_scope_respects_default_basic_visibility(ctx):
     page = directory_service.list_members(ctx.db, ctx.user("張晨"), None, 1, 50)
-    # MAG, 張晨, 黃俊傑 (計算機) + 陳思遠 (軟件工程) — all inside the open college.
-    assert _names(page) == {"MAG", "張晨", "黃俊傑", "陳思遠"}
-    # Other colleges excluded.
-    assert "林嘉怡" not in _names(page)
+    assert _names(page) == {"MAG", "張晨", "黃俊傑"}
 
 
 def test_department_scope_member_list(ctx):
@@ -27,10 +24,12 @@ def test_department_scope_member_list(ctx):
 
 
 def test_search_by_name_and_org_path(ctx):
-    by_name = directory_service.list_members(ctx.db, ctx.user("張晨"), "陳", 1, 50)
+    ctx.user("陳思遠").alumni_discoverable = True
+    ctx.db.flush()
+    by_name = directory_service.list_members(ctx.db, ctx.user("張晨"), "陳", 1, 50, discover=True)
     assert _names(by_name) == {"陳思遠"}
 
-    by_org = directory_service.list_members(ctx.db, ctx.user("張晨"), "軟件", 1, 50)
+    by_org = directory_service.list_members(ctx.db, ctx.user("張晨"), "軟件", 1, 50, discover=True)
     assert _names(by_org) == {"陳思遠"}
 
     # A class-scoped user cannot search outside their scope.
@@ -40,10 +39,10 @@ def test_search_by_name_and_org_path(ctx):
 
 def test_member_detail_respects_scope(ctx):
     db = ctx.db
-    # College-open viewer can read a member in another department.
-    seen = directory_service.get_member(db, ctx.user("張晨"), ctx.user("陳思遠").id)
+    seen = directory_service.get_member(db, ctx.user("張晨"), ctx.user("黃俊傑").id)
     assert seen is not None
-    assert seen.phone == "13800000004"
+    assert seen.phone is None
+    assert directory_service.get_member(db, ctx.user("張晨"), ctx.user("陳思遠").id) is None
 
     # Cross-college access is denied (returns None -> API maps to 404).
     denied = directory_service.get_member(db, ctx.user("周可欣"), ctx.user("張晨").id)

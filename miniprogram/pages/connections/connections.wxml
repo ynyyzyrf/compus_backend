@@ -1,7 +1,7 @@
 <view class="page-pad">
   <view class="tabs">
     <view class="{{tab === 'requests' ? 'selected' : ''}}" data-tab="requests" bindtap="changeTab">好友申请</view>
-    <view class="{{tab === 'friends' ? 'selected' : ''}}" data-tab="friends" bindtap="changeTab">我的好友</view>
+    <view class="{{tab === 'friends' ? 'selected' : ''}}" data-tab="friends" bindtap="changeTab">我的好友{{unreadMessages ? ' (' + unreadMessages + ')' : ''}}</view>
   </view>
   <view wx:if="{{loading}}" class="card muted">加载中…</view>
   <view wx:elif="{{error}}" class="card">{{error}} <text class="link" bindtap="load">重试</text></view>
@@ -23,12 +23,17 @@
   <block wx:else>
     <view wx:if="{{!friends.length}}" class="card muted">暂无好友</view>
     <view wx:for="{{friends}}" wx:key="peer_id" class="card connection">
-      <view class="name">{{item.name}}</view>
+      <view class="name" data-id="{{item.peer_id}}" bindtap="openFriendCard">{{item.name}}</view>
       <view wx:if="{{item.org_path}}" class="muted">{{item.org_path}}</view>
       <view wx:if="{{item.peer_wechat_id}}" class="wechat">微信号：{{item.peer_wechat_id}} <text class="link" data-value="{{item.peer_wechat_id}}" bindtap="copyWechat">复制</text></view>
-      <button size="mini" data-id="{{item.peer_id}}" bindtap="toggleShare" disabled="{{busyId !== 0}}">
-        {{item.shares_wechat ? '取消分享我的微信号' : '分享我的微信号'}}
-      </button>
+      <view class="actions">
+        <button size="mini" data-id="{{item.peer_id}}" bindtap="toggleShare" disabled="{{busyId !== 0}}">
+          {{item.shares_wechat ? '取消分享微信号' : '分享微信号'}}
+        </button>
+        <button size="mini" class="primary" data-id="{{item.peer_id}}" bindtap="openMessages">
+          留言{{item.unread_messages ? ' (' + item.unread_messages + ')' : ''}}
+        </button>
+      </view>
     </view>
   </block>
 </view>

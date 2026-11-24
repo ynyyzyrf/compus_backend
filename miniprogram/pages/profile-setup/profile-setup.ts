@@ -1,7 +1,7 @@
 import { getMyProfile, updateMyProfile } from '../../services/profile'
 import { locale } from '../../utils/i18n'
 import { session } from '../../utils/session'
-import type { MyProfile, MyProfileUpdate } from '../../types/api'
+import type { MyProfile, MyProfileUpdate, ProfileAudience, ProfileVisibilityKey } from '../../types/api'
 
 const DEFAULT_PROFILE_NAME = '未命名校友'
 
@@ -21,10 +21,6 @@ type FormKey =
   | 'referrals_needed'
   | 'personal_experience'
   | 'resources_offered'
-  | 'chamber_chapter'
-  | 'chamber_member_no'
-  | 'chamber_join_date'
-  | 'chamber_score'
   | 'bio'
 
 function leaveProfilePage() {
@@ -81,26 +77,24 @@ Page({
   onReferrals(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'referrals_needed') },
   onExperience(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'personal_experience') },
   onResources(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'resources_offered') },
-  onChamber(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'chamber_chapter') },
-  onChamberNo(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'chamber_member_no') },
-  onChamberJoin(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'chamber_join_date') },
-  onChamberScore(e: WechatMiniprogram.CustomEvent<{ value: string }>) {
-    const v = e.detail.value
-    const num = v ? Number(v) : null
-    if (num !== null && Number.isNaN(num)) return
-    this.setData({ 'profile.chamber_score': num })
-  },
   onBio(e: WechatMiniprogram.CustomEvent<{ value: string }>) { this.onField(e, 'bio') },
+
+  onVisibility(e: WechatMiniprogram.CustomEvent<{ key: ProfileVisibilityKey; value: ProfileAudience }>) {
+    const { key, value } = e.detail
+    this.setData({ [`profile.${key}`]: value })
+  },
 
   _buildPayload(): MyProfileUpdate {
     const p = this.data.profile
     if (!p) return {}
     const cleanStr = (v: string | null) => (v && v.trim() ? v.trim() : null)
     const name = p.name.trim() || p.name_en?.trim() || DEFAULT_PROFILE_NAME
-    const score = p.chamber_score == null ? undefined : Number(p.chamber_score)
     return {
       name,
       name_en: cleanStr(p.name_en),
+      basic_visibility: p.basic_visibility,
+      contact_visibility: p.contact_visibility,
+      details_visibility: p.details_visibility,
       phone: cleanStr(p.phone),
       wechat_id: cleanStr(p.wechat_id),
       email: cleanStr(p.email),
@@ -114,10 +108,6 @@ Page({
       referrals_needed: cleanStr(p.referrals_needed),
       personal_experience: cleanStr(p.personal_experience),
       resources_offered: cleanStr(p.resources_offered),
-      chamber_chapter: cleanStr(p.chamber_chapter),
-      chamber_member_no: cleanStr(p.chamber_member_no),
-      chamber_join_date: cleanStr(p.chamber_join_date),
-      chamber_score: score,
       bio: cleanStr(p.bio),
     }
   },

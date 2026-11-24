@@ -4,6 +4,7 @@ export interface ConnectionSummary {
   eligible: boolean
   discoverable: boolean
   unread: number
+  unread_messages: number
 }
 
 export interface ConnectionItem {
@@ -14,6 +15,7 @@ export interface ConnectionItem {
   incoming: boolean
   message: string
   unread: boolean
+  unread_messages: number
   shares_wechat: boolean
   peer_wechat_id: string | null
 }
@@ -38,3 +40,25 @@ export const respondToRequest = (id: number, action: 'accept' | 'decline'): Prom
 
 export const shareWechat = (id: number, share: boolean): Promise<void> =>
   request({ url: `/connections/${id}/wechat`, method: 'PUT', data: { share }, silent: true })
+
+export interface FriendMessage {
+  id: number
+  sender_id: number
+  message: string
+  created_at: string
+}
+
+export interface FriendMessagePage {
+  peer_name: string
+  items: FriendMessage[]
+  has_more: boolean
+}
+
+export const listFriendMessages = (id: number, beforeId?: number): Promise<FriendMessagePage> =>
+  request({ url: `/connections/${id}/messages${beforeId ? `?before_id=${beforeId}` : ''}`, silent: true })
+
+export const sendFriendMessage = (id: number, message: string, clientId: string): Promise<FriendMessage> =>
+  request({ url: `/connections/${id}/messages`, method: 'POST', data: { message, client_id: clientId }, silent: true })
+
+export const markFriendMessagesRead = (id: number, throughId: number): Promise<void> =>
+  request({ url: `/connections/${id}/messages/read`, method: 'POST', data: { through_id: throughId }, silent: true })

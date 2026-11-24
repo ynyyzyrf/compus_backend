@@ -23,10 +23,21 @@ export function listRelays(params: {
   status?: RelayStatus
   page?: number
   page_size?: number
-} = {}): Promise<RelayListItem[]> {
+} = {}, options: { silent?: boolean } = {}): Promise<RelayListItem[]> {
   return request<RelayListItem[]>({
     url: `/relays${qs(params as Record<string, string | number | boolean | undefined>)}`,
+    silent: options.silent,
   })
+}
+
+export async function hasActiveRelay(): Promise<boolean> {
+  const pageSize = 100
+  for (let page = 1; ; page += 1) {
+    const relays = await listRelays({ status: 'open', page, page_size: pageSize }, { silent: true })
+    const now = Date.now()
+    if (relays.some(relay => !relay.deadline || Date.parse(relay.deadline) >= now)) return true
+    if (relays.length < pageSize) return false
+  }
 }
 
 export function getRelay(id: number): Promise<RelayDetail> {

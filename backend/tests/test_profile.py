@@ -127,14 +127,11 @@ def test_my_profile_rejects_invalid_chamber_score(ctx, client):
     assert resp.status_code == 422
 
 
-def test_member_detail_now_returns_full_business_card(ctx, client):
-    # 張晨 fills his profile, then 周可欣 (商學, can see via 通訊錄學院級可讀
-    # is not enabled for 周可欣 — so use 周可欣 with phone query: 周可欣 can see
-    # only own class. Use MAG as viewer to verify the new fields are serialized.
+def test_business_card_details_require_the_owners_permission(ctx, client):
     zhang = ctx.user("張晨")
     client.put(
         "/api/v1/me/profile",
-        json={"company_name": "跨易國際物流", "position": "創始人"},
+        json={"company_name": "跨易國際物流", "position": "創始人", "details_visibility": "classmates"},
         headers=_auth(zhang),
     )
 
@@ -154,6 +151,18 @@ def test_member_detail_now_returns_full_business_card(ctx, client):
     assert body["company_name"] == "跨易國際物流"
     assert body["position"] == "創始人"
     assert body["profession"] is None  # untouched
+    assert body["phone"] is None
+
+
+def test_english_name_has_a_pinyin_default_and_can_be_replaced_or_cleared(ctx, client):
+    headers = _auth(ctx.user("張晨"))
+    url = "/api/v1/me/profile"
+    generated = client.put(url, headers=headers, json={"name": "黄康婷"}).json()
+    assert generated["name_en_display"] == "KANGTING HUANG"
+    manual = client.put(url, headers=headers, json={"name_en": "Kathy Huang"}).json()
+    assert manual["name_en_display"] == "Kathy Huang"
+    cleared = client.put(url, headers=headers, json={"name_en": None}).json()
+    assert cleared["name_en_display"] == "KANGTING HUANG"
 
 
 def test_me_profile_requires_auth(client):

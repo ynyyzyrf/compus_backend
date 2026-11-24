@@ -1,19 +1,26 @@
 <wxs src="../../utils/i18n.wxs" module="t" />
 <view class="login-page">
-  <view class="brand-space">
-    <view class="logo-row">
-      <view class="seal">商</view>
-      <view class="logo-text">
-        <view>{{t.t('login.org_name', lang)}}</view>
-        <text>{{t.t('home.brand_sub', lang)}}</text>
-      </view>
+  <image class="campus-photo" src="/assets/login-campus.jpg" mode="aspectFill" />
+
+  <view class="login-body">
+    <view class="brand-signature">
+      <view class="brand-seal">圆</view>
+      <text>{{t.t('login.org_name', lang)}}</text>
     </view>
-    <view class="title">{{t.t('login.app_name', lang)}}</view>
+    <view class="welcome-title">{{t.t('login.title', lang)}}</view>
+    <view class="welcome-description">{{t.t('login.subtitle', lang)}}</view>
+
+    <view class="login-actions">
+      <button
+        class="login-primary"
+        hover-class="login-primary-pressed"
+        loading="{{loading}}"
+        disabled="{{loading}}"
+        bindtap="onLogin"
+      >
+        <t-icon wx:if="{{!loading}}" name="logo-wechat-stroke-filled" size="40rpx" />
+        <text>{{t.t(loading ? 'login.loading' : 'login.button', lang)}}</text>
+      </button>
+    </view>
   </view>
-
-  <t-button theme="primary" size="large" block loading="{{loading}}" bindtap="onLogin">
-    {{t.t('login.button', lang)}}
-  </t-button>
-  <view class="skip-login" bindtap="skipLogin">{{t.t('login.skip', lang)}}</view>
-
 </view>
