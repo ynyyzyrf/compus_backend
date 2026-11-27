@@ -18,6 +18,9 @@
         <button size="mini" data-id="{{item.peer_id}}" data-action="decline" bindtap="respond" disabled="{{busyId !== 0}}">拒绝</button>
         <button size="mini" class="primary" data-id="{{item.peer_id}}" data-action="accept" bindtap="respond" disabled="{{busyId !== 0}}">同意</button>
       </view>
+      <view wx:elif="{{!item.incoming && item.status === 'declined'}}" class="actions">
+        <button size="mini" class="primary" data-id="{{item.peer_id}}" bindtap="retryRequest" disabled="{{busyId !== 0}}">重新申请</button>
+      </view>
     </view>
   </block>
   <block wx:else>

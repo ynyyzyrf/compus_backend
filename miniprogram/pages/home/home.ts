@@ -81,23 +81,18 @@ Page({
       return
     }
 
-    let canFindClass = false
+    void this.fetchHomeContent()
+    let canFindClass = true
     try {
       const affiliation = await getMyAffiliation()
       this.setData({ affiliation })
       canFindClass = !affiliation.class_id && !affiliation.pending_class_id
-      if (canFindClass) {
-        wx.reLaunch({ url: '/pages/org-select/org-select' })
-        return
-      }
     } catch (error) {
       if (user.role !== 'super_admin') {
         wx.showToast({ title: (error as Error).message || '组织资料载入失败', icon: 'none' })
-        return
       }
     }
 
-    void this.fetchHomeContent()
     const app = getApp<IAppOption>()
     if (app.globalData.pendingOnboarding && !canFindClass) {
       app.globalData.pendingOnboarding = false

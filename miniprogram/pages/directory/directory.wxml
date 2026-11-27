@@ -24,7 +24,6 @@
       </view>
     </view>
   </view>
-  <view wx:if="{{!eligible && scopeText === '入组后开放通讯录'}}" class="search-submit" bindtap="goFindClass">找回组织 ›</view>
   <view class="list-head"><text class="list-title">{{discover ? '校友搜索结果' : '校友通讯录'}}</text><text class="list-count">{{total}} 人</text></view>
   <view wx:if="{{error}}" class="muted">
     <view>{{error}}</view>

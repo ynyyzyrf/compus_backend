@@ -2,7 +2,7 @@
   <view wx:if="{{loading}}" class="state">正在加载…</view>
   <block wx:else>
     <view class="class-name">{{className}}</view>
-    <view class="section-heading">班级管理员 <text class="count">{{administrators.length}} 人</text></view>
+    <view class="section-heading">已设管理员 <text class="count">{{administrators.length}} 人</text></view>
     <view class="people-list">
       <view wx:for="{{administrators}}" wx:key="id" class="person-row">
         <view class="person-name">{{item.name}}<text wx:if="{{item.status === 'disabled'}}" class="count">（已停用）</text></view>

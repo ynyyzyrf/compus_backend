@@ -2,6 +2,7 @@ import { ensureLogin, goLogin } from '../../services/auth'
 import { listConnections, markRequestsRead, respondToRequest, shareWechat } from '../../services/connections'
 import type { ConnectionItem } from '../../services/connections'
 import { session } from '../../utils/session'
+import { requestAlumniContact } from '../../utils/connection-actions'
 
 interface RequestView extends ConnectionItem { statusLabel: string }
 
@@ -65,6 +66,17 @@ Page({
       await this.load()
     } catch (error) {
       wx.showModal({ title: '处理失败', content: (error as Error).message || '请稍后重试', showCancel: false })
+    } finally {
+      this.setData({ busyId: 0 })
+    }
+  },
+  async retryRequest(e: WechatMiniprogram.BaseEvent) {
+    if (this.data.busyId) return
+    const item = this.data.requests.find(request => request.peer_id === Number(e.currentTarget.dataset.id))
+    if (!item || item.incoming || item.status !== 'declined') return
+    this.setData({ busyId: item.peer_id })
+    try {
+      if (await requestAlumniContact(item.peer_id, item.name)) await this.load()
     } finally {
       this.setData({ busyId: 0 })
     }

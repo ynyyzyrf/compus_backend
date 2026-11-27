@@ -70,7 +70,7 @@
           data-id="{{item.id}}" binderror="onArticleCoverError" />
         <view class="home-row-body">
           <view class="home-article-heading">
-            <t-icon name="file" size="30rpx" class="home-document-icon" />
+            <t-icon name="sound-high" size="30rpx" class="home-document-icon" />
             <view class="home-row-title">{{item.title}}</view>
           </view>
           <view wx:if="{{item.dateText}}" class="home-meta home-article-date">{{item.dateText}}</view>

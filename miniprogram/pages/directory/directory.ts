@@ -145,5 +145,4 @@ Page({
     const member = this.data.members.find(row => row.id === Number(e.currentTarget.dataset.id))
     if (member && member.id !== this.data.userId && this.data.eligible) requestAlumniContact(member.id, member.name)
   },
-  goFindClass() { wx.navigateTo({ url: '/pages/org-select/org-select' }) },
 })

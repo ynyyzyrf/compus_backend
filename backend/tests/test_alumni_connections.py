@@ -1,8 +1,9 @@
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
+from sqlalchemy import func, select
 
 from app.core.security import create_access_token
 from app.db.session import get_db
@@ -159,7 +160,7 @@ def test_cross_department_search_and_friendship_respect_explicit_sharing(db, ctx
     assert search().json()["items"] == []
 
 
-def test_moderation_failure_does_not_create_request_and_decline_enforces_cooldown(db, ctx, client, monkeypatch):
+def test_declined_request_can_be_retried_immediately_with_fresh_unread_state(db, ctx, client, monkeypatch):
     sender, target = ctx.user("張晨"), ctx.user("黃俊傑")
     url = f"{API}/connections/{target.id}/request"
     payload = {"message": "一起参加校友活动"}
@@ -175,8 +176,109 @@ def test_moderation_failure_does_not_create_request_and_decline_enforces_cooldow
     assert client.post(f"{API}/connections/{sender.id}/respond", headers=auth(target), json={
         "action": "decline",
     }).status_code == 200
-    assert client.post(url, headers=auth(sender), json=payload).status_code == 429
     row = db.get(AlumniConnection, tuple(sorted([sender.id, target.id])))
-    row.responded_at = datetime.now(UTC) - timedelta(days=8)
+    previous_response = row.responded_at
+    row.requested_at = previous_response - timedelta(minutes=1)
     db.flush()
-    assert client.post(url, headers=auth(sender), json=payload).status_code == 201
+    checked = []
+    monkeypatch.setattr(wechat_moderation, "check_alumni_message", lambda _, text: checked.append(text))
+    retry_payload = {"message": "你好，想重新和你联系"}
+    retried = client.post(url, headers=auth(sender), json=retry_payload)
+    assert retried.status_code == 201, retried.text
+    assert retried.json() == {"status": "pending"}
+    db.refresh(row)
+    assert row.status == "pending" and row.sender_id == sender.id
+    assert row.message == retry_payload["message"]
+    assert row.requested_at >= previous_response
+    assert row.read_at is None and row.responded_at is None
+    assert checked == [retry_payload["message"]]
+    assert db.scalar(select(func.count()).select_from(AlumniConnection)) == 1
+    assert client.get(f"{API}/connections/summary", headers=auth(target)).json()["unread"] == 1
+    incoming = client.get(f"{API}/connections", headers=auth(target)).json()
+    assert len(incoming) == 1 and incoming[0]["unread"]
+    assert incoming[0]["message"] == retry_payload["message"]
+
+    requested_at = row.requested_at
+    assert client.post(url, headers=auth(sender), json={"message": "网络重试"}).status_code == 201
+    db.refresh(row)
+    assert row.requested_at == requested_at and row.message == retry_payload["message"]
+    assert checked == [retry_payload["message"]]
+    assert client.post(f"{API}/connections/{sender.id}/respond", headers=auth(target), json={
+        "action": "accept",
+    }).status_code == 200
+    assert client.post(url, headers=auth(sender), json=retry_payload).status_code == 409
+    assert db.scalar(select(func.count()).select_from(AlumniConnection)) == 1
+
+
+def test_declined_request_can_restart_in_reverse_direction(db, ctx, client):
+    sender, target = ctx.user("張晨"), ctx.user("黃俊傑")
+    original_url = f"{API}/connections/{target.id}/request"
+    reverse_url = f"{API}/connections/{sender.id}/request"
+    assert client.post(original_url, headers=auth(sender), json={"message": "你好"}).status_code == 201
+    assert client.post(f"{API}/connections/{sender.id}/respond", headers=auth(target), json={
+        "action": "decline",
+    }).status_code == 200
+    retried = client.post(reverse_url, headers=auth(target), json={"message": "现在方便联系了"})
+    assert retried.status_code == 201, retried.text
+    row = db.get(AlumniConnection, tuple(sorted([sender.id, target.id])))
+    db.refresh(row)
+    assert row.status == "pending" and row.sender_id == target.id
+    assert row.read_at is None and row.responded_at is None
+    assert row.message == "现在方便联系了"
+    assert client.get(f"{API}/connections/summary", headers=auth(sender)).json()["unread"] == 1
+    assert client.get(f"{API}/connections/summary", headers=auth(target)).json()["unread"] == 0
+    assert client.post(original_url, headers=auth(sender), json={}).status_code == 409
+    assert client.post(f"{API}/connections/{target.id}/respond", headers=auth(sender), json={
+        "action": "accept",
+    }).status_code == 200
+
+
+def test_retry_of_declined_request_still_checks_privacy_length_and_moderation(db, ctx, client, monkeypatch):
+    sender, target = ctx.user("張晨"), ctx.user("黃俊傑")
+    url = f"{API}/connections/{target.id}/request"
+    assert client.post(url, headers=auth(sender), json={}).status_code == 201
+    assert client.post(f"{API}/connections/{sender.id}/respond", headers=auth(target), json={
+        "action": "decline",
+    }).status_code == 200
+    row = db.get(AlumniConnection, tuple(sorted([sender.id, target.id])))
+    response_at = row.responded_at
+    target.basic_visibility = "private"
+    db.flush()
+    assert client.post(url, headers=auth(sender), json={}).status_code == 404
+    target.basic_visibility = "classmates"
+    db.flush()
+    assert client.post(url, headers=auth(sender), json={"message": "好" * 121}).status_code == 422
+
+    def reject_text(_openid, _message):
+        raise HTTPException(422, "留言未通过审核")
+
+    monkeypatch.setattr(wechat_moderation, "check_alumni_message", reject_text)
+    assert client.post(url, headers=auth(sender), json={"message": "再次申请"}).status_code == 422
+    db.refresh(row)
+    assert row.status == "declined" and row.responded_at == response_at
+
+
+def test_declined_retry_still_obeys_daily_request_limit(db, ctx, client):
+    sender, target = ctx.user("張晨"), ctx.user("黃俊傑")
+    url = f"{API}/connections/{target.id}/request"
+    assert client.post(url, headers=auth(sender), json={}).status_code == 201
+    assert client.post(f"{API}/connections/{sender.id}/respond", headers=auth(target), json={
+        "action": "decline",
+    }).status_code == 200
+    declined = db.get(AlumniConnection, tuple(sorted([sender.id, target.id])))
+    previous_response = declined.responded_at
+    for index in range(9):
+        peer = User(openid=f"daily-limit-peer-{index}", name=f"限额测试{index}")
+        db.add(peer)
+        db.flush()
+        low, high = sorted((sender.id, peer.id))
+        db.add(AlumniConnection(
+            user_low_id=low, user_high_id=high, sender_id=sender.id,
+            message="", status="pending", requested_at=declined.requested_at,
+        ))
+    db.flush()
+    retried = client.post(url, headers=auth(sender), json={"message": "再次申请"})
+    assert retried.status_code == 429
+    assert retried.json()["detail"] == "今天发送的好友申请已达上限"
+    db.refresh(declined)
+    assert declined.status == "declined" and declined.responded_at == previous_response

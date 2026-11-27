@@ -36,7 +36,7 @@
 .home-status-active { background: #f3e4db; color: var(--brand); }
 .home-announcements .home-list { padding: 0 14px; border-radius: 12px; background: var(--card); }
 .home-article-heading { display: flex; align-items: flex-start; gap: 7px; min-width: 0; }
-.home-document-icon { flex: none; margin-top: 2px; color: #aa8b73; }
+.home-document-icon { flex: none; margin-top: 2px; color: var(--brand); }
 .home-article-heading .home-row-title { flex: 1; min-width: 0; font-weight: 400; }
 .home-meta { overflow: hidden; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; text-overflow: ellipsis; white-space: nowrap; }
 .home-article-date { margin-left: 22px; font-size: 11px; }

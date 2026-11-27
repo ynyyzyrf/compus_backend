@@ -183,8 +183,6 @@ def send_request(peer_id: int, payload: RequestMessage, user: CurrentUser, db: D
         if row.status == "pending" and row.sender_id == user.id:
             return {"status": row.status}
         raise HTTPException(409, "已有好友关系或待处理申请")
-    if row and row.responded_at and row.responded_at > now - timedelta(days=7):
-        raise HTTPException(429, "申请暂不可重发，请稍后再试")
     daily_count = db.scalar(select(func.count()).select_from(AlumniConnection).where(
         AlumniConnection.sender_id == user.id, AlumniConnection.requested_at > now - timedelta(days=1)
     ))

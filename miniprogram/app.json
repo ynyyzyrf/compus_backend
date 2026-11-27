@@ -60,5 +60,6 @@
     ]
   },
   "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
   "componentFramework": "glass-easel"
 }

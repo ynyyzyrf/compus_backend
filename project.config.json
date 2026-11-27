@@ -13,7 +13,7 @@
     },
     "coverView": false,
     "postcss": false,
-    "minified": false,
+    "minified": true,
     "enhance": false,
     "showShadowRootInWxmlPanel": false,
     "packNpmRelationList": [],
@@ -49,6 +49,10 @@
       {
         "type": "file",
         "value": "assets/campus-hero.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/business-hero.jpg"
       }
     ],
     "include": []

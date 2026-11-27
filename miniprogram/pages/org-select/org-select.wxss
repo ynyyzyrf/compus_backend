@@ -1,5 +1,5 @@
 page { background: #f7f3ef; }
-.org-page { min-height: 100vh; padding: 44rpx 28rpx 200rpx; padding-bottom: calc(200rpx + env(safe-area-inset-bottom)); background: #f7f3ef; }
+.org-page { min-height: 100vh; padding: 44rpx 28rpx 160px; padding-bottom: calc(160px + env(safe-area-inset-bottom)); background: #f7f3ef; }
 .org-heading { margin-bottom: 36rpx; }
 .org-title { color: #302722; font-size: 42rpx; font-weight: 700; line-height: 1.35; }
 .org-description { margin-top: 12rpx; color: #8b7f75; font-size: 26rpx; line-height: 1.6; }
@@ -42,6 +42,8 @@ page { background: #f7f3ef; }
 .org-primary { display: flex; align-items: center; justify-content: center; width: 100% !important; height: 96rpx; min-height: 44px; margin: 0; padding: 24rpx; border-radius: 22rpx; background: var(--brand); color: #fff; font-size: 30rpx; font-weight: 600; line-height: 1.4; }
 .org-primary[disabled] { background: #e2c3bd; color: #fff; }
 .footer-note { margin-top: 18rpx; color: #8b7f75; font-size: 24rpx; text-align: center; line-height: 1.5; }
+.org-return-home { display: flex; align-items: center; justify-content: center; width: 100% !important; min-height: 44px; margin: 6px 0 0; padding: 8px; border: 0; background: transparent; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.org-return-home::after { border: 0; }
 .pending-state { padding: 60rpx 12rpx; text-align: center; }
 .pending-symbol { margin-bottom: 28rpx; color: var(--brand); }
 .pending-path { margin: 28rpx 0; color: #54453c; font-size: 28rpx; line-height: 1.7; word-break: break-word; }

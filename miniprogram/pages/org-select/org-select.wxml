@@ -76,11 +76,15 @@
       <view class="org-description">审核通过后即可查看所属组织的通讯录。</view>
     </view>
 
-    <view class="org-footer">
+  </block>
+
+  <view class="org-footer">
+    <block wx:if="{{!loading && !error}}">
       <button wx:if="{{step === 'select'}}" class="org-primary" disabled="{{!chosen}}" bindtap="nextStep">下一步</button>
       <button wx:elif="{{step === 'confirm'}}" class="org-primary" loading="{{submitting}}" disabled="{{submitting || !canSubmit}}" bindtap="submit">提交加入申请</button>
       <button wx:else class="org-primary" bindtap="enterHome">进入首页</button>
       <view wx:if="{{step === 'confirm'}}" class="footer-note">提交后请等待管理员审核</view>
-    </view>
-  </block>
+    </block>
+    <button wx:if="{{step !== 'pending' || loading || error}}" class="org-return-home" bindtap="enterHome" disabled="{{submitting}}">返回首页</button>
+  </view>
 </view>

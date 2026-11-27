@@ -31,6 +31,86 @@ function loadPage(name, modules, wx, globals = {}) {
 }
 
 const academics = load('miniprogram/utils/academic.ts')
+
+function retryFixture() {
+  const dialogs = []
+  const sent = []
+  const state = { status: 'declined', fail: false }
+  const wx = { showModal: options => dialogs.push(options), showToast() {} }
+  const actions = load('miniprogram/utils/connection-actions.ts', {
+    '../services/connections': { sendConnectionRequest: async (id, message) => {
+      sent.push([id, message])
+      if (state.fail) throw new Error('网络暂时不可用')
+      state.status = 'pending'
+    } },
+  }, { wx })
+  const page = loadPage('connections', {
+    '../../services/auth': { ensureLogin: async () => ({ id: 1 }) },
+    '../../services/connections': {
+      listConnections: async () => [{ peer_id: 2, name: '张明', status: state.status, incoming: false, unread: false }],
+      markRequestsRead: async () => {},
+    },
+    '../../utils/connection-actions': actions,
+    '../../utils/session': { session: { isGuest: () => false } },
+  }, wx)
+  return { page, dialogs, sent, state }
+}
+
+test('declined outgoing requests can be resent with a fresh message and refreshed pending status', async () => {
+  const { page, dialogs, sent } = retryFixture()
+  await page.load()
+  const event = { currentTarget: { dataset: { id: 2 } } }
+  const pending = page.retryRequest(event)
+  assert.equal(page.data.busyId, 2)
+  await page.retryRequest(event)
+  assert.equal(dialogs.length, 1, 'rapid taps must not open another request dialog')
+  await dialogs[0].success({ confirm: true, content: '  我们是同班同学  ' })
+  await pending
+  assert.deepEqual(sent, [[2, '我们是同班同学']])
+  assert.equal(page.data.requests[0].status, 'pending')
+  assert.equal(page.data.requests[0].statusLabel, '等待对方处理')
+  assert.equal(page.data.busyId, 0)
+})
+
+test('cancelled or failed retries keep the declined request usable', async () => {
+  const { page, dialogs, sent, state } = retryFixture()
+  await page.load()
+  const event = { currentTarget: { dataset: { id: 2 } } }
+  let pending = page.retryRequest(event)
+  await dialogs[0].success({ confirm: false })
+  await pending
+  assert.equal(page.data.busyId, 0)
+  assert.equal(sent.length, 0)
+
+  state.fail = true
+  pending = page.retryRequest(event)
+  await dialogs[1].success({ confirm: true, content: '你好' })
+  await pending
+  assert.equal(dialogs[2].title, '发送失败')
+  assert.equal(page.data.requests[0].status, 'declined')
+  assert.equal(page.data.busyId, 0)
+
+  state.fail = false
+  pending = page.retryRequest(event)
+  await dialogs[3].success({ confirm: true, content: '重新申请' })
+  await pending
+  assert.equal(page.data.requests[0].status, 'pending')
+})
+
+test('retry handler ignores incoming, pending, accepted and unknown requests', async () => {
+  const { page, dialogs } = retryFixture()
+  for (const request of [
+    { peer_id: 2, status: 'declined', incoming: true },
+    { peer_id: 2, status: 'pending', incoming: false },
+    { peer_id: 2, status: 'accepted', incoming: false },
+  ]) {
+    page.setData({ requests: [request] })
+    await page.retryRequest({ currentTarget: { dataset: { id: 2 } } })
+  }
+  await page.retryRequest({ currentTarget: { dataset: { id: 999 } } })
+  assert.equal(dialogs.length, 0)
+})
+
 const nodes = [
   { id: 1, name: '大学', type: 'school', parent_id: null },
   { id: 2, name: '工程学院', type: 'college', parent_id: 1 },
@@ -269,6 +349,36 @@ test('mine personal card opens the profile editor', () => {
   }, { navigateTo: ({ url }) => navigation.push(url) })
   mine.goProfileCard()
   assert.deepEqual(navigation, ['/pages/profile-edit/profile-edit'])
+})
+
+test('friend cards open messages while non-friends and own cards do not', async () => {
+  const navigation = []
+  let member = { id: 8, name: '张晨', is_friend: true }
+  let fail = false
+  const screen = loadPage('member-detail', {
+    '../../services/directory': { getMember: async () => { if (fail) throw Error('load failed'); return member } },
+    '../../services/connections': { connectionSummary: async () => ({ eligible: true }) },
+    '../../utils/i18n': { locale: { get: () => 'zh-CN' }, t: key => key },
+    '../../utils/session': { session: { getUser: () => ({ id: 2 }) } },
+  }, { setNavigationBarTitle() {}, showToast() {}, navigateTo: value => navigation.push(value.url) })
+  await screen.load(8)
+  assert.equal(screen.data.canMessage, true)
+  assert.equal(screen.data.canAdd, false)
+  screen.openMessages()
+  assert.deepEqual(navigation, ['/pages/friend-messages/friend-messages?id=8'])
+  member = { ...member, is_friend: false }
+  await screen.load(8)
+  screen.openMessages()
+  assert.equal(screen.data.canMessage, false)
+  assert.equal(screen.data.canAdd, true)
+  member = { ...member, id: 2, is_friend: true }
+  await screen.load(2)
+  screen.openMessages()
+  assert.equal(screen.data.canMessage, false)
+  fail = true
+  await screen.load(8)
+  assert.equal(screen.data.canMessage, false)
+  assert.equal(navigation.length, 1)
 })
 
 test('retries a friend message with the same client id and clears the draft after success', async () => {

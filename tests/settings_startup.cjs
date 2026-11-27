@@ -120,18 +120,18 @@ test('startup ignores stale affiliation responses after switching accounts', asy
   assert.deepEqual(navigation, [])
 })
 
-test('opening home directly without an organization routes before fetching home content', async () => {
+test('an unassigned user can return home and browse without being sent back to class selection', async () => {
   const navigation = []
   let fetched = false
   const screen = page('home', {
     '../../services/auth': { ensureLogin: async () => ({ id: 8, role: 'user' }) },
     '../../services/affiliation': { getMyAffiliation: async () => ({ class_id: null, pending_class_id: null }) },
     '../../utils/session': { session: { isGuest: () => false } },
-  }, { reLaunch: value => navigation.push(value.url) })
+  }, { reLaunch: value => navigation.push(value.url) }, { getApp: () => ({ globalData: { pendingOnboarding: true } }) })
   screen.fetchHomeContent = async () => { fetched = true }
   await screen.onShow()
-  assert.deepEqual(navigation, ['/pages/org-select/org-select'])
-  assert.equal(fetched, false)
+  assert.deepEqual(navigation, [])
+  assert.equal(fetched, true)
 })
 
 test('class reviewers do not request super-admin-only missing-class feedback', async () => {

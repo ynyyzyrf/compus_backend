@@ -17,6 +17,7 @@
       </view>
     </view>
     <button wx:if="{{canAdd}}" class="add-alumni" bindtap="addFriend">添加好友</button>
+    <button wx:if="{{canMessage}}" class="add-alumni" bindtap="openMessages">发留言</button>
     <view wx:if="{{member.wechat_id || member.phone || member.email}}" class="quick-contact card">
       <view
         class="contact-box {{member.wechat_id ? '' : 'disabled'}}"

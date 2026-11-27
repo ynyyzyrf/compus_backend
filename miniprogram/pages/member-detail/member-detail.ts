@@ -66,6 +66,7 @@ Page({
     loading: true,
     member: null as MemberCard | null,
     canAdd: false,
+    canMessage: false,
     memberId: 0,
   },
 
@@ -81,11 +82,11 @@ Page({
   onShow() { if (this.data.memberId) this.load(this.data.memberId) },
 
   async load(id: number) {
-    this.setData({ loading: true })
+    this.setData({ loading: true, canAdd: false, canMessage: false })
     try {
       const member = await getMember(id)
       const isOwnCard = member.id === session.getUser()?.id
-      this.setData({ lang: locale.get(), member: toCard(member) })
+      this.setData({ lang: locale.get(), member: toCard(member), canMessage: !isOwnCard && Boolean(member.is_friend) })
       wx.setNavigationBarTitle({ title: member.name || t('member.card_title') })
       const summary = !isOwnCard && !member.is_friend ? await connectionSummary().catch(() => null) : null
       this.setData({ canAdd: Boolean(summary?.eligible) })
@@ -111,5 +112,10 @@ Page({
   addFriend() {
     const member = this.data.member
     if (member && this.data.canAdd) requestAlumniContact(member.id, member.name)
+  },
+  openMessages() {
+    if (this.data.canMessage && this.data.member) {
+      wx.navigateTo({ url: `/pages/friend-messages/friend-messages?id=${this.data.member.id}` })
+    }
   },
 })

@@ -9,7 +9,7 @@ App<IAppOption>({
       const pages = getCurrentPages()
       const route = pages[pages.length - 1]?.route
       // These pages already load affiliation and route themselves.
-      if (route && ['pages/login/login', 'pages/home/home', 'pages/org-select/org-select'].includes(route)) return
+      if (route && ['pages/login/login', 'pages/org-select/org-select'].includes(route)) return
       void routeUnassignedUser()
     })
   },
